@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { BrowserRouter, Link, Outlet, Route, Routes } from 'react-router'
 import { AppHeader } from '../components/AppHeader'
 import { NetworkGuard } from '../components/NetworkGuard'
+import { OnboardingModal } from '../components/OnboardingModal'
 import { WalletProvider } from '../hooks/useWallet'
 import { queryClient } from '../lib/queryClient'
 import { HomePage } from '../pages/home-page'
@@ -68,6 +69,7 @@ function AppLayout() {
         </div>
       </div>
       <Toaster />
+      <OnboardingModal />
     </main>
   )
 }
