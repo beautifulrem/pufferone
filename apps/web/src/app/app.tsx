@@ -8,6 +8,7 @@ import { WalletProvider } from '../hooks/useWallet'
 import { queryClient } from '../lib/queryClient'
 import { HomePage } from '../pages/home-page'
 import { StakePage } from '../pages/stake-page'
+import { PortfolioPage } from '../pages/portfolio-page'
 import { SwapPage } from '../pages/swap-page'
 import { VaultsPage } from '../pages/vaults-page'
 
@@ -55,6 +56,12 @@ function AppLayout() {
             >
               Swap
             </Link>
+            <Link
+              to="/portfolio"
+              className="rounded-md border border-transparent px-3 py-1.5 text-text-tertiary transition-colors hover:border-border hover:text-foreground"
+            >
+              Portfolio
+            </Link>
           </nav>
           <NetworkGuard />
           <Outlet />
@@ -76,6 +83,7 @@ function App() {
               <Route path="stake" element={<StakePage />} />
               <Route path="vaults" element={<VaultsPage />} />
               <Route path="swap" element={<SwapPage />} />
+              <Route path="portfolio" element={<PortfolioPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
