@@ -27,17 +27,19 @@ export type DeployedContracts = {
   swapRouter: SepoliaAddress
 }
 
+/// PufferOne deployed contracts on Sepolia (chain 11155111).
+/// Deployed via contracts/script/Deploy.s.sol on 2026-05-22.
 export const CONTRACTS: DeployedContracts = {
-  pufETH: PLACEHOLDER,
-  stETH: PLACEHOLDER,
-  wstETH: PLACEHOLDER,
-  depositor: PLACEHOLDER,
-  vaultFactory: PLACEHOLDER,
-  unifiETH: PLACEHOLDER,
-  unifiUSD: PLACEHOLDER,
-  unifiBTC: PLACEHOLDER,
-  pufETHs: PLACEHOLDER,
-  swapRouter: PLACEHOLDER,
+  pufETH: '0xd44387034102491Af58292fF1c7405AED4e7Eb04',
+  stETH: '0xB59271CD9158Bb50125c3F9AC5CA013eE2fa7AF6',
+  wstETH: '0x0353908C9a9b58108E7A6446619B567A9207336D',
+  depositor: '0x8628C68227EAfe1B435eb3F918e5358aE5b1c390',
+  vaultFactory: '0xBEd71c18e2275F0A10c56c8f22EbFE774f05Ef3c',
+  unifiETH: '0x4D42919570c9dF3356afa44A0236198168933CCD',
+  unifiUSD: '0x4C0234A302650E5B56A5D658A037143f6B72948f',
+  unifiBTC: '0xEae62881Bbeeb18bDAE3a9C5edAB4B7eF33128e4',
+  pufETHs: '0xE8EAB43253f09C674B49b39451Bd3647cB21AeEb',
+  swapRouter: '0xF69507F745dC5b4a92f34c824A06e5308578361a',
 }
 
 /// True when the user has populated the addresses post-deploy.
