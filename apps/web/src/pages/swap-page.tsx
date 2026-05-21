@@ -1,7 +1,10 @@
+import { SafetyBar } from '../components/SafetyBar'
 import { SwapForm } from '../components/SwapForm'
 
 export function SwapPage() {
   return (
+    <>
+    <SafetyBar />
     <div className="grid gap-8 lg:grid-cols-2">
       <div>
         <p className="mb-3 font-mono text-[length:var(--text-caption)] text-primary uppercase tracking-[2.5px]">
@@ -34,5 +37,6 @@ export function SwapPage() {
 
       <SwapForm />
     </div>
+    </>
   )
 }

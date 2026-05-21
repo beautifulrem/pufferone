@@ -1,5 +1,6 @@
 import { Badge } from '@repo/ui/components/badge'
 import { useState } from 'react'
+import { SafetyBar } from '../components/SafetyBar'
 import { VaultCard } from '../components/VaultCard'
 import { VaultDepositModal } from '../components/VaultDepositModal'
 import { useTokenBalance } from '../hooks/useTokenBalance'
@@ -33,6 +34,7 @@ export function VaultsPage() {
 
   return (
     <>
+      <SafetyBar />
       <div className="mb-8">
         <p className="mb-3 font-mono text-[length:var(--text-caption)] text-primary uppercase tracking-[2.5px]">
           题目要求 04 · UniFi Vault 机会
