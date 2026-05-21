@@ -39,3 +39,6 @@ contracts/.env
 # build artifacts
 *.tsbuildinfo
 
+# vercel build artifact at root (copied from apps/web/dist)
+/dist/
+
