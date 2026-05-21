@@ -8,6 +8,7 @@ import { WalletProvider } from '../hooks/useWallet'
 import { queryClient } from '../lib/queryClient'
 import { HomePage } from '../pages/home-page'
 import { StakePage } from '../pages/stake-page'
+import { VaultsPage } from '../pages/vaults-page'
 
 function AppLayout() {
   useEffect(() => {
@@ -41,6 +42,12 @@ function AppLayout() {
             >
               Stake
             </Link>
+            <Link
+              to="/vaults"
+              className="rounded-md border border-transparent px-3 py-1.5 text-text-tertiary transition-colors hover:border-border hover:text-foreground"
+            >
+              Vaults
+            </Link>
           </nav>
           <NetworkGuard />
           <Outlet />
@@ -60,6 +67,7 @@ function App() {
             <Route element={<AppLayout />}>
               <Route index element={<HomePage />} />
               <Route path="stake" element={<StakePage />} />
+              <Route path="vaults" element={<VaultsPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
