@@ -1,0 +1,41 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# editor
+.vscode/
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+
+# os
+.DS_Store
+Thumbs.db
+
+# test
+coverage/
+
+# misc
+*.log
+*.tsbuildinfo
+
+.pnpm-store
+
+# foundry
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+contracts/lib/
+contracts/.env
+
+# build artifacts
+*.tsbuildinfo
+
