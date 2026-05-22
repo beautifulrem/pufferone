@@ -1,6 +1,5 @@
 import { Card, CardContent } from '@repo/ui/components/card'
 import {
-  ArrowDownToLine,
   BookOpen,
   ExternalLink,
   Monitor,
@@ -13,10 +12,8 @@ import { Link } from 'react-router'
 import { ImTokenLauncher } from '../components/ImTokenLauncher'
 import { openTutorial } from '../components/OnboardingModal'
 import { SafetyProtectionsDialog } from '../components/SafetyProtectionsButton'
-import { useTokenBalance } from '../hooks/useTokenBalance'
 import { type ThemeMode, useTheme } from '../hooks/useTheme'
 import { useWallet } from '../hooks/useWallet'
-import { CONTRACTS } from '../lib/contracts'
 
 const THEME_OPTIONS: { value: ThemeMode; label: string; Icon: typeof Sun }[] = [
   { value: 'system', label: '系统', Icon: Monitor },
@@ -123,27 +120,7 @@ export function MorePage() {
   const wallet = useWallet()
   const [safetyOpen, setSafetyOpen] = useState(false)
 
-  // 统计可赎回仓位（pufETH + 4 个金库份额）
-  const pufETH = useTokenBalance(CONTRACTS.pufETH)
-  const unifiETH = useTokenBalance(CONTRACTS.unifiETH)
-  const unifiUSD = useTokenBalance(CONTRACTS.unifiUSD)
-  const unifiBTC = useTokenBalance(CONTRACTS.unifiBTC)
-  const pufETHs = useTokenBalance(CONTRACTS.pufETHs)
-  const redeemable = [pufETH, unifiETH, unifiUSD, unifiBTC, pufETHs].filter(
-    (b) => (b.data ?? 0n) > 0n,
-  ).length
-
   const items: Item[] = [
-    {
-      action: { kind: 'link', href: '/exit' },
-      icon: ArrowDownToLine,
-      title: '赎回与退出',
-      description:
-        redeemable > 0
-          ? `当前有 ${redeemable} 个可赎回仓位。`
-          : '将 pufETH 兑回 ETH，或从金库赎回资产。',
-      badge: redeemable > 0 ? { count: redeemable } : undefined,
-    },
     {
       action: { kind: 'click', onClick: () => setSafetyOpen(true) },
       icon: ShieldCheck,
