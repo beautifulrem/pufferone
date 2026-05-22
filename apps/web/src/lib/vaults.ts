@@ -25,7 +25,7 @@ export const VAULTS: readonly VaultDescriptor[] = [
   {
     key: 'unifiETH',
     name: 'unifiETH',
-    description: '以 ETH 计价的 UniFi 金库，中等收益，ETH 风险敞口。',
+    description: 'ETH 本位稳健策略，叠加 Puffer 再质押与 EigenLayer AVS 双重收益。',
     address: CONTRACTS.unifiETH,
     accent: 'primary',
     risk: 'Low',
@@ -37,7 +37,7 @@ export const VAULTS: readonly VaultDescriptor[] = [
   {
     key: 'unifiUSD',
     name: 'unifiUSD',
-    description: '以 USD 计价的 UniFi 金库，最稳定，收益波动最低。',
+    description: 'USDC 本位稳定币策略，无币价敞口，收益来源于链上借贷与做市。',
     address: CONTRACTS.unifiUSD,
     accent: 'ai',
     risk: 'Low',
@@ -48,7 +48,7 @@ export const VAULTS: readonly VaultDescriptor[] = [
   {
     key: 'unifiBTC',
     name: 'unifiBTC',
-    description: '以 BTC 计价的 UniFi 金库，跟随 BTC 波动，收益略高。',
+    description: 'WBTC 本位策略，跟随 BTC 行情，叠加跨链 BTCfi 额外收益。',
     address: CONTRACTS.unifiBTC,
     accent: 'warning',
     risk: 'Medium',
@@ -59,7 +59,7 @@ export const VAULTS: readonly VaultDescriptor[] = [
   {
     key: 'pufETHs',
     name: 'pufETHs',
-    description: '带收益的 pufETH 变体，收益最高，结构化风险。',
+    description: 'pufETH 进阶版本，叠加 Pendle 利率衍生品，潜在年化最高。',
     address: CONTRACTS.pufETHs,
     accent: 'destructive',
     risk: 'Elevated',
