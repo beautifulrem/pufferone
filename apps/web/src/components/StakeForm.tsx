@@ -104,19 +104,18 @@ export function StakeForm() {
     <div className="space-y-4">
       <CornerBracketCard className="p-5">
         {/* Token segmented */}
-        <div className="mb-4 grid grid-cols-3 gap-1.5 rounded-lg bg-background/60 p-1.5">
+        <div className="mb-4 grid grid-cols-3 gap-1 rounded-lg bg-background/60 p-1">
           {(['ETH', 'stETH', 'wstETH'] as const).map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => setToken(t)}
-              className={`flex items-center justify-center gap-1.5 rounded-md py-2 font-mono text-sm transition-all ${
+              className={`flex items-center justify-center rounded-md py-2 font-mono text-sm transition-all ${
                 token === t
-                  ? 'bg-primary text-primary-foreground shadow-[0_4px_14px_rgba(255,20,147,0.4)]'
+                  ? 'bg-primary text-primary-foreground'
                   : 'text-text-tertiary hover:text-foreground'
               }`}
             >
-              <TokenIcon symbol={t} size={18} />
               {t}
             </button>
           ))}

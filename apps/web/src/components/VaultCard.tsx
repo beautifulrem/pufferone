@@ -1,20 +1,17 @@
 import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
 import { Card, CardContent } from '@repo/ui/components/card'
+import { useMemo } from 'react'
+import { APYHistory } from '../lib/mockHistory'
 import type { VaultDescriptor } from '../lib/vaults'
+import { Sparkline } from './Sparkline'
+import { TokenIcon } from './TokenIcon'
 
-const ACCENT_CLASS: Record<VaultDescriptor['accent'], string> = {
-  primary: 'bg-primary',
-  warning: 'bg-warning',
-  destructive: 'bg-destructive',
-  ai: 'bg-ai-primary',
-}
-
-const RISK_BADGE: Record<VaultDescriptor['risk'], { variant: 'success' | 'secondary' | 'destructive'; label: string }> =
+const RISK_LABEL: Record<VaultDescriptor['risk'], { variant: 'success' | 'secondary' | 'destructive'; label: string }> =
   {
-    Low: { variant: 'success', label: 'Low risk' },
-    Medium: { variant: 'secondary', label: 'Medium risk' },
-    Elevated: { variant: 'destructive', label: 'Elevated risk' },
+    Low: { variant: 'success', label: '低风险' },
+    Medium: { variant: 'secondary', label: '中等风险' },
+    Elevated: { variant: 'destructive', label: '较高风险' },
   }
 
 export type VaultCardProps = {
@@ -35,47 +32,50 @@ function formatTVL(tvl: number): string {
 export function VaultCard({ vault, apy, tvl, apyLoading, userShares, onDeposit }: VaultCardProps) {
   const effectiveAPY = apy ?? vault.fallbackAPY
   const effectiveTVL = tvl ?? vault.fallbackTVL
-  const risk = RISK_BADGE[vault.risk]
+  const risk = RISK_LABEL[vault.risk]
   const hasShares = userShares !== undefined && userShares > 0n
+
+  const sparklineData = useMemo(
+    () => APYHistory(vault.address, effectiveAPY).map((p) => ({ value: p.value })),
+    [vault.address, effectiveAPY],
+  )
 
   return (
     <Card className="border-border bg-card shadow-none transition-colors hover:border-primary/40">
-      <CardContent className="space-y-4 p-5">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className={`size-2 rounded-full ${ACCENT_CLASS[vault.accent]}`} />
-            <h3 className="font-mono font-semibold text-foreground text-lg">{vault.name}</h3>
+      <CardContent className="p-4">
+        {/* Top row: icon + name + risk badge */}
+        <div className="mb-3 flex items-center gap-3">
+          <TokenIcon symbol={vault.name} size={36} />
+          <div className="min-w-0 flex-1">
+            <p className="font-mono font-semibold text-foreground text-base">{vault.name}</p>
+            <p className="truncate font-mono text-[10px] text-text-tertiary">{vault.description}</p>
           </div>
-          <Badge variant={risk.variant} className="font-mono">
+          <Badge variant={risk.variant} className="font-mono text-[10px]">
             {risk.label}
           </Badge>
         </div>
 
-        <p className="text-sm text-text-tertiary leading-relaxed">{vault.description}</p>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-md border border-border bg-background/40 p-3">
-            <p className="font-mono text-text-tertiary text-xs uppercase tracking-wide">APY</p>
-            <p className="mt-1 font-mono font-semibold text-foreground text-lg">
+        {/* Metrics row: APY + TVL + sparkline */}
+        <div className="grid grid-cols-[1fr_1fr_80px] items-center gap-3">
+          <div>
+            <p className="font-mono text-[10px] text-text-tertiary uppercase tracking-wide">APY</p>
+            <p className="font-mono font-semibold text-foreground text-lg">
               {apyLoading ? '—' : `${effectiveAPY.toFixed(2)}%`}
             </p>
-            <p className="mt-0.5 font-mono text-text-tertiary text-xs">
-              {apy !== undefined ? 'mainnet live' : 'fallback estimate'}
-            </p>
           </div>
-          <div className="rounded-md border border-border bg-background/40 p-3">
-            <p className="font-mono text-text-tertiary text-xs uppercase tracking-wide">TVL</p>
-            <p className="mt-1 font-mono font-semibold text-foreground text-lg">
-              {formatTVL(effectiveTVL)}
-            </p>
-            <p className="mt-0.5 font-mono text-text-tertiary text-xs">mainnet 30-day avg</p>
+          <div>
+            <p className="font-mono text-[10px] text-text-tertiary uppercase tracking-wide">TVL</p>
+            <p className="font-mono font-semibold text-foreground text-lg">{formatTVL(effectiveTVL)}</p>
+          </div>
+          <div className="h-10">
+            <Sparkline data={sparklineData} />
           </div>
         </div>
 
         {hasShares && (
-          <div className="rounded-md border border-success/40 bg-success-surface/30 p-3 font-mono text-sm">
-            Your shares:{' '}
-            <span className="text-success-text">
+          <div className="mt-3 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 font-mono text-xs">
+            <span className="text-text-tertiary">已持有 </span>
+            <span className="text-primary">
               {(Number(userShares) / 1e18).toFixed(4)} {vault.name}
             </span>
           </div>
@@ -84,10 +84,10 @@ export function VaultCard({ vault, apy, tvl, apyLoading, userShares, onDeposit }
         <Button
           size="sm"
           variant={hasShares ? 'outline' : 'default'}
-          className="w-full font-mono"
+          className={`mt-3 w-full font-mono ${!hasShares ? 'cta-gradient' : ''}`}
           onClick={() => onDeposit(vault)}
         >
-          {hasShares ? `Deposit more pufETH` : `Deposit pufETH → ${vault.name}`}
+          {hasShares ? '继续存入 pufETH' : `存入 pufETH → ${vault.name}`}
         </Button>
       </CardContent>
     </Card>

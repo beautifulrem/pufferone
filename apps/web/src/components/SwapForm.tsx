@@ -1,8 +1,7 @@
 import { Button } from '@repo/ui/components/button'
-import { Card, CardContent } from '@repo/ui/components/card'
 import { Input } from '@repo/ui/components/input'
-import { Label } from '@repo/ui/components/label'
 import { Slider } from '@repo/ui/components/slider'
+import { ArrowDown, CheckCircle2, ExternalLink, Settings2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { parseEther, type Address } from 'viem'
 import { useAllowance } from '../hooks/useAllowance'
@@ -12,8 +11,9 @@ import { useTokenBalance } from '../hooks/useTokenBalance'
 import { useWallet } from '../hooks/useWallet'
 import { CONTRACTS } from '../lib/contracts'
 import { formatTokenAmount } from '../lib/format'
-import { RoutePath } from './RoutePath'
-import { TxSummaryCard } from './TxSummaryCard'
+import { CornerBracketCard } from './CornerBracketCard'
+import { GradientCTA } from './GradientCTA'
+import { TokenIcon } from './TokenIcon'
 
 type InputToken = 'stETH' | 'wstETH'
 
@@ -22,9 +22,6 @@ const INPUT_ADDRESS: Record<InputToken, Address> = {
   wstETH: CONTRACTS.wstETH,
 }
 
-// Conversion rate (1e18-scaled) — must match what Deploy.s.sol set on the router:
-//   stETH -> pufETH: 0.96
-//   wstETH -> pufETH: 1.12
 const RATE_BPS: Record<InputToken, bigint> = {
   stETH: 96n,
   wstETH: 112n,
@@ -33,8 +30,9 @@ const RATE_BPS: Record<InputToken, bigint> = {
 export function SwapForm() {
   const wallet = useWallet()
   const [tokenIn, setTokenIn] = useState<InputToken>('stETH')
-  const [amount, setAmount] = useState('10')
-  const [slippageBps, setSlippageBps] = useState<number>(50) // 0.5%
+  const [amount, setAmount] = useState('')
+  const [slippageBps, setSlippageBps] = useState<number>(50)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const balance = useTokenBalance(INPUT_ADDRESS[tokenIn])
   const allowance = useAllowance(INPUT_ADDRESS[tokenIn], CONTRACTS.swapRouter)
@@ -42,9 +40,9 @@ export function SwapForm() {
   const swap = useSwap()
 
   useEffect(() => {
-    if (swap.isSuccess || swap.isError) swap.reset()
-    if (approve.isSuccess || approve.isError) approve.reset()
-    // biome-ignore lint/correctness/useExhaustiveDependencies: only on input change
+    swap.reset()
+    approve.reset()
+    // biome-ignore lint/correctness/useExhaustiveDependencies: only on user change
   }, [tokenIn, amount])
 
   const inputWei = useMemo(() => {
@@ -60,7 +58,6 @@ export function SwapForm() {
   const minOut = (expectedOut * BigInt(10_000 - slippageBps)) / 10_000n
 
   const path: readonly Address[] = [INPUT_ADDRESS[tokenIn], CONTRACTS.pufETH]
-  const routeLabels = [tokenIn, 'pufETH']
 
   const balanceAmount = balance.data ?? 0n
   const allowanceAmount = allowance.data ?? 0n
@@ -69,185 +66,191 @@ export function SwapForm() {
   const isPending = swap.isPending || approve.isPending
 
   const canSubmit =
-    wallet.isConnected &&
-    wallet.isCorrectChain &&
-    inputWei > 0n &&
-    !insufficientBalance &&
-    !isPending
+    wallet.isConnected && wallet.isCorrectChain && inputWei > 0n && !insufficientBalance && !isPending
+
+  const setMax = () => setAmount(formatTokenAmount(balanceAmount, 18, 6))
 
   return (
-    <Card className="border-border bg-card shadow-none">
-      <CardContent className="space-y-6 p-6">
-        <div>
-          <p className="font-mono text-[length:var(--text-caption)] text-primary uppercase tracking-[2px]">
-            Phase 6 · DEX 聚合（进阶）
-          </p>
-          <h2 className="mt-1 font-semibold text-foreground text-xl">
-            Any token → pufETH
-          </h2>
+    <div className="space-y-4">
+      <CornerBracketCard className="p-4">
+        {/* Settings row */}
+        <div className="mb-3 flex items-center justify-between">
+          <p className="font-mono text-text-tertiary text-xs">Swap → pufETH</p>
+          <button
+            type="button"
+            onClick={() => setSettingsOpen((v) => !v)}
+            className="text-text-tertiary hover:text-foreground"
+          >
+            <Settings2 size={16} />
+          </button>
         </div>
 
-        {/* Token in selector */}
-        <div>
-          <Label className="mb-3 block text-text-tertiary text-xs uppercase tracking-wide">
-            From
-          </Label>
-          <div className="grid grid-cols-2 gap-2">
-            {(['stETH', 'wstETH'] as const).map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setTokenIn(t)}
-                className={`rounded-md border px-3 py-2 font-mono text-sm transition-colors ${
-                  tokenIn === t
-                    ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-border text-text-tertiary hover:border-border-strong'
-                }`}
-              >
-                {t}
-              </button>
-            ))}
+        {settingsOpen && (
+          <div className="mb-3 rounded-lg border border-border bg-background/40 p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="font-mono text-text-tertiary text-xs">滑点容忍度</p>
+              <span className="font-mono text-foreground text-sm">{(slippageBps / 100).toFixed(2)}%</span>
+            </div>
+            <Slider
+              min={10}
+              max={500}
+              step={10}
+              value={[slippageBps]}
+              onValueChange={([v]) => v !== undefined && setSlippageBps(v)}
+            />
+            <p className="mt-2 font-mono text-[10px] text-text-tertiary">
+              链上强制 minOut · 实际收到 {'<'} {(slippageBps / 100).toFixed(2)}% 会 revert
+            </p>
           </div>
-          <p className="mt-2 font-mono text-text-tertiary text-xs">
-            Balance: {formatTokenAmount(balanceAmount)} {tokenIn}
-            {insufficientBalance && balance.isFetched && (
-              <span className="ml-2 text-warning">· faucet on Stake page first</span>
-            )}
-          </p>
-        </div>
+        )}
 
-        {/* Amount */}
-        <div className="space-y-2">
-          <Label htmlFor="swap-amount" className="text-text-tertiary text-xs uppercase tracking-wide">
-            Amount in
-          </Label>
-          <Input
-            id="swap-amount"
-            type="text"
-            inputMode="decimal"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="h-12 border-border bg-background font-mono text-foreground text-lg"
-          />
-        </div>
-
-        {/* Slippage */}
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <Label className="text-text-tertiary text-xs uppercase tracking-wide">
-              Slippage tolerance
-            </Label>
-            <span className="font-mono text-foreground text-sm">
-              {(slippageBps / 100).toFixed(2)}%
+        {/* Input card */}
+        <div className="rounded-2xl border border-border bg-background/50 p-4">
+          <div className="mb-2 flex items-center justify-between font-mono text-text-tertiary text-xs">
+            <span>支付</span>
+            <span>
+              余额{' '}
+              <span className="text-foreground">{formatTokenAmount(balanceAmount, 18, 4)}</span>{' '}
+              <button
+                type="button"
+                onClick={setMax}
+                className="ml-1.5 rounded bg-primary/15 px-1.5 py-0.5 text-primary text-[10px] uppercase tracking-wider"
+              >
+                Max
+              </button>
             </span>
           </div>
-          <Slider
-            min={10}
-            max={500}
-            step={10}
-            value={[slippageBps]}
-            onValueChange={([v]) => v !== undefined && setSlippageBps(v)}
-            className="w-full"
-          />
-          <p className="mt-2 font-mono text-text-tertiary text-xs">
-            Min you'll receive: {formatTokenAmount(minOut)} pufETH (enforced on-chain)
-          </p>
-        </div>
-
-        {/* Route */}
-        <div>
-          <Label className="mb-2 block text-text-tertiary text-xs uppercase tracking-wide">
-            Route
-          </Label>
-          <RoutePath tokens={routeLabels} />
-          <p className="mt-2 font-mono text-text-tertiary text-xs">
-            Single-hop via MockSwapRouter. Rate: {Number(RATE_BPS[tokenIn])}% {tokenIn} →
-            pufETH (set in Deploy.s.sol).
-          </p>
-        </div>
-
-        <TxSummaryCard
-          action={`Swap ${tokenIn} → pufETH`}
-          inputLabel="You pay"
-          inputAmount={inputWei}
-          inputSymbol={tokenIn}
-          outputLabel="You receive (≥)"
-          outputAmount={minOut}
-          outputSymbol="pufETH"
-          contractAddress={CONTRACTS.swapRouter as Address}
-          riskLevel="Info"
-          riskNote={`MockSwapRouter on Sepolia. Slippage protection: minOut enforced at ${(slippageBps / 100).toFixed(2)}% tolerance.`}
-          exitNote="DEX swap mints pufETH directly via authorized minter pattern. Use Phase 10 redemption flow to exit pufETH back to ETH-equivalent."
-        />
-
-        {(approve.error || swap.error) && (
-          <div className="rounded-md border border-destructive/40 bg-error-surface/40 p-3 text-sm">
-            <p className="font-mono font-semibold text-destructive">Transaction Failed</p>
-            <p className="mt-1 break-all text-foreground text-xs">
-              {approve.error?.message ??
-                ('reason' in (swap.error ?? {})
-                  ? (swap.error as { reason: string }).reason
-                  : 'Unknown error')}
-            </p>
+          <div className="flex items-center gap-3">
+            <Input
+              type="text"
+              inputMode="decimal"
+              placeholder="0.0"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="h-11 flex-1 border-0 bg-transparent p-0 font-mono text-2xl text-foreground shadow-none focus-visible:ring-0"
+            />
+            <select
+              value={tokenIn}
+              onChange={(e) => setTokenIn(e.target.value as InputToken)}
+              className="appearance-none rounded-full border border-border bg-card px-3 py-1.5 font-mono text-foreground text-sm"
+            >
+              {(['stETH', 'wstETH'] as const).map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
           </div>
+        </div>
+
+        {/* Arrow */}
+        <div className="my-2 flex items-center justify-center">
+          <div className="rounded-full border border-border bg-card p-2 text-primary">
+            <ArrowDown size={14} />
+          </div>
+        </div>
+
+        {/* Output card */}
+        <div className="rounded-2xl border border-border bg-background/50 p-4">
+          <div className="mb-2 flex items-center justify-between font-mono text-text-tertiary text-xs">
+            <span>至少收到</span>
+            <span>滑点 {(slippageBps / 100).toFixed(2)}%</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <p className="flex-1 font-mono text-2xl text-foreground">
+              {formatTokenAmount(minOut, 18, 6)}
+            </p>
+            <div className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 font-mono text-foreground text-sm">
+              <TokenIcon symbol="pufETH" size={18} />
+              pufETH
+            </div>
+          </div>
+          <p className="mt-2 font-mono text-[10px] text-text-tertiary">
+            预计 {formatTokenAmount(expectedOut, 18, 6)} pufETH · 路由 {tokenIn} → pufETH
+          </p>
+        </div>
+
+        {/* Errors */}
+        {(approve.error || swap.error) && (
+          <p className="mt-3 font-mono text-destructive text-xs">
+            ❌{' '}
+            {approve.error?.message ??
+              ('reason' in (swap.error ?? {})
+                ? (swap.error as { reason: string }).reason
+                : '未知错误')}
+          </p>
         )}
 
-        {swap.isSuccess && swap.data && (
-          <div className="rounded-md border border-success/40 bg-success-surface/40 p-3 text-sm">
-            <p className="font-mono font-semibold text-success-text">Swap confirmed</p>
-            <p className="mt-1 break-all text-foreground text-xs">
-              Tx:{' '}
+        {approve.isSuccess && !swap.data && (
+          <p className="mt-3 font-mono text-success text-xs">✓ 授权成功 · 现在确认 swap</p>
+        )}
+
+        {/* Action */}
+        <div className="mt-4">
+          {needsApproval ? (
+            <GradientCTA
+              loading={approve.isPending}
+              disabled={!canSubmit}
+              onClick={() =>
+                approve.mutate({
+                  token: INPUT_ADDRESS[tokenIn],
+                  spender: CONTRACTS.swapRouter,
+                  amount: inputWei,
+                })
+              }
+            >
+              {approve.isPending
+                ? `授权 ${tokenIn} 中…`
+                : `授权 ${formatTokenAmount(inputWei, 18, 4)} ${tokenIn}`}
+            </GradientCTA>
+          ) : (
+            <GradientCTA
+              loading={swap.isPending}
+              disabled={!canSubmit}
+              onClick={() => swap.mutate({ amount, path, minAmountOut: minOut })}
+            >
+              {!wallet.isConnected
+                ? '请先连接钱包'
+                : !wallet.isCorrectChain
+                  ? '请切换到 Sepolia'
+                  : insufficientBalance
+                    ? `余额不足，去 Stake 页面 faucet ${tokenIn}`
+                    : swap.isPending
+                      ? '签名 & 广播中…'
+                      : `Swap ${tokenIn} → pufETH`}
+            </GradientCTA>
+          )}
+        </div>
+      </CornerBracketCard>
+
+      {/* TX Success */}
+      {swap.isSuccess && swap.data && (
+        <CornerBracketCard className="p-4">
+          <div className="flex items-start gap-3">
+            <CheckCircle2 size={22} className="mt-0.5 shrink-0 text-success" />
+            <div className="min-w-0 flex-1">
+              <p className="font-mono font-semibold text-success text-sm">Swap 成功</p>
+              <p className="mt-1 font-mono text-text-tertiary text-xs">
+                收到{' '}
+                <span className="text-primary">{formatTokenAmount(swap.data.amountOut, 18, 6)}</span>{' '}
+                pufETH
+              </p>
               <a
                 href={`https://sepolia.etherscan.io/tx/${swap.data.txHash}`}
-                className="text-primary underline"
-                rel="noreferrer noopener"
                 target="_blank"
+                rel="noreferrer noopener"
+                className="mt-2 inline-flex items-center gap-1 font-mono text-primary text-xs hover:underline"
               >
-                {swap.data.txHash}
+                Etherscan 查看 <ExternalLink size={11} />
               </a>
-            </p>
-            <p className="mt-1 text-foreground text-xs">
-              Received: {formatTokenAmount(swap.data.amountOut)} pufETH
-            </p>
+            </div>
           </div>
-        )}
+        </CornerBracketCard>
+      )}
 
-        {needsApproval ? (
-          <Button
-            size="lg"
-            className="w-full font-mono"
-            disabled={!canSubmit}
-            onClick={() =>
-              approve.mutate({
-                token: INPUT_ADDRESS[tokenIn],
-                spender: CONTRACTS.swapRouter,
-                amount: inputWei,
-              })
-            }
-          >
-            {approve.isPending
-              ? `Step 1/2: Approving ${tokenIn}…`
-              : `Step 1/2: Approve exact ${formatTokenAmount(inputWei)} ${tokenIn}`}
-          </Button>
-        ) : (
-          <Button
-            size="lg"
-            className="w-full font-mono"
-            disabled={!canSubmit}
-            onClick={() => swap.mutate({ amount, path, minAmountOut: minOut })}
-          >
-            {!wallet.isConnected
-              ? 'Connect Wallet First'
-              : !wallet.isCorrectChain
-                ? 'Switch to Sepolia First'
-                : insufficientBalance
-                  ? `Get ${tokenIn} from Stake page first`
-                  : swap.isPending
-                    ? 'Swapping…'
-                    : `Step 2/2: Swap ${tokenIn} → pufETH`}
-          </Button>
-        )}
-      </CardContent>
-    </Card>
+      <p className="font-mono text-[10px] text-text-tertiary">
+        合约 <span className="text-text-tertiary break-all">{CONTRACTS.swapRouter}</span>
+      </p>
+    </div>
   )
 }

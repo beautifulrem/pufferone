@@ -5,7 +5,6 @@ import { Input } from '@repo/ui/components/input'
 import { Label } from '@repo/ui/components/label'
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { SafetyBar } from '../components/SafetyBar'
 import { useTokenBalance } from '../hooks/useTokenBalance'
 import { useVaultWithdraw } from '../hooks/useVaultWithdraw'
 import { useWallet } from '../hooks/useWallet'
@@ -99,15 +98,11 @@ function VaultExitCard({ vault }: { vault: VaultDescriptor }) {
 
 export function ExitPage() {
   return (
-    <>
-      <SafetyBar />
-
-      <div className="mb-8">
-        <p className="mb-3 font-mono text-[length:var(--text-caption)] text-primary uppercase tracking-[2.5px]">
-          Phase 10 · Exit & Redemption
-        </p>
-        <h1 className="mb-4 font-bold text-4xl text-foreground leading-[1.1] tracking-tight">
-          Exit your <span className="identity-gradient">positions</span>
+    <div className="space-y-4 pb-6">
+      <div>
+        <p className="cyber-eyebrow">PUFFER // 赎回</p>
+        <h1 className="mt-1 font-bold text-2xl text-foreground tracking-tight">
+          退出仓位
         </h1>
         <p className="max-w-3xl text-text-secondary-gray leading-relaxed">
           每个 PufferOne 仓位都可以单步赎回。3 个已有 Puffer 作品都不做退出端 ——
@@ -115,35 +110,28 @@ export function ExitPage() {
         </p>
       </div>
 
-      <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card className="border-primary/40 bg-primary/5 shadow-none lg:col-span-3">
-          <CardContent className="space-y-2 p-5">
-            <p className="font-mono text-[length:var(--text-caption)] text-primary uppercase tracking-[2px]">
-              pufETH → stETH / wstETH
-            </p>
-            <p className="font-semibold text-foreground">
-              退出 pufETH 走 DEX swap（已配置反向路由）
-            </p>
-            <p className="text-sm text-text-secondary-gray leading-relaxed">
-              MockSwapRouter 已在 Deploy.s.sol 配置了反向路径：pufETH → stETH (1.04) 和
-              pufETH → wstETH (0.89)。到 Swap 页面切换 token in 顺序即可使用。生产环境的
-              Puffer 会走 PufferVault 的提款队列（1-2 周延迟）。
-            </p>
-            <Button asChild size="sm" className="font-mono">
-              <Link to="/swap">Open Swap →</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="border-border bg-card shadow-none">
+        <CardContent className="space-y-2 p-4">
+          <p className="cyber-eyebrow">pufETH → stETH / wstETH</p>
+          <p className="font-mono font-semibold text-foreground text-sm">
+            通过 DEX 反向 swap 退出 pufETH
+          </p>
+          <p className="text-text-tertiary text-xs leading-relaxed">
+            MockSwapRouter 已配置反向路径：pufETH → stETH (1.04) / pufETH → wstETH
+            (0.89)。生产环境走 PufferVault 提款队列（1-2 周延迟）。
+          </p>
+          <Button asChild size="sm" variant="outline" className="mt-2 font-mono">
+            <Link to="/swap">前往 Swap →</Link>
+          </Button>
+        </CardContent>
+      </Card>
 
-      <p className="mb-4 font-mono text-[length:var(--text-caption)] text-text-tertiary uppercase tracking-[2.5px]">
-        UniFi Vault redemption · pufETH 直接退回
-      </p>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <p className="cyber-eyebrow pt-2">UniFi Vault 赎回</p>
+      <div className="space-y-2">
         {VAULTS.map((v) => (
           <VaultExitCard key={v.key} vault={v} />
         ))}
       </div>
-    </>
+    </div>
   )
 }
