@@ -5,6 +5,7 @@ import {
   ArrowLeftRight,
   ChevronDown,
   Layers,
+  Send,
   TrendingUp,
   Wallet,
   X,
@@ -15,6 +16,7 @@ import { CornerBracketCard } from '../components/CornerBracketCard'
 import { openTutorial } from '../components/OnboardingModal'
 import { ProtocolStatsCard } from '../components/ProtocolStatsCard'
 import { ReceiveModal } from '../components/ReceiveModal'
+import { SendModal } from '../components/SendModal'
 import { Sparkline } from '../components/Sparkline'
 import { TokenIcon } from '../components/TokenIcon'
 import { useNativeBalance } from '../hooks/useNativeBalance'
@@ -120,6 +122,7 @@ function QuickAction({
 export function HomePage() {
   const wallet = useWallet()
   const [receiveOpen, setReceiveOpen] = useState(false)
+  const [sendOpen, setSendOpen] = useState(false)
   const [showZero, setShowZero] = useState(false)
 
   const eth = useNativeBalance()
@@ -259,11 +262,17 @@ export function HomePage() {
         </div>
       </CornerBracketCard>
 
-      {/* Quick Actions — 4 圆形 icon (Phantom 风格) */}
-      <div className="grid grid-cols-4 rounded-xl border border-border bg-card/40 py-2">
+      {/* Quick Actions — 5 圆形 icon (Phantom 风格) */}
+      <div className="grid grid-cols-5 rounded-xl border border-border bg-card/40 py-2">
         <QuickAction label="质押" Icon={TrendingUp} to="/stake" />
         <QuickAction label="金库" Icon={Layers} to="/vaults" iconColor="#A78BFA" />
         <QuickAction label="兑换" Icon={ArrowLeftRight} to="/swap" iconColor="#7DD3FC" />
+        <QuickAction
+          label="发送"
+          Icon={Send}
+          iconColor="#FBBF24"
+          onClick={() => setSendOpen(true)}
+        />
         <QuickAction
           label="收款"
           Icon={ArrowDownToLine}
@@ -317,6 +326,7 @@ export function HomePage() {
       <ProtocolStatsCard />
 
       <ReceiveModal open={receiveOpen} onOpenChange={setReceiveOpen} />
+      <SendModal open={sendOpen} onOpenChange={setSendOpen} />
     </div>
   )
 }
