@@ -111,7 +111,7 @@ export function VaultCard({ vault, apy, tvl, apyLoading, userShares, onDeposit }
           className={`mt-3 w-full font-mono ${!hasShares ? 'cta-gradient' : ''}`}
           onClick={() => onDeposit(vault)}
         >
-          {hasShares ? '继续存入 pufETH' : `存入 pufETH → ${vault.name}`}
+          {hasShares ? '管理仓位（存入 / 赎回）' : `存入 pufETH → ${vault.name}`}
         </Button>
       </CardContent>
     </Card>

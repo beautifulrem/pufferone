@@ -10,6 +10,7 @@ import { useAllowance } from '../hooks/useAllowance'
 import { useApprove } from '../hooks/useApprove'
 import { useTokenBalance } from '../hooks/useTokenBalance'
 import { useVaultDeposit } from '../hooks/useVaultDeposit'
+import { useVaultWithdraw } from '../hooks/useVaultWithdraw'
 import { useWallet } from '../hooks/useWallet'
 import { CONTRACTS } from '../lib/contracts'
 import { formatTokenAmount } from '../lib/format'
@@ -18,6 +19,8 @@ import { TokenIcon } from './TokenIcon'
 import { TxSummaryCard } from './TxSummaryCard'
 import { VaultAPYChart } from './VaultAPYChart'
 
+type Mode = 'deposit' | 'withdraw'
+
 export type VaultDepositModalProps = {
   vault: VaultDescriptor | null
   onClose: () => void
@@ -25,19 +28,24 @@ export type VaultDepositModalProps = {
 
 export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
   const wallet = useWallet()
+  const [mode, setMode] = useState<Mode>('deposit')
   const [amount, setAmount] = useState('0.5')
 
   const pufETHBalance = useTokenBalance(CONTRACTS.pufETH)
+  const sharesBalance = useTokenBalance(vault?.address)
   const allowance = useAllowance(CONTRACTS.pufETH, vault?.address)
   const approve = useApprove()
   const deposit = useVaultDeposit()
+  const withdraw = useVaultWithdraw()
 
+  // 切换 vault / mode 时清空
   useEffect(() => {
-    setAmount('0.5')
+    setAmount(mode === 'deposit' ? '0.5' : '0.1')
     if (approve.isSuccess || approve.isError) approve.reset()
     if (deposit.isSuccess || deposit.isError) deposit.reset()
-    // biome-ignore lint/correctness/useExhaustiveDependencies: only on vault change
-  }, [vault?.address])
+    if (withdraw.isSuccess || withdraw.isError) withdraw.reset()
+    // biome-ignore lint/correctness/useExhaustiveDependencies: only on vault/mode change
+  }, [vault?.address, mode])
 
   const inputWei = useMemo(() => {
     if (!amount) return 0n
@@ -50,21 +58,45 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
 
   if (!vault) return null
 
-  const balanceAmount = pufETHBalance.data ?? 0n
+  const pufBalance = pufETHBalance.data ?? 0n
+  const shareBalance = sharesBalance.data ?? 0n
   const allowanceAmount = allowance.data ?? 0n
-  const insufficientBalance = balanceAmount < inputWei
-  const needsApproval = !insufficientBalance && allowanceAmount < inputWei
+
+  const insufficientBalance =
+    mode === 'deposit' ? pufBalance < inputWei : shareBalance < inputWei
+
+  const needsApproval = mode === 'deposit' && !insufficientBalance && allowanceAmount < inputWei
 
   // shares = assets * 1e18 / sharePrice
   const expectedShares = (inputWei * 1_000_000_000_000_000_000n) / vault.sharePrice
+  // assets = shares * sharePrice / 1e18
+  const expectedAssets = (inputWei * vault.sharePrice) / 1_000_000_000_000_000_000n
+
+  const isPending = approve.isPending || deposit.isPending || withdraw.isPending
 
   const canSubmit =
     wallet.isConnected &&
     wallet.isCorrectChain &&
     inputWei > 0n &&
     !insufficientBalance &&
-    !approve.isPending &&
-    !deposit.isPending
+    !isPending
+
+  const handlePrimary = () => {
+    if (mode === 'deposit') {
+      deposit.mutate({ vault: vault.address, amount })
+    } else {
+      withdraw.mutate({ vault: vault.address, shares: amount })
+    }
+  }
+
+  // 共用变量
+  const sourceSymbol = mode === 'deposit' ? 'pufETH' : vault.name
+  const targetSymbol = mode === 'deposit' ? vault.name : 'pufETH'
+  const balanceForMode = mode === 'deposit' ? pufBalance : shareBalance
+  const outAmount = mode === 'deposit' ? expectedShares : expectedAssets
+
+  const success = mode === 'deposit' ? deposit.data : withdraw.data
+  const errorObj = mode === 'deposit' ? deposit.error : withdraw.error
 
   return (
     <Dialog open={vault !== null} onOpenChange={(open) => !open && onClose()}>
@@ -72,11 +104,37 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-foreground">
             <TokenIcon symbol={vault.name} size={24} />
-            存入 pufETH → {vault.name}
+            {vault.name}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Mode 切换 */}
+          <div className="grid grid-cols-2 gap-1 rounded-lg bg-background/60 p-1">
+            <button
+              type="button"
+              onClick={() => setMode('deposit')}
+              className={`rounded-md py-2 font-mono text-sm transition-all ${
+                mode === 'deposit'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-text-tertiary hover:text-foreground'
+              }`}
+            >
+              存入
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('withdraw')}
+              className={`rounded-md py-2 font-mono text-sm transition-all ${
+                mode === 'withdraw'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-text-tertiary hover:text-foreground'
+              }`}
+            >
+              赎回
+            </button>
+          </div>
+
           {/* 产品介绍卡 */}
           <div className="rounded-lg border border-border bg-background/40 p-4">
             <p className="cyber-eyebrow text-text-tertiary">产品介绍</p>
@@ -95,16 +153,18 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
           <VaultAPYChart vaultKey={vault.key} baseAPY={vault.fallbackAPY} />
 
           <div className="rounded-md border border-border bg-background/40 p-3 font-mono text-sm">
-            你的 pufETH 余额：{' '}
-            <span className="text-foreground">{formatTokenAmount(balanceAmount)}</span>
-            {insufficientBalance && pufETHBalance.isFetched && (
-              <span className="ml-2 text-warning">· 余额不足，请先去质押更多 pufETH</span>
+            {mode === 'deposit' ? '你的 pufETH 余额：' : `你的 ${vault.name} 份额：`}{' '}
+            <span className="text-foreground">{formatTokenAmount(balanceForMode)}</span>
+            {insufficientBalance && (
+              <span className="ml-2 text-warning">
+                · {mode === 'deposit' ? '余额不足，请先质押更多 pufETH' : '没有可赎回的份额'}
+              </span>
             )}
           </div>
 
           <div className="space-y-2">
             <Label className="text-text-tertiary text-xs uppercase tracking-wide">
-              存入数量
+              {mode === 'deposit' ? '存入数量' : '赎回份额'}
             </Label>
             <Input
               type="text"
@@ -114,29 +174,44 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
               className="h-11 border-border bg-background font-mono"
             />
             <div className="flex flex-wrap gap-2">
-              {['0.1', '0.5', '1', '5'].map((p) => (
-                <Button
-                  key={p}
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setAmount(p)}
-                  className="font-mono text-text-tertiary text-xs"
-                  type="button"
-                >
-                  {p} pufETH
-                </Button>
-              ))}
+              {(mode === 'deposit' ? ['0.1', '0.5', '1', '5'] : ['25%', '50%', '75%', 'MAX']).map(
+                (p) => (
+                  <Button
+                    key={p}
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      if (mode === 'deposit') {
+                        setAmount(p)
+                      } else {
+                        const pct =
+                          p === 'MAX' ? 100n : BigInt(Number.parseInt(p, 10))
+                        const pick = (shareBalance * pct) / 100n
+                        setAmount(formatTokenAmount(pick, 18, 6))
+                      }
+                    }}
+                    className="font-mono text-text-tertiary text-xs"
+                    type="button"
+                  >
+                    {mode === 'deposit' ? `${p} pufETH` : p}
+                  </Button>
+                ),
+              )}
             </div>
           </div>
 
           <TxSummaryCard
-            action={`将 pufETH 存入 ${vault.name}`}
+            action={
+              mode === 'deposit'
+                ? `将 pufETH 存入 ${vault.name}`
+                : `从 ${vault.name} 赎回为 pufETH`
+            }
             inputLabel="你支付"
             inputAmount={inputWei}
-            inputSymbol="pufETH"
+            inputSymbol={sourceSymbol}
             outputLabel="你收到"
-            outputAmount={expectedShares}
-            outputSymbol={vault.name}
+            outputAmount={outAmount}
+            outputSymbol={targetSymbol}
             contractAddress={vault.address as Address}
             riskLevel={
               vault.risk === 'Low' ? 'Info' : vault.risk === 'Medium' ? 'Warning' : 'Danger'
@@ -144,34 +219,39 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
             riskNote={`${vault.risk === 'Low' ? '稳健型' : vault.risk === 'Medium' ? '平衡型' : '进取型'}产品：${(Number(vault.sharePrice) / 1e18).toFixed(3)} pufETH = 1 份金库份额，份额价格会随收益累积上涨。`}
           />
 
-          {(approve.error || deposit.error) && (
+          {(approve.error || errorObj) && (
             <div className="rounded-md border border-destructive/40 bg-error-surface/40 p-3 text-sm">
               <p className="font-mono font-semibold text-destructive">交易失败</p>
               <p className="mt-1 break-all text-foreground text-xs">
                 {approve.error?.message ??
-                  ('reason' in (deposit.error ?? {})
-                    ? (deposit.error as { reason: string }).reason
+                  ('reason' in (errorObj ?? {})
+                    ? (errorObj as { reason: string }).reason
                     : '未知错误')}
               </p>
             </div>
           )}
 
-          {deposit.isSuccess && deposit.data && (
+          {success && (
             <div className="rounded-md border border-success/40 bg-success-surface/40 p-3 text-sm">
-              <p className="font-mono font-semibold text-success-text">存入成功</p>
+              <p className="font-mono font-semibold text-success-text">
+                {mode === 'deposit' ? '存入成功' : '赎回成功'}
+              </p>
               <p className="mt-1 break-all text-foreground text-xs">
                 交易哈希：{' '}
                 <a
-                  href={`https://sepolia.etherscan.io/tx/${deposit.data.txHash}`}
+                  href={`https://sepolia.etherscan.io/tx/${success.txHash}`}
                   className="text-primary underline"
                   rel="noreferrer noopener"
                   target="_blank"
                 >
-                  {deposit.data.txHash}
+                  {success.txHash}
                 </a>
               </p>
               <p className="mt-1 text-foreground text-xs">
-                收到：{formatTokenAmount(deposit.data.expectedShares)} {vault.name}
+                收到：
+                {mode === 'deposit'
+                  ? `${formatTokenAmount((success as { expectedShares: bigint }).expectedShares)} ${vault.name}`
+                  : `${formatTokenAmount((success as { assetsOut: bigint }).assetsOut)} pufETH`}
               </p>
             </div>
           )}
@@ -200,17 +280,23 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
               size="lg"
               className="w-full font-mono"
               disabled={!canSubmit}
-              onClick={() => deposit.mutate({ vault: vault.address, amount })}
+              onClick={handlePrimary}
             >
               {!wallet.isConnected
                 ? '请先连接钱包'
                 : !wallet.isCorrectChain
                   ? '请先切换到 Sepolia'
                   : insufficientBalance
-                    ? '请先质押更多 pufETH'
-                    : deposit.isPending
-                      ? '存入中…'
-                      : `第 2/2 步：存入 ${vault.name}`}
+                    ? mode === 'deposit'
+                      ? '请先质押更多 pufETH'
+                      : `没有 ${vault.name} 份额`
+                    : isPending
+                      ? mode === 'deposit'
+                        ? '存入中…'
+                        : '赎回中…'
+                      : mode === 'deposit'
+                        ? `第 2/2 步：存入 ${vault.name}`
+                        : `赎回 ${vault.name} → pufETH`}
             </Button>
           )}
         </div>
