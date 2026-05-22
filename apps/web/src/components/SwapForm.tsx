@@ -75,7 +75,7 @@ export function SwapForm() {
       <CornerBracketCard className="p-4">
         {/* Settings row */}
         <div className="mb-3 flex items-center justify-between">
-          <p className="font-mono text-text-tertiary text-xs">兑换 → pufETH</p>
+          <p className="font-mono text-text-tertiary text-xs">闪兑 · 一键换 pufETH</p>
           <button
             type="button"
             onClick={() => setSettingsOpen((v) => !v)}

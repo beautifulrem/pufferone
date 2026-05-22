@@ -8,11 +8,13 @@ import type { VaultDescriptor } from '../lib/vaults'
 import { Sparkline } from './Sparkline'
 import { TokenIcon } from './TokenIcon'
 
+/// 风险等级 — 套用金融行业「稳健型 / 平衡型 / 进取型」分档（招商银行 R 系列、
+/// 支付宝理财、券商基金常用），避免「低 / 中 / 高」过于直白。
 const RISK_LABEL: Record<VaultDescriptor['risk'], { variant: 'success' | 'secondary' | 'destructive'; label: string }> =
   {
-    Low: { variant: 'success', label: '低风险' },
-    Medium: { variant: 'secondary', label: '中等风险' },
-    Elevated: { variant: 'destructive', label: '较高风险' },
+    Low: { variant: 'success', label: '稳健型' },
+    Medium: { variant: 'secondary', label: '平衡型' },
+    Elevated: { variant: 'destructive', label: '进取型' },
   }
 
 export type VaultCardProps = {

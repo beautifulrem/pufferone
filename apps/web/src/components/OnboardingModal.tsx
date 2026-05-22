@@ -36,9 +36,9 @@ const STEPS: Step[] = [
   },
   {
     title: '4 · UniFi 金库放大收益',
-    highlight: '4 个金库 · 不同风险档位 · 都吃 pufETH。',
+    highlight: '4 个产品 · 稳健到进取 · 都收 pufETH。',
     body:
-      'unifiETH（APY 5%，低风险）· unifiUSD（4%，低）· unifiBTC（5.5%，中）· pufETHs（7.5%，较高）。全部接收 pufETH，返还会随时间升值的金库份额。',
+      'unifiETH（年化 5%，稳健型）· unifiUSD（4%，稳健型）· unifiBTC（5.5%，平衡型）· pufETHs（7.5%，进取型）。全部接收 pufETH，返还会随时间升值的金库份额。',
   },
   {
     title: '5 · 主控权在你',
