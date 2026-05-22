@@ -5,6 +5,7 @@ import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import type { Address } from 'viem'
 import { formatTokenAmount } from '../lib/format'
+import { AIInsight, type InsightContext } from './AIInsight'
 
 export type TxSummaryProps = {
   /// e.g. "Stake ETH" / "Approve stETH" / "Deposit to unifiETH"
@@ -25,6 +26,8 @@ export type TxSummaryProps = {
   riskNote?: string
   /// Exit / withdrawal hint shown to satisfy SKILL.md §3.4 "what comes next"
   exitNote?: string
+  /// 可选 AI 助手卡上下文。传入即在头部渲染紫色 AIInsight 评估卡。
+  insightCtx?: InsightContext
 }
 
 const riskBadge: Record<TxSummaryProps['riskLevel'], { variant: 'success' | 'secondary' | 'destructive'; label: string }> =
@@ -46,6 +49,8 @@ export function TxSummaryCard(props: TxSummaryProps) {
   return (
     <Card className="border-border bg-card shadow-none">
       <CardContent className="space-y-4 p-5">
+        {props.insightCtx && <AIInsight ctx={props.insightCtx} />}
+
         <div className="flex items-center justify-between">
           <p className="font-mono text-[length:var(--text-caption)] text-text-tertiary uppercase tracking-[2px]">
             交易预览
