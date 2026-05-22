@@ -3,16 +3,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@repo/ui/compo
 import { Check, Copy, ExternalLink, Smartphone } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-/// imToken DApp 浏览器深度链接：
-/// imtokenv2://navigate/DAppView?url=<encoded>
-function buildDeeplink(): string {
-  const current = typeof window !== 'undefined' ? window.location.href : ''
-  return `imtokenv2://navigate/DAppView?url=${encodeURIComponent(current)}`
+const PROD_URL = 'https://beautifulrem.github.io/pufferone/'
+
+function appUrl(): string {
+  if (typeof window === 'undefined') return PROD_URL
+  const href = window.location.href
+  return href.includes('localhost') || href.includes('127.0.0.1') ? PROD_URL : href
 }
 
-/// 当前页 URL（用于二维码 / 复制）
-function currentUrl(): string {
-  return typeof window !== 'undefined' ? window.location.href : ''
+function buildDeeplink(url?: string): string {
+  return `imtokenv2://navigate/DAppView?url=${encodeURIComponent(url ?? appUrl())}`
 }
 
 function qrUrl(text: string, size = 200): string {
@@ -54,7 +54,7 @@ export function ImTokenLauncher() {
   }
 
   const handleCopyUrl = async () => {
-    await navigator.clipboard.writeText(currentUrl())
+    await navigator.clipboard.writeText(appUrl())
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
   }
@@ -95,20 +95,23 @@ export function ImTokenLauncher() {
           <div className="flex flex-col items-center gap-3">
             <div className="rounded-xl border border-border bg-white p-3">
               <img
-                src={qrUrl(currentUrl())}
-                alt="PufferOne 二维码"
+                src={qrUrl(buildDeeplink(PROD_URL))}
+                alt="imToken 深度链接二维码"
                 width={200}
                 height={200}
                 className="rounded-md"
               />
             </div>
+            <p className="text-center text-text-tertiary text-[10px]">
+              用 imToken「扫一扫」扫描，自动跳转 DApp 浏览器
+            </p>
 
             <div className="w-full rounded-lg border border-border bg-background/40 p-3">
               <p className="font-mono text-text-tertiary text-[10px] uppercase tracking-wider">
-                当前页面链接
+                页面链接
               </p>
               <p className="mt-1 break-all font-mono text-foreground text-xs leading-relaxed">
-                {currentUrl()}
+                {appUrl()}
               </p>
             </div>
 
