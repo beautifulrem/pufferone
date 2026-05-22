@@ -11,6 +11,9 @@
 
 const TRUST = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets'
 const SPOTHQ = 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color'
+/// Puffer 官方 token SVG (app.puffer.fi/icons/tokens/{Symbol}.svg)，已镜像到本地
+/// /public/icons/tokens/ 以免远程 CDN 抖动。
+const PUFFER_LOCAL = '/icons/tokens'
 
 /// Mainnet checksum addresses (case-sensitive — Trust Wallet pinned to checksum).
 const MAINNET = {
@@ -33,6 +36,10 @@ function spothqUrl(symbol: string): string {
   return `${SPOTHQ}/${symbol.toLowerCase()}.svg`
 }
 
+function pufferLocalUrl(symbol: string): string {
+  return `${PUFFER_LOCAL}/${symbol}.svg`
+}
+
 export type TokenSource =
   | { kind: 'urls'; urls: readonly string[]; symbol: string }
   | { kind: 'gradient'; from: string; to: string; label: string }
@@ -45,26 +52,30 @@ export type TokenSource =
 
 /// Direct registry — order matters (first URL tried first).
 const SOURCES: Record<string, TokenSource> = {
-  ETH: { kind: 'urls', urls: [spothqUrl('eth')], symbol: 'ETH' },
+  ETH: {
+    kind: 'urls',
+    urls: [pufferLocalUrl('ETH'), spothqUrl('eth')],
+    symbol: 'ETH',
+  },
   STETH: {
     kind: 'urls',
-    urls: [trustWalletUrl(MAINNET.STETH), spothqUrl('steth')],
+    urls: [pufferLocalUrl('stETH'), trustWalletUrl(MAINNET.STETH), spothqUrl('steth')],
     symbol: 'stETH',
   },
   WSTETH: {
     kind: 'urls',
-    urls: [trustWalletUrl(MAINNET.WSTETH), spothqUrl('wsteth')],
+    urls: [pufferLocalUrl('wstETH'), trustWalletUrl(MAINNET.WSTETH), spothqUrl('wsteth')],
     symbol: 'wstETH',
   },
   PUFETH: {
     kind: 'urls',
-    urls: [trustWalletUrl(MAINNET.PUFETH)],
+    // 用 PufferOne 改色版（粉紫青）保持与全站主色一致
+    urls: ['/pufferone-logo.svg', pufferLocalUrl('pufETH'), trustWalletUrl(MAINNET.PUFETH)],
     symbol: 'pufETH',
   },
   WETH: {
     kind: 'urls',
-    // WETH 在 Trust Wallet / Spothq 中常 fallback 到 ETH logo
-    urls: [trustWalletUrl(MAINNET.WETH), spothqUrl('eth')],
+    urls: [pufferLocalUrl('WETH'), trustWalletUrl(MAINNET.WETH), spothqUrl('eth')],
     symbol: 'WETH',
   },
   // USDC / USDT / WBTC 被金库卡片用作 unifiUSD / unifiBTC 的底图（见下方 WRAPS）
