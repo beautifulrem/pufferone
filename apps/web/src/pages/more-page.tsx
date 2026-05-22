@@ -161,8 +161,7 @@ export function MorePage() {
   return (
     <div className="space-y-4 pb-6">
       <div>
-        <p className="cyber-eyebrow">PUFFER // 更多</p>
-        <h1 className="mt-1 font-bold text-2xl text-foreground tracking-tight">更多功能</h1>
+        <h1 className="font-bold text-2xl text-foreground tracking-tight">更多功能</h1>
       </div>
 
       <div className="space-y-2">

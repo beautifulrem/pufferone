@@ -34,8 +34,7 @@ export function VaultsPage() {
   return (
     <div className="space-y-4 pb-6">
       <div>
-        <p className="cyber-eyebrow">PUFFER // 金库</p>
-        <h1 className="mt-1 font-bold text-2xl text-foreground tracking-tight">用 pufETH 进入收益策略</h1>
+        <h1 className="font-bold text-2xl text-foreground tracking-tight">用 pufETH 进入收益策略</h1>
         <p className="mt-1.5 text-sm text-text-tertiary leading-relaxed">
           选择适合的收益策略，存入 pufETH，到期可随时赎回。
         </p>

@@ -28,8 +28,7 @@ export function StakePage() {
     <div className="space-y-4 pb-6">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <p className="cyber-eyebrow">PUFFER // 质押</p>
-          <h1 className="mt-1 font-bold text-2xl text-foreground tracking-tight">
+          <h1 className="font-bold text-2xl text-foreground tracking-tight">
             将 ETH 质押为 <span className="text-primary">pufETH</span>
           </h1>
         </div>

@@ -214,8 +214,6 @@ export function HomePage() {
     <div className="space-y-4 pb-6">
       <IntroCard />
 
-      <p className="cyber-eyebrow">PUFFER // 我的资产</p>
-
       {/* Total Value Card — empty state aware */}
       <CornerBracketCard>
         <div className="space-y-2 p-5">

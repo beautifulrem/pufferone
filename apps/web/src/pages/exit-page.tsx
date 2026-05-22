@@ -100,8 +100,7 @@ export function ExitPage() {
   return (
     <div className="space-y-4 pb-6">
       <div>
-        <p className="cyber-eyebrow">PUFFER // 赎回</p>
-        <h1 className="mt-1 font-bold text-2xl text-foreground tracking-tight">
+        <h1 className="font-bold text-2xl text-foreground tracking-tight">
           赎回与退出
         </h1>
         <p className="max-w-3xl text-text-secondary-gray leading-relaxed">
