@@ -1,26 +1,27 @@
-import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert'
-import { Button } from '@repo/ui/components/button'
+import { AlertTriangle } from 'lucide-react'
 import { useWallet } from '../hooks/useWallet'
 import { CHAIN_ID } from '../lib/viem'
 
-/// Banner shown when the user is connected to a wallet but on the wrong chain.
-/// Per security/SKILL.md §2.2 — this is a Block-level risk: every transactional
-/// action must be disabled while this banner is up.
 export function NetworkGuard() {
   const wallet = useWallet()
   if (!wallet.isConnected || wallet.chainId === CHAIN_ID) return null
 
   return (
-    <Alert variant="destructive" className="mb-6 border-destructive/50 bg-error-surface">
-      <AlertTitle className="font-mono">网络不匹配 · 阻断级风险</AlertTitle>
-      <AlertDescription className="font-mono text-text-secondary-gray">
-        <p className="mb-3">
-          当前钱包链 ID：{wallet.chainId ?? '—'}。PufferOne 演示只支持 Sepolia（{CHAIN_ID}），切换之前所有交易操作均已禁用。
+    <div className="flex items-start gap-2.5 rounded-xl border border-destructive/40 bg-destructive/5 p-3">
+      <AlertTriangle size={16} className="mt-0.5 shrink-0 text-destructive" />
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold text-destructive text-xs">网络不匹配</p>
+        <p className="mt-0.5 text-text-tertiary text-[11px] leading-relaxed">
+          当前链 ID {wallet.chainId ?? '—'}，需切换到 Sepolia（{CHAIN_ID}）才能操作。
         </p>
-        <Button size="sm" onClick={wallet.switchToSepolia} className="font-mono">
+        <button
+          type="button"
+          onClick={wallet.switchToSepolia}
+          className="mt-2 rounded-lg bg-destructive px-3 py-1.5 font-mono text-white text-xs transition-colors hover:bg-destructive/90"
+        >
           切换到 Sepolia
-        </Button>
-      </AlertDescription>
-    </Alert>
+        </button>
+      </div>
+    </div>
   )
 }
