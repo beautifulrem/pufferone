@@ -1,147 +1,204 @@
 import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
-import { Card, CardContent } from '@repo/ui/components/card'
+import { ArrowLeftRight, Layers, TrendingUp } from 'lucide-react'
+import { useMemo } from 'react'
+import { Link } from 'react-router'
+import { CornerBracketCard } from '../components/CornerBracketCard'
+import { Sparkline } from '../components/Sparkline'
+import { TokenIcon } from '../components/TokenIcon'
+import { useNativeBalance } from '../hooks/useNativeBalance'
+import { useTokenBalance } from '../hooks/useTokenBalance'
 import { useWallet } from '../hooks/useWallet'
+import { CONTRACTS } from '../lib/contracts'
+import { formatTokenAmount, truncateAddress } from '../lib/format'
+import { APYHistory } from '../lib/mockHistory'
+import { VAULTS } from '../lib/vaults'
 
-type FeatureCard = {
-  index: string
-  title: string
-  description: string
+type AssetRow = {
+  symbol: string
+  fullName: string
+  amount: bigint
+  usdPerUnit: number
+  href: string
+  badge?: string
 }
 
-const features: FeatureCard[] = [
-  {
-    index: '01',
-    title: '连接钱包',
-    description: 'imToken EIP-1193 注入 + MetaMask + WalletConnect 三栈支持，永不持有用户密钥。',
-  },
-  {
-    index: '02',
-    title: '3 币种铸造 pufETH',
-    description: 'ETH / stETH / wstETH 三个入口在 Sepolia 上全部真实链上可执行，非 UI 占位。',
-  },
-  {
-    index: '03',
-    title: 'pufETH 余额与汇率',
-    description: '实时余额、USD 估值、rate 历史 24h / 7d 变化，链上数据 + Puffer 主网 API。',
-  },
-  {
-    index: '04',
-    title: 'UniFi Vault 真实存入',
-    description: '4 个 vault（unifiETH / unifiUSD / unifiBTC / pufETHs）在 Mini App 内可交互，不跳走主网。',
-  },
-  {
-    index: '05',
-    title: '安全引导',
-    description: '5 个具体机制：交易模拟、风险评分、滑点保护、精确授权、签前总结卡。',
-  },
-  {
-    index: '06',
-    title: 'DEX 聚合一站式',
-    description: '任意 ERC-20 经 Uniswap V3 多跳路由换成 pufETH 或 vault 资产，路径与最小输出可见。',
-  },
-]
-
-function HomePage() {
+export function HomePage() {
   const wallet = useWallet()
 
+  const eth = useNativeBalance()
+  const pufETH = useTokenBalance(CONTRACTS.pufETH)
+  const stETH = useTokenBalance(CONTRACTS.stETH)
+  const wstETH = useTokenBalance(CONTRACTS.wstETH)
+  const unifiETH = useTokenBalance(CONTRACTS.unifiETH)
+  const unifiUSD = useTokenBalance(CONTRACTS.unifiUSD)
+  const unifiBTC = useTokenBalance(CONTRACTS.unifiBTC)
+  const pufETHs = useTokenBalance(CONTRACTS.pufETHs)
+
+  const assets: AssetRow[] = useMemo(
+    () => [
+      {
+        symbol: 'ETH',
+        fullName: 'Sepolia 原生 ETH',
+        amount: eth.data ?? 0n,
+        usdPerUnit: 3_800,
+        href: '/stake',
+      },
+      {
+        symbol: 'pufETH',
+        fullName: 'PufferOne Mock pufETH',
+        amount: pufETH.data ?? 0n,
+        usdPerUnit: 3_950,
+        href: '/stake',
+        badge: '可质押',
+      },
+      {
+        symbol: 'stETH',
+        fullName: 'Mock Lido stETH',
+        amount: stETH.data ?? 0n,
+        usdPerUnit: 3_790,
+        href: '/stake',
+      },
+      {
+        symbol: 'wstETH',
+        fullName: 'Mock Wrapped stETH',
+        amount: wstETH.data ?? 0n,
+        usdPerUnit: 4_180,
+        href: '/stake',
+      },
+      ...VAULTS.map((v) => ({
+        symbol: v.name,
+        fullName: v.description,
+        amount:
+          (v.key === 'unifiETH'
+            ? unifiETH.data
+            : v.key === 'unifiUSD'
+              ? unifiUSD.data
+              : v.key === 'unifiBTC'
+                ? unifiBTC.data
+                : pufETHs.data) ?? 0n,
+        usdPerUnit:
+          v.key === 'unifiUSD' ? 1 : v.key === 'unifiBTC' ? 65_000 : 3_800,
+        href: '/vaults',
+        badge: `${v.fallbackAPY.toFixed(1)}% APY`,
+      })),
+    ],
+    [
+      eth.data,
+      pufETH.data,
+      stETH.data,
+      wstETH.data,
+      unifiETH.data,
+      unifiUSD.data,
+      unifiBTC.data,
+      pufETHs.data,
+    ],
+  )
+
+  const totalUSD = assets.reduce(
+    (acc, a) => acc + (Number(a.amount) / 1e18) * a.usdPerUnit,
+    0,
+  )
+  const activeCount = assets.filter((a) => a.amount > 0n).length
+
+  // Sparkline mock data (total portfolio value over 30 days)
+  const sparklineData = useMemo(
+    () => APYHistory(wallet.address ?? 'default', totalUSD || 100).map((p) => ({ value: p.value })),
+    [wallet.address, totalUSD],
+  )
+
   return (
-    <>
-      {/* Hero */}
-      <section className="mb-16">
-        <p className="mb-5 font-mono text-[length:var(--text-caption)] text-primary uppercase tracking-[2.5px]">
-          imToken 十周年 · Puffer 专项
-        </p>
-        <h1 className="mb-6 font-bold text-5xl text-foreground leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">
-          把 Puffer 质押的
-          <br />
-          <span className="identity-gradient">每一条要求</span>
-          <br />
-          做到底。
-        </h1>
-        <p className="mb-8 max-w-2xl text-lg text-text-secondary-gray leading-relaxed">
-          PufferOne 是一个兼容 imToken 的 Puffer 质押 Mini App。
-          正面回应题目原文 6 条要求，附加 5 个具体安全机制与新手引导。
-          <span className="block mt-2 font-mono text-[length:var(--text-body-sm)] text-text-tertiary">
-            ETH / stETH / wstETH → pufETH · 4 UniFi Vaults · DEX 聚合 · Safe by design.
-          </span>
-        </p>
-        <div className="flex flex-wrap items-center gap-4">
+    <div className="space-y-4 pb-6">
+      {/* Eyebrow */}
+      <p className="cyber-eyebrow">PUFFER // 我的资产</p>
+
+      {/* Total Value Card */}
+      <CornerBracketCard>
+        <div className="space-y-2 p-5">
+          <p className="font-mono text-text-tertiary text-xs">总资产估值</p>
+          <p className="font-mono font-semibold text-3xl text-foreground">
+            <span className="neon-pink">${totalUSD.toFixed(2)}</span>
+          </p>
           {wallet.isConnected ? (
-            <Badge variant="success" className="px-4 py-2 font-mono">
-              <span className="mr-2 size-2 rounded-full bg-success-text" />
-              Wallet connected · Phase 3 staking flow coming next
-            </Badge>
+            <p className="font-mono text-text-tertiary text-xs">
+              {truncateAddress(wallet.address ?? undefined)} ·{' '}
+              <span className="neon-cyan">{activeCount}</span> 个活跃仓位
+            </p>
           ) : (
-            <Button size="lg" onClick={wallet.connectInjected} className="font-mono">
-              {wallet.isConnecting ? 'Connecting…' : 'Connect Wallet to Start'}
-            </Button>
+            <p className="font-mono text-warning text-xs">连接钱包查看你的实际仓位</p>
           )}
-          <Button asChild variant="ghost" size="lg" className="font-mono text-text-tertiary">
-            <a
-              href="https://github.com/beautifulrem/pufferone"
-              rel="noreferrer noopener"
-              target="_blank"
-            >
-              View on GitHub →
-            </a>
-          </Button>
+          <div className="-mb-1 -mx-1 h-10 pt-2">
+            <Sparkline data={sparklineData} color="#FF1493" colorBottom="#00E8FF" height={40} />
+          </div>
         </div>
-        {wallet.error && (
-          <p className="mt-4 font-mono text-destructive text-sm">{wallet.error}</p>
-        )}
-      </section>
+      </CornerBracketCard>
 
-      {/* Features grid */}
-      <section>
-        <p className="mb-6 font-mono text-[length:var(--text-caption)] text-text-tertiary uppercase tracking-[2.5px]">
-          6 条题目要求 · 100% 深度
-        </p>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
-            <Card
-              key={feature.index}
-              className="border-border bg-card shadow-none transition-colors hover:border-primary/50"
-            >
-              <CardContent className="p-6">
-                <p className="mb-3 font-mono text-[length:var(--text-caption)] text-primary tracking-wider">
-                  {feature.index}
-                </p>
-                <h3 className="mb-2 font-semibold text-foreground text-lg">{feature.title}</h3>
-                <p className="text-sm text-text-tertiary leading-relaxed">
-                  {feature.description}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+      {/* Quick Actions */}
+      <div className="grid grid-cols-3 gap-2">
+        <Button asChild variant="outline" className="h-16 flex-col gap-1 border-border bg-card font-mono text-xs">
+          <Link to="/stake">
+            <TrendingUp size={18} className="text-primary" />
+            <span>质押</span>
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="h-16 flex-col gap-1 border-border bg-card font-mono text-xs">
+          <Link to="/vaults">
+            <Layers size={18} style={{ color: '#A78BFA' }} />
+            <span>Vault</span>
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="h-16 flex-col gap-1 border-border bg-card font-mono text-xs">
+          <Link to="/swap">
+            <ArrowLeftRight size={18} style={{ color: '#00E8FF' }} />
+            <span>Swap</span>
+          </Link>
+        </Button>
+      </div>
+
+      {/* Assets List */}
+      <div className="space-y-1.5 pt-2">
+        <div className="flex items-center justify-between px-1">
+          <p className="cyber-eyebrow">持仓列表</p>
+          <p className="font-mono text-text-tertiary text-[10px]">链 · Sepolia</p>
         </div>
-      </section>
 
-      {/* Footer */}
-      <footer className="mt-16 border-border border-t pt-8">
-        <p className="font-mono text-[length:var(--text-caption)] text-text-tertiary">
-          © 2026 PufferOne · Built for{' '}
-          <a
-            href="https://10th.token.im"
-            className="text-primary transition-colors hover:text-primary-hover"
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            imToken 十周年共创
-          </a>{' '}
-          · Code on{' '}
-          <a
-            href="https://github.com/beautifulrem/pufferone"
-            className="text-primary transition-colors hover:text-primary-hover"
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            GitHub
-          </a>
-        </p>
-      </footer>
-    </>
+        {assets.map((a) => {
+          const hasBalance = a.amount > 0n
+          const usd = (Number(a.amount) / 1e18) * a.usdPerUnit
+          return (
+            <Link key={a.symbol} to={a.href} className="block">
+              <div
+                className={`flex items-center gap-3 rounded-lg border p-3 transition-colors ${
+                  hasBalance
+                    ? 'border-primary/30 bg-primary/5 hover:border-primary/60'
+                    : 'border-border bg-card hover:border-border-strong'
+                }`}
+              >
+                <TokenIcon symbol={a.symbol} size={36} />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-mono font-semibold text-foreground text-sm">{a.symbol}</p>
+                    {a.badge && hasBalance && (
+                      <Badge variant="outline" className="border-primary/40 font-mono text-[10px] text-primary">
+                        {a.badge}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="truncate font-mono text-[10px] text-text-tertiary">{a.fullName}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-mono font-semibold text-foreground text-sm">
+                    {formatTokenAmount(a.amount, 18, 4)}
+                  </p>
+                  <p className="font-mono text-[10px] text-text-tertiary">
+                    {hasBalance ? `≈ $${usd.toFixed(2)}` : '—'}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          )
+        })}
+      </div>
+    </div>
   )
 }
-
-export { HomePage }
