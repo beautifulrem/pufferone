@@ -12,6 +12,7 @@ import { queryClient } from '../lib/queryClient'
 import { ExitPage } from '../pages/exit-page'
 import { HomePage } from '../pages/home-page'
 import { MorePage } from '../pages/more-page'
+import { NotFoundPage } from '../pages/not-found-page'
 import { StakePage } from '../pages/stake-page'
 import { SwapPage } from '../pages/swap-page'
 import { VaultsPage } from '../pages/vaults-page'
@@ -45,6 +46,7 @@ function App() {
                 <Route path="swap" element={<SwapPage />} />
                 <Route path="more" element={<MorePage />} />
                 <Route path="exit" element={<ExitPage />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Routes>
           </BrowserRouter>

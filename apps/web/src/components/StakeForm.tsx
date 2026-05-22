@@ -3,6 +3,7 @@ import { Input } from '@repo/ui/components/input'
 import { ArrowDownUp, CheckCircle2, ExternalLink, Info } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { parseEther, parseUnits, type Address } from 'viem'
+import { useActivityLog } from '../hooks/useActivityLog'
 import { useAllowance } from '../hooks/useAllowance'
 import { useApprove } from '../hooks/useApprove'
 import { useFaucet } from '../hooks/useFaucet'
@@ -100,6 +101,52 @@ export function StakeForm({ direction: dirProp, onDirectionChange }: StakeFormPr
   const unstakeETHMutation = useUnstakeETH()
   const approve = useApprove()
   const faucet = useFaucet()
+  const log = useActivityLog()
+
+  // 任一 mutation 成功后写一笔活动记录
+  useEffect(() => {
+    if (stakeETH.isSuccess && stakeETH.data) {
+      log.add({
+        type: 'stake',
+        label: `质押 ${amount || '?'} ETH → ${formatTokenAmount(stakeETH.data.expectedPufETH, 18, 4)} pufETH`,
+        txHash: stakeETH.data.txHash,
+      })
+    }
+    // biome-ignore lint/correctness/useExhaustiveDependencies: log on success only
+  }, [stakeETH.isSuccess])
+
+  useEffect(() => {
+    if (stakeERC20.isSuccess && stakeERC20.data) {
+      log.add({
+        type: 'stake',
+        label: `质押 ${amount || '?'} ${token} → ${formatTokenAmount(stakeERC20.data.expectedPufETH, 18, 4)} pufETH`,
+        txHash: stakeERC20.data.txHash,
+      })
+    }
+    // biome-ignore lint/correctness/useExhaustiveDependencies: log on success only
+  }, [stakeERC20.isSuccess])
+
+  useEffect(() => {
+    if (swap.isSuccess && swap.data) {
+      log.add({
+        type: 'unstake',
+        label: `赎回 ${amount || '?'} pufETH → ${formatTokenAmount(swap.data.amountOut, 18, 4)} ${token}`,
+        txHash: swap.data.txHash,
+      })
+    }
+    // biome-ignore lint/correctness/useExhaustiveDependencies: log on success only
+  }, [swap.isSuccess])
+
+  useEffect(() => {
+    if (unstakeETHMutation.isSuccess && unstakeETHMutation.data) {
+      log.add({
+        type: 'unstake',
+        label: `赎回 ${amount || '?'} pufETH → ${formatTokenAmount(unstakeETHMutation.data.ethOut, 18, 4)} ETH`,
+        txHash: unstakeETHMutation.data.txHash,
+      })
+    }
+    // biome-ignore lint/correctness/useExhaustiveDependencies: log on success only
+  }, [unstakeETHMutation.isSuccess])
 
   useEffect(() => {
     stakeETH.reset()

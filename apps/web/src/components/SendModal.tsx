@@ -5,6 +5,7 @@ import { Label } from '@repo/ui/components/label'
 import { AlertTriangle, CheckCircle2, ExternalLink } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { isAddress, parseUnits, type Address } from 'viem'
+import { useActivityLog } from '../hooks/useActivityLog'
 import { useTokenBalance } from '../hooks/useTokenBalance'
 import { useTransfer } from '../hooks/useTransfer'
 import { useWallet } from '../hooks/useWallet'
@@ -38,6 +39,18 @@ export function SendModal({
   const selectedToken =
     SEND_TOKENS.find((t) => t.key === tokenKey) ?? SEND_TOKENS[0]!
   const balance = useTokenBalance(selectedToken.address)
+  const log = useActivityLog()
+
+  useEffect(() => {
+    if (transfer.isSuccess && transfer.data) {
+      log.add({
+        type: 'transfer',
+        label: `发送 ${amount || '?'} ${selectedToken.symbol} → ${transfer.data.to.slice(0, 6)}…${transfer.data.to.slice(-4)}`,
+        txHash: transfer.data.txHash,
+      })
+    }
+    // biome-ignore lint/correctness/useExhaustiveDependencies: log on success only
+  }, [transfer.isSuccess])
 
   // 重置时清空 form
   useEffect(() => {

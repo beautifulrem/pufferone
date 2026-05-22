@@ -6,6 +6,7 @@ import { Separator } from '@repo/ui/components/separator'
 import { ExternalLink } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { parseEther, type Address } from 'viem'
+import { useActivityLog } from '../hooks/useActivityLog'
 import { useAllowance } from '../hooks/useAllowance'
 import { useApprove } from '../hooks/useApprove'
 import { useTokenBalance } from '../hooks/useTokenBalance'
@@ -37,6 +38,29 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
   const approve = useApprove()
   const deposit = useVaultDeposit()
   const withdraw = useVaultWithdraw()
+  const log = useActivityLog()
+
+  useEffect(() => {
+    if (deposit.isSuccess && deposit.data && vault) {
+      log.add({
+        type: 'vault-deposit',
+        label: `申购 ${amount || '?'} pufETH → ${vault.name}`,
+        txHash: deposit.data.txHash,
+      })
+    }
+    // biome-ignore lint/correctness/useExhaustiveDependencies: log on success only
+  }, [deposit.isSuccess])
+
+  useEffect(() => {
+    if (withdraw.isSuccess && withdraw.data && vault) {
+      log.add({
+        type: 'vault-withdraw',
+        label: `赎回 ${amount || '?'} ${vault.name} → pufETH`,
+        txHash: withdraw.data.txHash,
+      })
+    }
+    // biome-ignore lint/correctness/useExhaustiveDependencies: log on success only
+  }, [withdraw.isSuccess])
 
   // 切换 vault / mode 时清空
   useEffect(() => {

@@ -3,6 +3,7 @@ import { Input } from '@repo/ui/components/input'
 import { ArrowDown, CheckCircle2, ExternalLink, Info, Settings2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { parseEther, type Address } from 'viem'
+import { useActivityLog } from '../hooks/useActivityLog'
 import { useAllowance } from '../hooks/useAllowance'
 import { useApprove } from '../hooks/useApprove'
 import { useSwap } from '../hooks/useSwap'
@@ -50,6 +51,18 @@ export function SwapForm() {
     approve.reset()
     // biome-ignore lint/correctness/useExhaustiveDependencies: only on user change
   }, [tokenKey, amount])
+
+  const log = useActivityLog()
+  useEffect(() => {
+    if (swap.isSuccess && swap.data) {
+      log.add({
+        type: 'swap',
+        label: `闪兑 ${amount || '?'} ${selectedToken.symbol} → ${formatTokenAmount(swap.data.amountOut, 18, 4)} pufETH`,
+        txHash: swap.data.txHash,
+      })
+    }
+    // biome-ignore lint/correctness/useExhaustiveDependencies: log on success only
+  }, [swap.isSuccess])
 
   const inputWei = useMemo(() => {
     if (!amount) return 0n

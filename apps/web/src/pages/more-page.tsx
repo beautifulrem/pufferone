@@ -4,11 +4,13 @@ import {
   ExternalLink,
   Monitor,
   Moon,
+  RotateCcw,
   ShieldCheck,
   Sun,
 } from 'lucide-react'
 import { type ComponentType, useState } from 'react'
 import { Link } from 'react-router'
+import { ActivityList } from '../components/ActivityList'
 import { ImTokenLauncher } from '../components/ImTokenLauncher'
 import { openTutorial } from '../components/OnboardingModal'
 import { SafetyProtectionsDialog } from '../components/SafetyProtectionsButton'
@@ -133,6 +135,18 @@ export function MorePage() {
       title: '查看新手教程',
       description: '通过 5 个步骤了解 PufferOne 的工作机制。',
     },
+    {
+      action: {
+        kind: 'click',
+        onClick: () => {
+          window.localStorage.removeItem('pufferone:intro-dismissed')
+          window.location.href = '/'
+        },
+      },
+      icon: RotateCcw,
+      title: '重置引导卡片',
+      description: '让资产页顶部的「欢迎使用 PufferOne」介绍卡再次出现。',
+    },
   ]
 
   return (
@@ -148,6 +162,12 @@ export function MorePage() {
       </div>
 
       <SafetyProtectionsDialog open={safetyOpen} onOpenChange={setSafetyOpen} />
+
+      {/* 最近活动 */}
+      <div className="space-y-2 pt-2">
+        <p className="cyber-eyebrow">最近活动</p>
+        <ActivityList />
+      </div>
 
       {/* imToken deeplink + 二维码 fallback — 已在 imToken 内打开时不显示 */}
       {wallet.injectedKind !== 'imToken' && <ImTokenLauncher />}
