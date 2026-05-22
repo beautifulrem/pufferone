@@ -12,7 +12,7 @@ function appUrl(): string {
 }
 
 function buildDeeplink(url?: string): string {
-  return `imtokenv2://navigate/DAppView?url=${encodeURIComponent(url ?? appUrl())}`
+  return `imtokenv2://navigate/DappView?url=${encodeURIComponent(url ?? appUrl())}`
 }
 
 function qrUrl(text: string, size = 200): string {
