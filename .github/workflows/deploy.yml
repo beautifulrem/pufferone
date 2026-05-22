@@ -29,7 +29,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm --filter @pufferone/web build
+      - run: pnpm --filter @repo/web build
 
       - name: Copy index.html as 404.html for SPA routing
         run: cp apps/web/dist/index.html apps/web/dist/404.html
