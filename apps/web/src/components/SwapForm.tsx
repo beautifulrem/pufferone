@@ -1,6 +1,5 @@
 import { Button } from '@repo/ui/components/button'
 import { Input } from '@repo/ui/components/input'
-import { Slider } from '@repo/ui/components/slider'
 import { ArrowDown, CheckCircle2, ExternalLink, Settings2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { parseEther, type Address } from 'viem'
@@ -86,20 +85,16 @@ export function SwapForm() {
         </div>
 
         {settingsOpen && (
-          <div className="mb-3 rounded-lg border border-border bg-background/40 p-3">
-            <div className="mb-2 flex items-center justify-between">
+          <div className="mb-3 space-y-2 rounded-lg border border-border bg-background/40 p-3">
+            <div className="flex items-center justify-between">
               <p className="font-mono text-text-tertiary text-xs">滑点容忍度</p>
-              <span className="font-mono text-foreground text-sm">{(slippageBps / 100).toFixed(2)}%</span>
+              <span className="font-mono text-foreground text-sm">
+                {(slippageBps / 100).toFixed(2)}%
+              </span>
             </div>
-            <Slider
-              min={10}
-              max={500}
-              step={10}
-              value={[slippageBps]}
-              onValueChange={([v]) => v !== undefined && setSlippageBps(v)}
-            />
-            <p className="mt-2 font-mono text-[10px] text-text-tertiary">
-              链上强制 minOut · 实际收到 {'<'} {(slippageBps / 100).toFixed(2)}% 会 revert
+            <SlippagePresets value={slippageBps} onChange={setSlippageBps} />
+            <p className="font-mono text-[10px] text-text-tertiary">
+              链上强制最少收到 · 实际成交 {'<'} {(slippageBps / 100).toFixed(2)}% 会自动回滚
             </p>
           </div>
         )}
@@ -261,6 +256,56 @@ export function SwapForm() {
       )}
 
       <SafetyProtectionsButton />
+    </div>
+  )
+}
+
+const SLIPPAGE_PRESETS = [10, 50, 100] as const
+
+function SlippagePresets({ value, onChange }: { value: number; onChange: (bps: number) => void }) {
+  const isPreset = (SLIPPAGE_PRESETS as readonly number[]).includes(value)
+  return (
+    <div className="grid grid-cols-4 gap-1.5">
+      {SLIPPAGE_PRESETS.map((bps) => {
+        const active = value === bps
+        return (
+          <button
+            key={bps}
+            type="button"
+            onClick={() => onChange(bps)}
+            className={`rounded-md border py-1.5 font-mono text-xs transition-colors ${
+              active
+                ? 'border-primary bg-primary text-primary-foreground'
+                : 'border-border bg-card text-text-tertiary hover:border-primary/40 hover:text-foreground'
+            }`}
+          >
+            {(bps / 100).toFixed(1)}%
+          </button>
+        )
+      })}
+      <div
+        className={`flex items-center rounded-md border bg-card pr-2 transition-colors focus-within:border-primary/60 ${
+          isPreset ? 'border-border' : 'border-primary'
+        }`}
+      >
+        <input
+          type="text"
+          inputMode="decimal"
+          placeholder="自定义"
+          value={isPreset ? '' : (value / 100).toString()}
+          onChange={(e) => {
+            const raw = e.target.value.replace(/[^0-9.]/g, '')
+            if (raw === '' || raw === '.') return
+            const n = Number.parseFloat(raw)
+            if (Number.isNaN(n)) return
+            // 限制 0.01% – 5%
+            const bps = Math.max(1, Math.min(500, Math.round(n * 100)))
+            onChange(bps)
+          }}
+          className="w-full bg-transparent px-2 py-1.5 font-mono text-xs text-foreground placeholder:text-text-tertiary focus:outline-none"
+        />
+        <span className="shrink-0 font-mono text-text-tertiary text-xs">%</span>
+      </div>
     </div>
   )
 }
