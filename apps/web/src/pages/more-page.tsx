@@ -1,7 +1,9 @@
 import { Card, CardContent } from '@repo/ui/components/card'
 import {
   BookOpen,
+  ChevronDown,
   ExternalLink,
+  FileCode2,
   Monitor,
   Moon,
   RotateCcw,
@@ -15,6 +17,7 @@ import { ImTokenLauncher } from '../components/ImTokenLauncher'
 import { openTutorial } from '../components/OnboardingModal'
 import { SafetyProtectionsDialog } from '../components/SafetyProtectionsButton'
 import { type ThemeMode, useTheme } from '../hooks/useTheme'
+import { CONTRACTS } from '../lib/contracts'
 import { useWallet } from '../hooks/useWallet'
 
 const THEME_OPTIONS: { value: ThemeMode; label: string; Icon: typeof Sun }[] = [
@@ -72,9 +75,21 @@ type Item = {
 
 const LINKS = [
   { href: 'https://github.com/beautifulrem/pufferone', label: 'GitHub 源码' },
-  { href: 'https://sepolia.etherscan.io/address/0x8628C68227EAfe1B435eb3F918e5358aE5b1c390', label: 'Sepolia 合约浏览' },
   { href: 'https://10th.token.im/#showcase', label: 'imToken 十周年活动' },
 ] as const
+
+const CONTRACT_LABELS: { key: keyof typeof CONTRACTS; label: string }[] = [
+  { key: 'pufETH', label: 'pufETH 代币' },
+  { key: 'stETH', label: 'Mock stETH' },
+  { key: 'wstETH', label: 'Mock wstETH' },
+  { key: 'depositor', label: '质押合约' },
+  { key: 'swapRouter', label: '闪兑路由' },
+  { key: 'ethUnstake', label: 'ETH 赎回' },
+  { key: 'unifiETH', label: 'unifiETH 金库' },
+  { key: 'unifiUSD', label: 'unifiUSD 金库' },
+  { key: 'unifiBTC', label: 'unifiBTC 金库' },
+  { key: 'pufETHs', label: 'pufETHs 金库' },
+]
 
 function ItemCard({ item }: { item: Item }) {
   const { icon: Icon, title, description, badge } = item
@@ -174,6 +189,8 @@ export function MorePage() {
 
       <ThemeSwitcher />
 
+      <ContractExplorer />
+
       <div className="space-y-2 pt-2">
         <p className="cyber-eyebrow">外部链接</p>
         {LINKS.map(({ href, label }) => (
@@ -200,6 +217,47 @@ export function MorePage() {
           <p className="mt-3 cyber-eyebrow text-text-tertiary">v0.1.0 · 2026-05-22</p>
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+function ContractExplorer() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="space-y-2 pt-2">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between"
+      >
+        <p className="cyber-eyebrow">Sepolia 合约浏览</p>
+        <ChevronDown
+          size={14}
+          className={`text-text-tertiary transition-transform ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
+      {open && (
+        <div className="space-y-1.5">
+          {CONTRACT_LABELS.map(({ key, label }) => (
+            <a
+              key={key}
+              href={`https://sepolia.etherscan.io/address/${CONTRACTS[key]}`}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2.5 transition-colors hover:border-primary/40"
+            >
+              <FileCode2 size={14} className="shrink-0 text-primary" />
+              <div className="min-w-0 flex-1">
+                <p className="text-foreground text-xs font-medium">{label}</p>
+                <p className="truncate font-mono text-text-tertiary text-[10px]">
+                  {CONTRACTS[key]}
+                </p>
+              </div>
+              <ExternalLink size={12} className="shrink-0 text-text-tertiary" />
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
