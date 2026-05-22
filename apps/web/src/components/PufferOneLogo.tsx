@@ -1,100 +1,66 @@
-/// PufferOne app icon — 在 Figma 中手工绘制的版本，转译为 inline SVG。
+/// PufferOne app icon = Twemoji blowfish 🐡 in a gradient rounded square.
 ///
-/// 设计：
-/// - 256×256 圆角方形（半径 56）做容器
-/// - 对角线渐变背景：粉 #FC72FF → 紫 #A78BFA → 青 #7DD3FC
-/// - 中间是 cute pufferfish 剪影：白身、左下粉脸颊、深色眼睛带高光、小嘴 + 粉色舌头
-/// - 7 个白色 spike 三角形围绕身体辐射（右侧让位给尾巴）
-/// - 右侧白色三角尾鳍
+/// Twemoji is Twitter/X's emoji set, CC-BY 4.0, polished and recognizable.
+/// The fish keeps its native pink/coral tones which complement our brand
+/// pink (#FC72FF). The pink→purple→cyan gradient bg provides brand identity.
 ///
-/// 用 viewBox 256x256，外层可缩放到任意 size。
+/// Source: https://github.com/jdecked/twemoji  (1f421 = U+1F421 BLOWFISH)
 export function PufferOneLogo({ size = 28 }: { size?: number }) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 256 256"
+      viewBox="0 0 36 36"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-label="PufferOne"
     >
       <defs>
-        <linearGradient id="po-bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+        <linearGradient id="po-bg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#FC72FF" />
           <stop offset="0.55" stopColor="#A78BFA" />
           <stop offset="1" stopColor="#7DD3FC" />
         </linearGradient>
-        <radialGradient id="po-hl" cx="128" cy="0" r="128" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="white" stopOpacity="0.4" />
+        <radialGradient id="po-hl" cx="18" cy="0" r="20" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="white" stopOpacity="0.35" />
           <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
       </defs>
 
-      {/* Background rounded square */}
-      <rect x="0" y="0" width="256" height="256" rx="56" fill="url(#po-bg)" />
+      {/* Background rounded square with gradient */}
+      <rect x="0" y="0" width="36" height="36" rx="8" fill="url(#po-bg)" />
+      {/* Subtle top highlight */}
+      <rect x="0" y="0" width="36" height="16" rx="8" fill="url(#po-hl)" />
 
-      {/* Top highlight */}
-      <rect x="0" y="0" width="256" height="120" rx="56" fill="url(#po-hl)" />
-
-      {/* Spikes — 7 white triangles around the body, skipping the rightmost (tail) */}
-      {/* Each spike: small triangle, tip pointing outward, ~22px tall */}
-      {/* Computed from angle 0..2π starting at top (-π/2), skipping index 2 (right) */}
-
-      {/* Spike 0 (top, angle -90°) */}
-      <polygon points="128,38 122,58 134,58" fill="#FFFFFF" opacity="0.92" />
-      {/* Spike 1 (top-right, angle -45°) */}
-      <polygon
-        points="182,60 168,72 178,82"
-        fill="#FFFFFF"
-        opacity="0.92"
-        transform="rotate(-15 175 70)"
-      />
-      {/* Spike 3 skipped (rightmost — tail goes here) */}
-      {/* Spike 3 (bottom-right, angle 45°) */}
-      <polygon
-        points="180,180 168,170 184,176"
-        fill="#FFFFFF"
-        opacity="0.92"
-        transform="rotate(60 177 175)"
-      />
-      {/* Spike 4 (bottom, angle 90°) */}
-      <polygon points="128,218 122,198 134,198" fill="#FFFFFF" opacity="0.92" />
-      {/* Spike 5 (bottom-left, angle 135°) */}
-      <polygon
-        points="76,180 88,170 72,176"
-        fill="#FFFFFF"
-        opacity="0.92"
-        transform="rotate(-60 78 175)"
-      />
-      {/* Spike 6 (left, angle 180°) */}
-      <polygon points="38,128 58,122 58,134" fill="#FFFFFF" opacity="0.92" />
-      {/* Spike 7 (top-left, angle 225°) */}
-      <polygon
-        points="74,60 88,72 78,82"
-        fill="#FFFFFF"
-        opacity="0.92"
-        transform="rotate(15 78 70)"
-      />
-
-      {/* Tail — right-side triangle pointing right (replaces skipped spike 2) */}
-      <polygon points="186,128 220,108 220,148" fill="#FFFFFF" opacity="0.95" />
-
-      {/* Body — white ellipse */}
-      <ellipse cx="128" cy="128" rx="56" ry="48" fill="#FFFFFF" />
-
-      {/* Cheek blush — pink */}
-      <ellipse cx="100" cy="138" rx="13" ry="8" fill="#FC72FF" opacity="0.55" />
-
-      {/* Mouth (small dark) */}
-      <ellipse cx="128" cy="150" rx="10" ry="7" fill="#4D2050" opacity="0.85" />
-
-      {/* Tongue inside mouth */}
-      <ellipse cx="128" cy="154" rx="6" ry="3" fill="#FC72FFB3" />
-
-      {/* Eye — cream outer + dark pupil + white highlight */}
-      <ellipse cx="148" cy="116" rx="14" ry="14" fill="#F5F5FA" />
-      <circle cx="151" cy="119" r="9" fill="#0F0F19" />
-      <circle cx="154" cy="116" r="3.5" fill="#FFFFFF" />
+      {/* Twemoji blowfish 🐡 (CC-BY 4.0, twitter/twemoji) — scaled to fit, slightly inset */}
+      <g transform="translate(1.5 1.5) scale(0.92)">
+        <path
+          fill="#d99e82"
+          d="M33 17c.461.184.902 3-1 3c-6 0-11 11-20 11S1 18.5 1 16S5.82 6 13 6s15 9 20 11"
+        />
+        <path fill="#d99e82" d="M3 19c0 .553-.671 1-1.5 1S0 19.553 0 19s0-2 1.5-1c.689.46 1.5.447 1.5 1" />
+        <path
+          fill="#c1694f"
+          d="M33 17c.461.184.876.688-1 1c-6 1-10.045-.896-19 0c-10 1-12 1-12-2C1 13.5 5.82 6 13 6s15 9 20 11"
+        />
+        <path
+          fill="#d99e82"
+          d="M30 17.5c0 2.485 3.343 4.5 5 4.5s0-2.015 0-4.5s1.657-4.5 0-4.5s-5 2.015-5 4.5"
+        />
+        <circle cx="7" cy="13" r="1" fill="#292f33" />
+        <path fill="#d99e82" d="M19.16 25S22 29 24 29s0-5 0-5h-2.84c-3 0-2 1-2 1" />
+        <path
+          fill="#c1694f"
+          d="M21.351 8.923S24.211 6.106 26 7c4.074 2.036-2 4-2 4l-1.593-.106c-2.993-.201-1.056-1.971-1.056-1.971"
+        />
+        <circle cx="16" cy="25" r="2" fill="#c1694f" />
+        <circle cx="20" cy="21" r="1" fill="#c1694f" />
+        <circle cx="24.5" cy="20.5" r="1.5" fill="#c1694f" />
+        <circle cx="16.5" cy="14.5" r="1.5" fill="#662113" />
+        <circle cx="23.5" cy="15.5" r="1.5" fill="#662113" />
+        <circle cx="20" cy="11" r="1" fill="#662113" />
+        <path fill="#c1694f" d="M3 17c0 .552 1 2-1.5 1c-.77-.308-1.5-.448-1.5-1s.671-1 1.5-1s1.5.448 1.5 1" />
+      </g>
     </svg>
   )
 }
