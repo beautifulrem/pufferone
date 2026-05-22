@@ -1,11 +1,12 @@
 import { Activity, Layers, TrendingUp } from 'lucide-react'
-import { type ComponentType, useMemo, useState } from 'react'
-import { useProtocolTVL, useVaultTVLs } from '../hooks/usePufferAPI'
+import { type ComponentType, useState } from 'react'
+import { useProtocolTVL } from '../hooks/usePufferAPI'
 import { VAULTS } from '../lib/vaults'
 import { MetricDetailModal, type MetricSpec } from './MetricDetailModal'
 
-const FALLBACK_LRT_TVL = 58_900_000 // ~$58.9M (mainnet)
-const FALLBACK_PUFETH_APY = 3.5
+const FALLBACK_LRT_TVL = 58_900_000
+const FALLBACK_UNIFI_TVL = 1_140_000
+const FALLBACK_PUFETH_APY = 2.64
 
 function formatCompactUSD(n: number): string {
   if (n >= 1_000_000_000) return `$${(n / 1_000_000_000).toFixed(2)}B`
@@ -14,36 +15,26 @@ function formatCompactUSD(n: number): string {
   return `$${n.toFixed(0)}`
 }
 
-/// 主网协议规模看板 — 三列 stat（LRT TVL / UniFi TVL / pufETH APY）。
-/// 每个 stat 点击后弹出大折线图 + 详细说明（参考 OKX / 币安行情详情页）。
 export function ProtocolStatsCard() {
   const protocol = useProtocolTVL()
-  const vaultTVLs = useVaultTVLs()
   const [activeMetric, setActiveMetric] = useState<MetricSpec | null>(null)
 
   const lrtTVL =
-    typeof protocol.data?.totalTVL === 'number' && Number.isFinite(protocol.data.totalTVL)
+    protocol.data?.totalTVL && protocol.data.totalTVL > 0
       ? protocol.data.totalTVL
       : FALLBACK_LRT_TVL
 
   const pufETHAPY =
-    typeof protocol.data?.pufETHStakingAPY === 'number' &&
-    Number.isFinite(protocol.data.pufETHStakingAPY)
+    protocol.data?.pufETHStakingAPY && protocol.data.pufETHStakingAPY > 0
       ? protocol.data.pufETHStakingAPY
       : FALLBACK_PUFETH_APY
 
-  const unifiTVL = useMemo(() => {
-    if (Array.isArray(vaultTVLs.data)) {
-      const sum = vaultTVLs.data
-        .map((e) => (typeof e.tvl === 'number' ? e.tvl : 0))
-        .reduce((a, b) => a + b, 0)
-      if (sum > 0) return sum
-    }
-    return VAULTS.reduce((acc, v) => acc + v.fallbackTVL, 0)
-  }, [vaultTVLs.data])
+  const unifiTVL =
+    protocol.data?.unifiTVL && protocol.data.unifiTVL > 0
+      ? protocol.data.unifiTVL
+      : FALLBACK_UNIFI_TVL
 
   const isLive = !protocol.isError && protocol.isSuccess
-  const isVaultLive = !vaultTVLs.isError && vaultTVLs.isSuccess
 
   const metrics: MetricSpec[] = [
     {
@@ -66,7 +57,7 @@ export function ProtocolStatsCard() {
       formatter: (n) => formatCompactUSD(n),
       Icon: Layers,
       accent: 'rgb(167 139 250)',
-      isLive: isVaultLive,
+      isLive,
     },
     {
       key: 'pufeth-apy',

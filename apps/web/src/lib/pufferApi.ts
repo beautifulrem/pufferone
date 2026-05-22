@@ -25,19 +25,20 @@ type PufETHMetricsResponse = {
   holderCount?: number
 }
 
-type VaultAPYEntry = {
+export type VaultAPYEntry = {
   vault: string
   apy: number
 }
 
-type VaultTVLEntry = {
+export type VaultTVLEntry = {
   vault: string
   tvl: number
 }
 
-type ProtocolTVLResponse = {
+export type ProtocolTVLResponse = {
   totalTVL: number
   pufETHStakingAPY: number
+  unifiTVL: number
 }
 
 const CACHE_TTL_MS = 5 * 60_000 // 5 minutes
@@ -96,10 +97,60 @@ async function fetchJSON<T>(path: string): Promise<T> {
   return data
 }
 
+type RawProtocolTVL = {
+  lrt_total_usd?: string
+  unifi_total_usd?: string
+  apy?: string
+  tvl_puffer_staking?: string
+}
+
+type RawVaultTVL = Record<string, string>
+
+type RawVaultAPY = {
+  data?: { token_address: string; apy: string }[]
+}
+
+const VAULT_ADDRESS_MAP: Record<string, string> = {
+  '0x196ead472583bc1e9af7a05f860d9857e1bd3dcc': 'unifiETH',
+  '0x170d847a8320f3b6a77ee15b0cae430e3ec933a0': 'unifiUSD',
+  '0x82c40e07277ebb92935f79ce92268f80ddc7cab4': 'unifiBTC',
+}
+
+const VAULT_KEY_MAP: Record<string, string> = {
+  unifi_eth_vault: 'unifiETH',
+  unifi_usd_vault: 'unifiUSD',
+  unifi_btc_vault: 'unifiBTC',
+}
+
 export const pufferApi = {
   pufETHRate: () => fetchJSON<PufETHRateResponse>('/pufeth/rate'),
   pufETHMetrics: () => fetchJSON<PufETHMetricsResponse>('/pufeth/metrics'),
-  vaultsAPY: () => fetchJSON<VaultAPYEntry[]>('/vaults/apy'),
-  vaultsTVL: () => fetchJSON<VaultTVLEntry[]>('/vaults/tvl'),
-  protocolTVL: () => fetchJSON<ProtocolTVLResponse>('/protocol/tvl'),
+
+  vaultsAPY: async (): Promise<VaultAPYEntry[]> => {
+    const raw = await fetchJSON<RawVaultAPY>('/vaults/apy')
+    if (!raw.data || !Array.isArray(raw.data)) return []
+    return raw.data.map((e) => ({
+      vault: VAULT_ADDRESS_MAP[e.token_address.toLowerCase()] ?? e.token_address,
+      apy: Number.parseFloat(e.apy) || 0,
+    }))
+  },
+
+  vaultsTVL: async (): Promise<VaultTVLEntry[]> => {
+    const raw = await fetchJSON<RawVaultTVL>('/vaults/tvl')
+    return Object.entries(raw)
+      .filter(([k]) => k in VAULT_KEY_MAP)
+      .map(([k, v]) => ({
+        vault: VAULT_KEY_MAP[k] ?? k,
+        tvl: Number.parseFloat(v) || 0,
+      }))
+  },
+
+  protocolTVL: async (): Promise<ProtocolTVLResponse> => {
+    const raw = await fetchJSON<RawProtocolTVL>('/protocol/tvl')
+    return {
+      totalTVL: Number.parseFloat(raw.lrt_total_usd ?? '0') || 0,
+      pufETHStakingAPY: Number.parseFloat(raw.apy ?? '0') || 0,
+      unifiTVL: Number.parseFloat(raw.unifi_total_usd ?? '0') || 0,
+    }
+  },
 }
