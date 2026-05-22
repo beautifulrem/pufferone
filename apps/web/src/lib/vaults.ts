@@ -37,8 +37,8 @@ export const VAULTS: readonly VaultDescriptor[] = [
     address: CONTRACTS.unifiETH,
     accent: 'primary',
     risk: 'Low',
-    fallbackAPY: 5.0,
-    fallbackTVL: 18_500_000,
+    fallbackAPY: 2.96,
+    fallbackTVL: 1_024_000,
     sharePrice: 1_050_000_000_000_000_000n, // 1.05e18
     highlight: 'beginner',
   },
@@ -52,8 +52,8 @@ export const VAULTS: readonly VaultDescriptor[] = [
     address: CONTRACTS.unifiUSD,
     accent: 'ai',
     risk: 'Low',
-    fallbackAPY: 4.0,
-    fallbackTVL: 9_300_000,
+    fallbackAPY: 0,
+    fallbackTVL: 17_800,
     sharePrice: 1_040_000_000_000_000_000n, // 1.04e18
   },
   {
@@ -66,8 +66,8 @@ export const VAULTS: readonly VaultDescriptor[] = [
     address: CONTRACTS.unifiBTC,
     accent: 'warning',
     risk: 'Medium',
-    fallbackAPY: 5.5,
-    fallbackTVL: 4_750_000,
+    fallbackAPY: 12.72,
+    fallbackTVL: 101_200,
     sharePrice: 1_055_000_000_000_000_000n, // 1.055e18
   },
   {
@@ -80,8 +80,8 @@ export const VAULTS: readonly VaultDescriptor[] = [
     address: CONTRACTS.pufETHs,
     accent: 'destructive',
     risk: 'Elevated',
-    fallbackAPY: 7.5,
-    fallbackTVL: 2_120_000,
+    fallbackAPY: 8.0,
+    fallbackTVL: 0,
     sharePrice: 1_075_000_000_000_000_000n, // 1.075e18
     highlight: 'hot',
   },

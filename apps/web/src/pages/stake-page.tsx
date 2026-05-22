@@ -7,8 +7,8 @@ import { useTokenBalance } from '../hooks/useTokenBalance'
 import { CONTRACTS } from '../lib/contracts'
 import { formatTokenAmount } from '../lib/format'
 
-const FALLBACK_APY = 3.5
-const FALLBACK_RATE = 0.96
+const FALLBACK_APY = 2.64
+const FALLBACK_RATE = 0.9298
 
 type Direction = 'stake' | 'unstake'
 
