@@ -1,12 +1,29 @@
 import { HelpCircle, TrendingUp } from 'lucide-react'
 import { openTutorial } from '../components/OnboardingModal'
 import { StakeForm } from '../components/StakeForm'
+import { useProtocolTVL, usePufETHRate } from '../hooks/usePufferAPI'
 
-/// Mock pufETH staking APY — main-net runs ~3.5% (Beacon Chain + Puffer modules).
-/// PufferOne 在 Sepolia 上没有真实收益累积，所以前端给一个稳定参考值。
-const STAKING_APY = 3.5
+const FALLBACK_APY = 3.5
+const FALLBACK_RATE = 0.96
 
+/// 主网汇率取自 pufETHRate.pufEthPerEth；fallback 用 Sepolia mock 合约的 0.96
+/// 跟 StakeForm 的合约 mock 一致。 APY 同理。
 export function StakePage() {
+  const rate = usePufETHRate()
+  const protocol = useProtocolTVL()
+
+  const liveRate = rate.data?.pufEthPerEth
+    ? Number.parseFloat(rate.data.pufEthPerEth)
+    : null
+  const displayRate = Number.isFinite(liveRate) && liveRate ? liveRate : FALLBACK_RATE
+  const rateSource: 'live' | 'fallback' = liveRate !== null && Number.isFinite(liveRate)
+    ? 'live'
+    : 'fallback'
+
+  const liveAPY = protocol.data?.pufETHStakingAPY
+  const displayAPY =
+    typeof liveAPY === 'number' && Number.isFinite(liveAPY) ? liveAPY : FALLBACK_APY
+
   return (
     <div className="space-y-4 pb-6">
       <div className="flex items-end justify-between gap-3">
@@ -37,15 +54,19 @@ export function StakePage() {
               预期年化收益
             </p>
             <p className="font-mono font-bold text-2xl text-foreground leading-none">
-              {STAKING_APY.toFixed(2)}%
+              {displayAPY.toFixed(2)}%
             </p>
           </div>
         </div>
         <div className="text-right">
-          <p className="font-mono text-[10px] text-text-tertiary uppercase tracking-wider">参考汇率</p>
-          <p className="font-mono font-semibold text-foreground text-sm">1 ETH → 0.96 pufETH</p>
+          <p className="font-mono text-[10px] text-text-tertiary uppercase tracking-wider">
+            {rateSource === 'live' ? '主网实时汇率' : '参考汇率'}
+          </p>
+          <p className="font-mono font-semibold text-foreground text-sm">
+            1 ETH → {displayRate.toFixed(4)} pufETH
+          </p>
           <p className="font-mono text-[10px] text-text-tertiary">
-            含未来收益增长
+            {rateSource === 'live' ? '来自 Puffer 主网' : '离线估算'}
           </p>
         </div>
       </div>

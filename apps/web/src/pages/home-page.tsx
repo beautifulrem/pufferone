@@ -13,6 +13,7 @@ import { type ComponentType, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router'
 import { CornerBracketCard } from '../components/CornerBracketCard'
 import { openTutorial } from '../components/OnboardingModal'
+import { ProtocolStatsCard } from '../components/ProtocolStatsCard'
 import { ReceiveModal } from '../components/ReceiveModal'
 import { Sparkline } from '../components/Sparkline'
 import { TokenIcon } from '../components/TokenIcon'
@@ -312,6 +313,8 @@ export function HomePage() {
           </>
         )}
       </div>
+
+      <ProtocolStatsCard />
 
       <ReceiveModal open={receiveOpen} onOpenChange={setReceiveOpen} />
     </div>
