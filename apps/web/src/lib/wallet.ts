@@ -32,5 +32,5 @@ export function detectInjectedKind(): InjectedWalletKind {
 export const InjectedWalletLabel: Record<InjectedWalletKind, string> = {
   imToken: 'imToken',
   metamask: 'MetaMask',
-  unknown: 'Browser Wallet',
+  unknown: '浏览器钱包',
 }

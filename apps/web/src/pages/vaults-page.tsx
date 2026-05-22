@@ -34,10 +34,10 @@ export function VaultsPage() {
   return (
     <div className="space-y-4 pb-6">
       <div>
-        <p className="cyber-eyebrow">PUFFER // VAULTS</p>
+        <p className="cyber-eyebrow">PUFFER // 金库</p>
         <h1 className="mt-1 font-bold text-2xl text-foreground tracking-tight">UniFi 金库</h1>
         <p className="mt-1.5 text-sm text-text-tertiary leading-relaxed">
-          4 个 Sepolia mock vault，Mini App 内真实存入。APY/TVL 实时来自 Puffer 主网 API。
+          4 个 Sepolia 模拟金库，可在小程序内真实存入。APY / TVL 实时来自 Puffer 主网 API。
         </p>
         <div className="mt-3 flex flex-wrap gap-1.5 font-mono text-[10px]">
           <Badge variant="outline" className="border-border text-text-tertiary">

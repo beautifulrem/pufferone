@@ -12,14 +12,13 @@ export function NetworkGuard() {
 
   return (
     <Alert variant="destructive" className="mb-6 border-destructive/50 bg-error-surface">
-      <AlertTitle className="font-mono">Network Mismatch · Block Level Risk</AlertTitle>
+      <AlertTitle className="font-mono">网络不匹配 · 阻断级风险</AlertTitle>
       <AlertDescription className="font-mono text-text-secondary-gray">
         <p className="mb-3">
-          You are connected to chain {wallet.chainId ?? '—'}. PufferOne demo runs only on
-          Sepolia ({CHAIN_ID}). All transactional actions are disabled until you switch.
+          当前钱包链 ID：{wallet.chainId ?? '—'}。PufferOne 演示只支持 Sepolia（{CHAIN_ID}），切换之前所有交易操作均已禁用。
         </p>
         <Button size="sm" onClick={wallet.switchToSepolia} className="font-mono">
-          Switch to Sepolia
+          切换到 Sepolia
         </Button>
       </AlertDescription>
     </Alert>

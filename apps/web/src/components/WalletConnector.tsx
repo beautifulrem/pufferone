@@ -22,7 +22,7 @@ export function WalletConnector() {
           }}
         >
           <span className="size-1.5 rounded-full bg-primary" />
-          {copied ? 'Copied' : truncateAddress(wallet.address)}
+          {copied ? '已复制' : truncateAddress(wallet.address)}
         </Badge>
         <Button
           size="sm"
@@ -30,7 +30,7 @@ export function WalletConnector() {
           className="h-7 px-2 font-mono text-text-tertiary text-xs"
           onClick={wallet.disconnect}
         >
-          Disconnect
+          断开
         </Button>
       </div>
     )
@@ -44,8 +44,8 @@ export function WalletConnector() {
       className="font-mono"
     >
       {wallet.isConnecting
-        ? 'Connecting…'
-        : `Connect ${InjectedWalletLabel[wallet.injectedKind]}`}
+        ? '连接中…'
+        : `连接 ${InjectedWalletLabel[wallet.injectedKind]}`}
     </Button>
   )
 }

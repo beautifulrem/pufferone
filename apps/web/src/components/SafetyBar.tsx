@@ -12,37 +12,37 @@ const MECHANISMS: SafetyMechanism[] = [
   {
     id: 'simulate',
     icon: '◇',
-    title: 'eth_call Simulation',
+    title: 'eth_call 模拟',
     description:
-      'Every transaction is statically simulated via publicClient.simulateContract before the wallet sign prompt opens. Simulated revert reasons surface as Danger-level alerts, blocking the broadcast — per Token UI security/SKILL.md §1.1.',
+      '钱包签名弹窗打开前，每一笔交易都会通过 publicClient.simulateContract 做静态模拟。模拟出的 revert 原因会以「高风险」级别弹出并阻止广播——遵循 Token UI security/SKILL.md §1.1。',
   },
   {
     id: 'risk',
     icon: '△',
-    title: 'Risk Score',
+    title: '风险评分',
     description:
-      'Each transactional surface renders a 4-tier badge: Info / Warning / Danger / Block. Block-level events (wrong chain, simulation failed) disable the sign button entirely. Risk text accompanies each preview card.',
+      '每个交易页面都会渲染 4 级徽章：信息 / 注意 / 高风险 / 阻断。阻断级别事件（链不对、模拟失败）会直接禁用签名按钮。每张预览卡都会附带风险说明。',
   },
   {
     id: 'minout',
     icon: '◯',
-    title: 'Slippage Protection (minOut)',
+    title: '滑点保护（minOut）',
     description:
-      'DEX swap and vault deposits enforce minOut on-chain — not just in UI. The router and vault contracts revert if real output falls below the user-set slippage tolerance.',
+      'DEX 兑换和金库存入都在链上强制 minOut——不仅仅是 UI 检查。如果实际输出低于用户设定的滑点容忍度，路由合约和金库合约会直接 revert。',
   },
   {
     id: 'approve',
     icon: '◢',
-    title: 'Exact-Amount Approval',
+    title: '精确数额授权',
     description:
-      'Every ERC-20 approve() call uses the EXACT amount needed — never type(uint256).max. The Approve step shows the exact amount being granted. No infinite allowance shortcuts.',
+      '每次 ERC-20 approve() 调用都使用「正好够本次交易」的数额——绝不 type(uint256).max。授权步骤显示完整数额。无无限授权的快捷通道。',
   },
   {
     id: 'summary',
     icon: '◭',
-    title: 'Pre-Sign Tx Summary',
+    title: '签前交易总结',
     description:
-      'Before every sign action, a summary card shows: target contract (FULL address, not truncated, per SKILL.md §1.2), input/output amounts, risk badge, exit hint. The user knows exactly what they sign.',
+      '每次签名前都会有一张总结卡，展示：目标合约（完整地址，不缩写，遵循 SKILL.md §1.2）、输入 / 输出数量、风险徽章、退出提示。你签的是什么，一目了然。',
   },
 ]
 
@@ -54,7 +54,7 @@ export function SafetyBar() {
       <CardContent className="space-y-3 p-4">
         <div className="flex items-center justify-between">
           <p className="font-mono text-[length:var(--text-caption)] text-primary uppercase tracking-[2px]">
-            5 Safety Mechanisms · 题目要求 05 · click to expand
+            5 道安全机制 · 题目要求 05 · 点击展开
           </p>
         </div>
 

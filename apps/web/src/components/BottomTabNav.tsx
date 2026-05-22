@@ -11,8 +11,8 @@ type Tab = {
 const TABS: readonly Tab[] = [
   { path: '/', label: '资产', icon: Wallet },
   { path: '/stake', label: '质押', icon: TrendingUp },
-  { path: '/vaults', label: 'Vault', icon: Layers },
-  { path: '/swap', label: 'Swap', icon: ArrowLeftRight },
+  { path: '/vaults', label: '金库', icon: Layers },
+  { path: '/swap', label: '兑换', icon: ArrowLeftRight },
   { path: '/more', label: '更多', icon: MoreHorizontal },
 ] as const
 

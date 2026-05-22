@@ -23,7 +23,7 @@ export const VAULTS: readonly VaultDescriptor[] = [
   {
     key: 'unifiETH',
     name: 'unifiETH',
-    description: 'ETH-denominated UniFi vault. Moderate yield, ETH risk profile.',
+    description: '以 ETH 计价的 UniFi 金库，中等收益，ETH 风险敞口。',
     address: CONTRACTS.unifiETH,
     accent: 'primary',
     risk: 'Low',
@@ -34,7 +34,7 @@ export const VAULTS: readonly VaultDescriptor[] = [
   {
     key: 'unifiUSD',
     name: 'unifiUSD',
-    description: 'USD-denominated UniFi vault. Most stable, lowest yield volatility.',
+    description: '以 USD 计价的 UniFi 金库，最稳定，收益波动最低。',
     address: CONTRACTS.unifiUSD,
     accent: 'ai',
     risk: 'Low',
@@ -45,7 +45,7 @@ export const VAULTS: readonly VaultDescriptor[] = [
   {
     key: 'unifiBTC',
     name: 'unifiBTC',
-    description: 'BTC-denominated UniFi vault. BTC volatility, slightly higher yield.',
+    description: '以 BTC 计价的 UniFi 金库，跟随 BTC 波动，收益略高。',
     address: CONTRACTS.unifiBTC,
     accent: 'warning',
     risk: 'Medium',
@@ -56,7 +56,7 @@ export const VAULTS: readonly VaultDescriptor[] = [
   {
     key: 'pufETHs',
     name: 'pufETHs',
-    description: 'Yield-bearing pufETH variant. Highest yield, structured risk.',
+    description: '带收益的 pufETH 变体，收益最高，结构化风险。',
     address: CONTRACTS.pufETHs,
     accent: 'destructive',
     risk: 'Elevated',

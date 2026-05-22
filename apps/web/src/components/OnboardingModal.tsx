@@ -12,34 +12,34 @@ type Step = {
 
 const STEPS: Step[] = [
   {
-    title: '1 · What is restaking?',
-    highlight: 'Stake once, earn twice.',
+    title: '1 · 什么是再质押？',
+    highlight: '一份 ETH，两份收益。',
     body:
-      'Restaking lets your already-staked ETH secure additional services beyond Ethereum consensus — extra yield, extra risk. PufferOne demonstrates the user-facing layer; the underlying validator economics live on Ethereum mainnet.',
+      '再质押（restaking）让你已经质押的 ETH 同时为以太坊共识之外的服务提供安全——多一份收益，也多一层风险。PufferOne 展示用户端体验；底层的验证人经济学跑在以太坊主网上。',
   },
   {
-    title: '2 · Why Puffer?',
-    highlight: 'Validator-aligned, liquid, programmable.',
+    title: '2 · 为什么选 Puffer？',
+    highlight: '对齐验证人、保持流动、可编程。',
     body:
-      'Puffer Finance is a leading liquid restaking protocol on Ethereum mainnet. Their pufETH token represents your ETH at work — earning validator rewards while staying liquid (transferable, usable in DeFi).',
+      'Puffer Finance 是以太坊主网领先的流动再质押协议。它的 pufETH 代币就是你工作中的 ETH——一边赚验证人奖励，一边保持流动（可转账、可在 DeFi 中使用）。',
   },
   {
-    title: '3 · pufETH = your receipt',
-    highlight: '1 ETH → ~0.96 pufETH (mainnet rate).',
+    title: '3 · pufETH = 你的收据',
+    highlight: '1 ETH → 约 0.96 pufETH（主网汇率）。',
     body:
-      'When you stake, you receive pufETH at a slight discount. As validators earn rewards, the redemption rate (ETH per pufETH) grows — that growth is your yield. PufferOne uses a fixed 0.96 mock rate on Sepolia.',
+      '质押时你会以一个轻微折扣拿到 pufETH。随着验证人持续赚奖励，赎回率（每个 pufETH 兑换的 ETH 数量）会不断增长——这部分增长就是你的收益。PufferOne 在 Sepolia 上使用固定 0.96 模拟汇率。',
   },
   {
-    title: '4 · UniFi Vaults amplify yield',
-    highlight: '4 vaults · different risk profiles · same pufETH input.',
+    title: '4 · UniFi 金库放大收益',
+    highlight: '4 个金库 · 不同风险档位 · 都吃 pufETH。',
     body:
-      'unifiETH (5% APY, Low risk) · unifiUSD (4%, Low) · unifiBTC (5.5%, Medium) · pufETHs (7.5%, Elevated). All accept pufETH and return vault shares whose price appreciates over time.',
+      'unifiETH（APY 5%，低风险）· unifiUSD（4%，低）· unifiBTC（5.5%，中）· pufETHs（7.5%，较高）。全部接收 pufETH，返还会随时间升值的金库份额。',
   },
   {
-    title: '5 · You stay in control',
-    highlight: '5 safety mechanisms before every signature.',
+    title: '5 · 主控权在你',
+    highlight: '每次签名前 5 道安全机制。',
     body:
-      'Every PufferOne transaction goes through: eth_call simulation → risk score → slippage minOut (DEX) → exact-amount approval (no infinite) → pre-sign summary with full contract address. You approve nothing you cannot see.',
+      'PufferOne 的每一笔交易都会走：eth_call 模拟 → 风险评分 → 链上滑点保护（DEX）→ 精确数额授权（绝不无限）→ 签前显示完整合约地址的总结卡片。你看不见的，绝不签名。',
   },
 ]
 
@@ -71,10 +71,10 @@ export function OnboardingModal() {
       <DialogContent className="max-w-xl border-border bg-card">
         <DialogHeader>
           <DialogTitle className="font-mono text-foreground">
-            Welcome to PufferOne
+            欢迎来到 PufferOne
           </DialogTitle>
           <p className="mt-1 font-mono text-text-tertiary text-xs">
-            Step {step + 1} of {STEPS.length} · skip to dive in
+            第 {step + 1} / {STEPS.length} 步 · 或直接跳过进入应用
           </p>
         </DialogHeader>
 
@@ -112,7 +112,7 @@ export function OnboardingModal() {
               className="font-mono text-text-tertiary"
               onClick={handleClose}
             >
-              Skip onboarding
+              跳过教程
             </Button>
 
             <div className="flex gap-2">
@@ -123,7 +123,7 @@ export function OnboardingModal() {
                   className="font-mono"
                   onClick={() => setStep((s) => s - 1)}
                 >
-                  Back
+                  上一步
                 </Button>
               )}
               <Button
@@ -137,7 +137,7 @@ export function OnboardingModal() {
                   }
                 }}
               >
-                {isLast ? "Let's go" : 'Next'}
+                {isLast ? '开始使用' : '下一步'}
               </Button>
             </div>
           </div>

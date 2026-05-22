@@ -28,17 +28,17 @@ function VaultExitCard({ vault }: { vault: VaultDescriptor }) {
           <h3 className="font-mono font-semibold text-foreground text-base">{vault.name}</h3>
           {hasShares ? (
             <Badge variant="success" className="font-mono">
-              Has position
+              有仓位
             </Badge>
           ) : (
             <Badge variant="outline" className="font-mono text-text-tertiary">
-              No position
+              无仓位
             </Badge>
           )}
         </div>
 
         <p className="font-mono text-sm text-text-tertiary">
-          Shares held:{' '}
+          持有份额：{' '}
           <span className="text-foreground">{formatTokenAmount(balance)}</span> {vault.name}
         </p>
 
@@ -46,7 +46,7 @@ function VaultExitCard({ vault }: { vault: VaultDescriptor }) {
           <>
             <div className="space-y-2">
               <Label className="text-text-tertiary text-xs uppercase tracking-wide">
-                Shares to redeem
+                赎回份额
               </Label>
               <Input
                 type="text"
@@ -63,16 +63,16 @@ function VaultExitCard({ vault }: { vault: VaultDescriptor }) {
 
             {withdraw.isSuccess && withdraw.data && (
               <div className="rounded-md border border-success/40 bg-success-surface/40 p-2 font-mono text-xs">
-                <p className="text-success-text">Withdraw confirmed</p>
+                <p className="text-success-text">赎回成功</p>
                 <p className="break-all">
-                  Received {formatTokenAmount(withdraw.data.assetsOut)} pufETH ·{' '}
+                  收到 {formatTokenAmount(withdraw.data.assetsOut)} pufETH ·{' '}
                   <a
                     href={`https://sepolia.etherscan.io/tx/${withdraw.data.txHash}`}
                     className="text-primary underline"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
-                    Etherscan
+                    Etherscan 查看
                   </a>
                 </p>
               </div>
@@ -87,7 +87,7 @@ function VaultExitCard({ vault }: { vault: VaultDescriptor }) {
               }
               onClick={() => withdraw.mutate({ vault: vault.address, shares })}
             >
-              {withdraw.isPending ? 'Redeeming…' : `Redeem ${shares} ${vault.name} → pufETH`}
+              {withdraw.isPending ? '赎回中…' : `赎回 ${shares} ${vault.name} → pufETH`}
             </Button>
           </>
         )}
@@ -105,8 +105,8 @@ export function ExitPage() {
           退出仓位
         </h1>
         <p className="max-w-3xl text-text-secondary-gray leading-relaxed">
-          每个 PufferOne 仓位都可以单步赎回。3 个已有 Puffer 作品都不做退出端 ——
-          PufferOne 把"如何离开"这一步也写出来，体现完整生命周期 (deposit → manage → exit)。
+          每个 PufferOne 仓位都可以单步赎回。已有的 Puffer 作品都不做退出端——
+          PufferOne 把「如何离开」这一步也写出来，体现完整生命周期（存入 → 管理 → 退出）。
         </p>
       </div>
 
@@ -114,19 +114,18 @@ export function ExitPage() {
         <CardContent className="space-y-2 p-4">
           <p className="cyber-eyebrow">pufETH → stETH / wstETH</p>
           <p className="font-mono font-semibold text-foreground text-sm">
-            通过 DEX 反向 swap 退出 pufETH
+            通过 DEX 反向兑换退出 pufETH
           </p>
           <p className="text-text-tertiary text-xs leading-relaxed">
-            MockSwapRouter 已配置反向路径：pufETH → stETH (1.04) / pufETH → wstETH
-            (0.89)。生产环境走 PufferVault 提款队列（1-2 周延迟）。
+            MockSwapRouter 已配置反向路径：pufETH → stETH（1.04）/ pufETH → wstETH（0.89）。生产环境走 PufferVault 提款队列（1–2 周延迟）。
           </p>
           <Button asChild size="sm" variant="outline" className="mt-2 font-mono">
-            <Link to="/swap">前往 Swap →</Link>
+            <Link to="/swap">前往兑换页 →</Link>
           </Button>
         </CardContent>
       </Card>
 
-      <p className="cyber-eyebrow pt-2">UniFi Vault 赎回</p>
+      <p className="cyber-eyebrow pt-2">UniFi 金库赎回</p>
       <div className="space-y-2">
         {VAULTS.map((v) => (
           <VaultExitCard key={v.key} vault={v} />

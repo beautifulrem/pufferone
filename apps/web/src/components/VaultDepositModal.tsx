@@ -68,22 +68,22 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
       <DialogContent className="max-w-xl border-border bg-card">
         <DialogHeader>
           <DialogTitle className="font-mono text-foreground">
-            Deposit pufETH → {vault.name}
+            存入 pufETH → {vault.name}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="rounded-md border border-border bg-background/40 p-3 font-mono text-sm">
-            Your pufETH balance:{' '}
+            你的 pufETH 余额：{' '}
             <span className="text-foreground">{formatTokenAmount(balanceAmount)}</span>
             {insufficientBalance && pufETHBalance.isFetched && (
-              <span className="ml-2 text-warning">· need to stake more pufETH first</span>
+              <span className="ml-2 text-warning">· 余额不足，请先去质押更多 pufETH</span>
             )}
           </div>
 
           <div className="space-y-2">
             <Label className="text-text-tertiary text-xs uppercase tracking-wide">
-              Deposit amount
+              存入数量
             </Label>
             <Input
               type="text"
@@ -109,38 +109,38 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
           </div>
 
           <TxSummaryCard
-            action={`Deposit pufETH into ${vault.name}`}
-            inputLabel="You deposit"
+            action={`将 pufETH 存入 ${vault.name}`}
+            inputLabel="你支付"
             inputAmount={inputWei}
             inputSymbol="pufETH"
-            outputLabel="You receive"
+            outputLabel="你收到"
             outputAmount={expectedShares}
             outputSymbol={vault.name}
             contractAddress={vault.address as Address}
             riskLevel={
               vault.risk === 'Low' ? 'Info' : vault.risk === 'Medium' ? 'Warning' : 'Danger'
             }
-            riskNote={`${vault.risk} risk profile — Sepolia mock vault. Share price ${(Number(vault.sharePrice) / 1e18).toFixed(3)} pufETH/share.`}
-            exitNote="Vault shares can be redeemed via withdraw() (Phase 10 exit flow). All approvals use exact amounts, not infinite — per security skill."
+            riskNote={`${vault.risk === 'Low' ? '低风险' : vault.risk === 'Medium' ? '中等风险' : '较高风险'}档位 — Sepolia 模拟金库。每份份额定价 ${(Number(vault.sharePrice) / 1e18).toFixed(3)} pufETH。`}
+            exitNote="金库份额可通过 withdraw() 赎回（见「更多 → 赎回与退出」）。所有授权均使用精确数额，绝不无限——遵循安全规范。"
           />
 
           {(approve.error || deposit.error) && (
             <div className="rounded-md border border-destructive/40 bg-error-surface/40 p-3 text-sm">
-              <p className="font-mono font-semibold text-destructive">Transaction Failed</p>
+              <p className="font-mono font-semibold text-destructive">交易失败</p>
               <p className="mt-1 break-all text-foreground text-xs">
                 {approve.error?.message ??
                   ('reason' in (deposit.error ?? {})
                     ? (deposit.error as { reason: string }).reason
-                    : 'Unknown error')}
+                    : '未知错误')}
               </p>
             </div>
           )}
 
           {deposit.isSuccess && deposit.data && (
             <div className="rounded-md border border-success/40 bg-success-surface/40 p-3 text-sm">
-              <p className="font-mono font-semibold text-success-text">Deposit confirmed</p>
+              <p className="font-mono font-semibold text-success-text">存入成功</p>
               <p className="mt-1 break-all text-foreground text-xs">
-                Tx:{' '}
+                交易哈希：{' '}
                 <a
                   href={`https://sepolia.etherscan.io/tx/${deposit.data.txHash}`}
                   className="text-primary underline"
@@ -151,7 +151,7 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
                 </a>
               </p>
               <p className="mt-1 text-foreground text-xs">
-                Received: {formatTokenAmount(deposit.data.expectedShares)} {vault.name}
+                收到：{formatTokenAmount(deposit.data.expectedShares)} {vault.name}
               </p>
             </div>
           )}
@@ -172,8 +172,8 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
               }
             >
               {approve.isPending
-                ? `Step 1/2: Approving ${formatTokenAmount(inputWei)} pufETH…`
-                : `Step 1/2: Approve exact ${formatTokenAmount(inputWei)} pufETH`}
+                ? `第 1/2 步：授权 ${formatTokenAmount(inputWei)} pufETH 中…`
+                : `第 1/2 步：精确授权 ${formatTokenAmount(inputWei)} pufETH`}
             </Button>
           ) : (
             <Button
@@ -183,14 +183,14 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
               onClick={() => deposit.mutate({ vault: vault.address, amount })}
             >
               {!wallet.isConnected
-                ? 'Connect Wallet First'
+                ? '请先连接钱包'
                 : !wallet.isCorrectChain
-                  ? 'Switch to Sepolia First'
+                  ? '请先切换到 Sepolia'
                   : insufficientBalance
-                    ? `Stake more pufETH first`
+                    ? '请先质押更多 pufETH'
                     : deposit.isPending
-                      ? 'Depositing…'
-                      : `Step 2/2: Deposit into ${vault.name}`}
+                      ? '存入中…'
+                      : `第 2/2 步：存入 ${vault.name}`}
             </Button>
           )}
         </div>

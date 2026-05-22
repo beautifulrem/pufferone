@@ -75,7 +75,7 @@ export function SwapForm() {
       <CornerBracketCard className="p-4">
         {/* Settings row */}
         <div className="mb-3 flex items-center justify-between">
-          <p className="font-mono text-text-tertiary text-xs">Swap → pufETH</p>
+          <p className="font-mono text-text-tertiary text-xs">兑换 → pufETH</p>
           <button
             type="button"
             onClick={() => setSettingsOpen((v) => !v)}
@@ -217,7 +217,7 @@ export function SwapForm() {
                     ? `余额不足，去 Stake 页面 faucet ${tokenIn}`
                     : swap.isPending
                       ? '签名 & 广播中…'
-                      : `Swap ${tokenIn} → pufETH`}
+                      : `兑换 ${tokenIn} → pufETH`}
             </GradientCTA>
           )}
         </div>
@@ -229,7 +229,7 @@ export function SwapForm() {
           <div className="flex items-start gap-3">
             <CheckCircle2 size={22} className="mt-0.5 shrink-0 text-success" />
             <div className="min-w-0 flex-1">
-              <p className="font-mono font-semibold text-success text-sm">Swap 成功</p>
+              <p className="font-mono font-semibold text-success text-sm">兑换成功</p>
               <p className="mt-1 font-mono text-text-tertiary text-xs">
                 收到{' '}
                 <span className="text-primary">{formatTokenAmount(swap.data.amountOut, 18, 6)}</span>{' '}

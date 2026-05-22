@@ -144,13 +144,13 @@ export function HomePage() {
         <Button asChild variant="outline" className="h-16 flex-col gap-1 border-border bg-card font-mono text-xs">
           <Link to="/vaults">
             <Layers size={18} style={{ color: 'var(--ai-primary)' }} />
-            <span>Vault</span>
+            <span>金库</span>
           </Link>
         </Button>
         <Button asChild variant="outline" className="h-16 flex-col gap-1 border-border bg-card font-mono text-xs">
           <Link to="/swap">
             <ArrowLeftRight size={18} style={{ color: 'var(--brand-secondary)' }} />
-            <span>Swap</span>
+            <span>兑换</span>
           </Link>
         </Button>
       </div>

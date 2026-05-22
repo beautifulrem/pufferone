@@ -27,10 +27,10 @@ export type TxSummaryProps = {
 
 const riskBadge: Record<TxSummaryProps['riskLevel'], { variant: 'success' | 'secondary' | 'destructive'; label: string }> =
   {
-    Info: { variant: 'success', label: 'Info' },
-    Warning: { variant: 'secondary', label: 'Warning' },
-    Danger: { variant: 'destructive', label: 'Danger' },
-    Block: { variant: 'destructive', label: 'Block' },
+    Info: { variant: 'success', label: '信息' },
+    Warning: { variant: 'secondary', label: '注意' },
+    Danger: { variant: 'destructive', label: '高风险' },
+    Block: { variant: 'destructive', label: '阻断' },
   }
 
 /// TxSummaryCard — the canonical "what you're about to sign" preview.
@@ -44,7 +44,7 @@ export function TxSummaryCard(props: TxSummaryProps) {
       <CardContent className="space-y-4 p-5">
         <div className="flex items-center justify-between">
           <p className="font-mono text-[length:var(--text-caption)] text-text-tertiary uppercase tracking-[2px]">
-            Transaction Preview
+            交易预览
           </p>
           <Badge variant={risk.variant} className="font-mono">
             {risk.label}
@@ -78,7 +78,7 @@ export function TxSummaryCard(props: TxSummaryProps) {
         <Separator />
 
         <div>
-          <p className="text-text-tertiary text-xs uppercase tracking-wide">Contract (full address)</p>
+          <p className="text-text-tertiary text-xs uppercase tracking-wide">合约地址（完整）</p>
           <p className="mt-1 break-all font-mono text-foreground text-xs">{props.contractAddress}</p>
         </div>
 
@@ -86,7 +86,7 @@ export function TxSummaryCard(props: TxSummaryProps) {
           <>
             <Separator />
             <div>
-              <p className="text-text-tertiary text-xs uppercase tracking-wide">After this transaction</p>
+              <p className="text-text-tertiary text-xs uppercase tracking-wide">交易之后</p>
               <p className="mt-1 text-sm text-text-secondary-gray leading-relaxed">{props.exitNote}</p>
             </div>
           </>
