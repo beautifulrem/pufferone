@@ -83,7 +83,7 @@ export function TxSummaryCard(props: TxSummaryProps) {
           <>
             <Separator />
             <div>
-              <p className="text-text-tertiary text-xs uppercase tracking-wide">想知道之后怎么办？</p>
+              <p className="text-text-tertiary text-xs uppercase tracking-wide">后续操作</p>
               <p className="mt-1 text-sm text-text-secondary-gray leading-relaxed">{props.exitNote}</p>
             </div>
           </>

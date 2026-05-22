@@ -121,7 +121,7 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
               vault.risk === 'Low' ? 'Info' : vault.risk === 'Medium' ? 'Warning' : 'Danger'
             }
             riskNote={`${vault.risk === 'Low' ? '稳健型' : vault.risk === 'Medium' ? '平衡型' : '进取型'}产品：${(Number(vault.sharePrice) / 1e18).toFixed(3)} pufETH = 1 份金库份额，份额价格会随收益累积上涨。`}
-            exitNote="想取出来的时候，去「更多 → 赎回与退出」一步就能换回 pufETH，不用等主网 1–2 周的提款队列。"
+            exitNote="如需赎回，可在「更多 → 赎回与退出」一步将金库份额兑回 pufETH，无需等待主网 1–2 周的官方提款队列。"
           />
 
           {(approve.error || deposit.error) && (

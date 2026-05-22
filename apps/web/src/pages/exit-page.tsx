@@ -102,10 +102,10 @@ export function ExitPage() {
       <div>
         <p className="cyber-eyebrow">PUFFER // 赎回</p>
         <h1 className="mt-1 font-bold text-2xl text-foreground tracking-tight">
-          把仓位换回去
+          赎回与退出
         </h1>
         <p className="max-w-3xl text-text-secondary-gray leading-relaxed">
-          手里有的资产，这里都可以一步换回 ETH 或 pufETH。
+          当前持有的资产可在此一键兑回 ETH 或 pufETH。
         </p>
       </div>
 
@@ -113,13 +113,13 @@ export function ExitPage() {
         <CardContent className="space-y-2 p-4">
           <p className="cyber-eyebrow">pufETH → stETH / wstETH</p>
           <p className="font-semibold text-foreground text-sm">
-            把 pufETH 换回 stETH / wstETH
+            将 pufETH 兑回 stETH / wstETH
           </p>
           <p className="text-text-tertiary text-xs leading-relaxed">
-            不用走主网官方的 1–2 周提款队列，直接在兑换页一步完成。
+            无需等待主网 1–2 周的官方提款队列，可直接在闪兑页面一步完成。
           </p>
           <Button asChild size="sm" variant="outline" className="mt-2 font-mono">
-            <Link to="/swap">前往兑换页 →</Link>
+            <Link to="/swap">前往闪兑 →</Link>
           </Button>
         </CardContent>
       </Card>

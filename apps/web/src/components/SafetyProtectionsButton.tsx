@@ -5,28 +5,28 @@ import { useState } from 'react'
 const PROTECTIONS = [
   {
     Icon: Eye,
-    title: '交易预演',
-    body: '签名前先在链上模拟跑一遍，如果会失败，直接拦住，不让你白付 gas。',
+    title: '交易模拟',
+    body: '签名前自动在链上预执行该交易；若执行将失败，会立即拦截并提示原因，避免无谓的 gas 消耗。',
   },
   {
     Icon: TriangleAlert,
-    title: '风险等级',
-    body: '每笔交易都有清晰的风险标签（信息 / 注意 / 高风险 / 阻断），不让你蒙圈。',
+    title: '风险分级',
+    body: '每笔交易均会进行分级标识：信息 / 注意 / 高风险 / 阻断，便于在签名前快速判断。',
   },
   {
     Icon: Scissors,
-    title: '按需授权',
-    body: '只授权本次交易需要的金额，不给「无限授权」的常见钓鱼留口子。',
+    title: '精确数额授权',
+    body: '每次仅授权本次交易所需的精确数额，避免常见的「无限授权」钓鱼风险。',
   },
   {
     Icon: FileText,
-    title: '签前预览',
-    body: '签名前显示一张摘要卡，看清楚了再签。',
+    title: '签前摘要',
+    body: '每笔交易在签名前都会以摘要卡呈现关键信息，便于确认无误后再行授权。',
   },
   {
     Icon: ShieldCheck,
-    title: '合约完整可见',
-    body: '展示完整的合约地址，不缩写，方便和官方公布的地址核对。',
+    title: '合约地址完整可见',
+    body: '始终展示完整的合约地址（不做截断），便于与项目方官方公示的地址进行核对。',
   },
 ] as const
 
@@ -41,9 +41,9 @@ export function SafetyProtectionsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md border-border bg-card">
         <DialogHeader>
-          <DialogTitle className="text-foreground">5 项交易保护</DialogTitle>
+          <DialogTitle className="text-foreground">交易安全保障</DialogTitle>
           <p className="mt-1 text-text-tertiary text-xs leading-relaxed">
-            每次签名前，PufferOne 都会自动跑这 5 道流程，帮你避坑。
+            每次签名前，PufferOne 会自动执行以下 5 道安全检查。
           </p>
         </DialogHeader>
         <div className="space-y-3">
@@ -74,11 +74,11 @@ export function SafetyProtectionsButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full items-center justify-between rounded-lg border border-border bg-card px-3 py-2 font-mono text-text-tertiary text-xs transition-colors hover:border-primary/50 hover:text-foreground"
+        className="flex w-full items-center justify-between rounded-lg border border-border bg-card px-3 py-2 text-text-tertiary text-xs transition-colors hover:border-primary/50 hover:text-foreground"
       >
         <span className="flex items-center gap-2">
           <ShieldCheck size={14} className="text-primary" />
-          已启用 5 项交易保护
+          已启用 5 项交易安全保障
         </span>
         <span className="text-text-tertiary">›</span>
       </button>

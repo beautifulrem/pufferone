@@ -110,19 +110,19 @@ export function MorePage() {
       action: { kind: 'link', href: '/exit' },
       icon: ArrowDownToLine,
       title: '赎回与退出',
-      description: '把 pufETH 换回 ETH，或者从金库取回。',
+      description: '将 pufETH 兑回 ETH，或从金库赎回资产。',
     },
     {
       action: { kind: 'click', onClick: () => setSafetyOpen(true) },
       icon: ShieldCheck,
-      title: '5 项交易保护',
-      description: '每次签名前自动跑的 5 道防护，点开看说明。',
+      title: '交易安全保障',
+      description: '了解每次签名前自动执行的 5 道安全检查。',
     },
     {
       action: { kind: 'click', onClick: openTutorial },
       icon: BookOpen,
-      title: '重看新手教学',
-      description: '5 步带你了解 PufferOne 在做什么。',
+      title: '查看新手教程',
+      description: '通过 5 个步骤了解 PufferOne 的工作机制。',
     },
   ]
 

@@ -166,8 +166,8 @@ export function StakeForm() {
               pufETH
             </div>
           </div>
-          <p className="mt-2 font-mono text-[10px] text-text-tertiary leading-relaxed">
-            pufETH 数量少于 ETH 是因为它代表「已经在工作」的 ETH——价格会随着 Puffer 收益自动累积。
+          <p className="mt-2 text-[11px] text-text-tertiary leading-relaxed">
+            pufETH 数量少于 ETH，是因为它代表已包含未来收益的头寸；随着 Puffer 持续累积收益，pufETH 对 ETH 的赎回比例会逐步上升。
           </p>
         </div>
 

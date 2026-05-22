@@ -18,33 +18,33 @@ type Step = {
 const STEPS: Step[] = [
   {
     title: '1 · 什么是再质押？',
-    highlight: '一份 ETH，两份收益。',
+    highlight: '复用质押资产，获取叠加收益。',
     body:
-      '再质押（restaking）让你已经质押的 ETH 同时为以太坊共识之外的服务提供安全——多一份收益，也多一层风险。PufferOne 展示用户端体验；底层的验证人经济学跑在以太坊主网上。',
+      '再质押（Restaking）允许已经质押的 ETH 同时为以太坊共识之外的服务（如 AVS、DA 层等）提供安全保障，从而获得叠加收益，相应地也会承担额外的削减（Slashing）风险。',
   },
   {
-    title: '2 · 为什么选 Puffer？',
-    highlight: '对齐验证人、保持流动、可编程。',
+    title: '2 · 为什么选择 Puffer Finance？',
+    highlight: '验证人友好，流动性强，生态完善。',
     body:
-      'Puffer Finance 是以太坊主网领先的流动再质押协议。它的 pufETH 代币就是你工作中的 ETH——一边赚验证人奖励，一边保持流动（可转账、可在 DeFi 中使用）。',
+      'Puffer Finance 是以太坊主网上的主流流动再质押协议。其发行的 pufETH 同时承载验证人奖励与流动性属性，可在主流 DeFi 协议中自由使用。',
   },
   {
-    title: '3 · pufETH = 你的收据',
-    highlight: '1 ETH → 约 0.96 pufETH（主网汇率）。',
+    title: '3 · pufETH 是你的收益凭证',
+    highlight: '1 ETH 约可铸造 0.96 pufETH（主网参考汇率）。',
     body:
-      '质押时你会以一个轻微折扣拿到 pufETH。随着验证人持续赚奖励，赎回率（每个 pufETH 兑换的 ETH 数量）会不断增长——这部分增长就是你的收益。PufferOne 在 Sepolia 上使用固定 0.96 模拟汇率。',
+      '质押 ETH 后将获得 pufETH 凭证。随着验证人持续累积奖励，pufETH 对 ETH 的赎回比例会逐步上升，这部分增值即为你的收益。本演示在 Sepolia 测试网上采用 0.96 固定模拟汇率。',
   },
   {
-    title: '4 · UniFi 金库放大收益',
-    highlight: '4 个产品 · 稳健到进取 · 都收 pufETH。',
+    title: '4 · 使用 UniFi 金库放大收益',
+    highlight: '四类策略，从稳健型到进取型。',
     body:
-      'unifiETH（年化 5%，稳健型）· unifiUSD（4%，稳健型）· unifiBTC（5.5%，平衡型）· pufETHs（7.5%，进取型）。全部接收 pufETH，返还会随时间升值的金库份额。',
+      'unifiETH（年化 5%，稳健型）/ unifiUSD（4%，稳健型）/ unifiBTC（5.5%，平衡型）/ pufETHs（7.5%，进取型）。所有金库均以 pufETH 为本金，并以金库份额形式持有，份额价格随收益累积上涨。',
   },
   {
-    title: '5 · 主控权在你',
-    highlight: '每次签名前 5 道安全机制。',
+    title: '5 · 签名前的多重保障',
+    highlight: '每笔交易自动执行 5 道安全检查。',
     body:
-      'PufferOne 的每一笔交易都会走：eth_call 模拟 → 风险评分 → 链上滑点保护（DEX）→ 精确数额授权（绝不无限）→ 签前显示完整合约地址的总结卡片。你看不见的，绝不签名。',
+      '在你签名之前，PufferOne 会依次执行：交易模拟、风险分级、滑点保护、精确数额授权、签前摘要展示。所有关键信息都会在签名前完整呈现，由你最终确认。',
   },
 ]
 
@@ -85,11 +85,11 @@ export function OnboardingModal() {
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent className="max-w-xl border-border bg-card">
         <DialogHeader>
-          <DialogTitle className="font-mono text-foreground">
-            欢迎来到 PufferOne
+          <DialogTitle className="text-foreground">
+            欢迎使用 PufferOne
           </DialogTitle>
-          <p className="mt-1 font-mono text-text-tertiary text-xs">
-            第 {step + 1} / {STEPS.length} 步 · 或直接跳过进入应用
+          <p className="mt-1 text-text-tertiary text-xs">
+            第 {step + 1} / {STEPS.length} 步 · 可随时跳过
           </p>
         </DialogHeader>
 

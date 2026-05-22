@@ -55,17 +55,17 @@ function IntroCard() {
       >
         <X size={14} />
       </button>
-      <p className="cyber-eyebrow text-primary">欢迎来到 PufferOne</p>
+      <p className="cyber-eyebrow text-primary">欢迎使用 PufferOne</p>
       <p className="mt-2 text-foreground text-sm leading-relaxed">
-        把 ETH 存进来变成 <span className="font-semibold text-primary">pufETH</span>，
-        一边赚以太坊共识奖励，一边赚 Puffer 收益。
+        将 ETH 质押为 <span className="font-semibold text-primary">pufETH</span>，
+        同时获得以太坊共识奖励与 Puffer 协议收益。
       </p>
       <button
         type="button"
         onClick={openTutorial}
-        className="mt-3 inline-flex items-center gap-1 font-mono text-primary text-xs hover:underline"
+        className="mt-3 inline-flex items-center gap-1 text-primary text-xs hover:underline"
       >
-        了解更多（5 步教学） →
+        查看完整介绍 →
       </button>
     </div>
   )
