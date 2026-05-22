@@ -42,7 +42,9 @@ contracts/.env
 # vercel build artifact at root (copied from apps/web/dist)
 /dist/
 
-# local task tracking / agent scratchpad
+# local config
 tasks/
 .claude/
+CLAUDE.md
+AGENTS.md
 
