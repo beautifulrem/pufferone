@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@repo/ui/compo
 import { Input } from '@repo/ui/components/input'
 import { Label } from '@repo/ui/components/label'
 import { Separator } from '@repo/ui/components/separator'
+import { ExternalLink } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { parseEther, type Address } from 'viem'
 import { useAllowance } from '../hooks/useAllowance'
@@ -13,7 +14,9 @@ import { useWallet } from '../hooks/useWallet'
 import { CONTRACTS } from '../lib/contracts'
 import { formatTokenAmount } from '../lib/format'
 import type { VaultDescriptor } from '../lib/vaults'
+import { TokenIcon } from './TokenIcon'
 import { TxSummaryCard } from './TxSummaryCard'
+import { VaultAPYChart } from './VaultAPYChart'
 
 export type VaultDepositModalProps = {
   vault: VaultDescriptor | null
@@ -65,14 +68,32 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
 
   return (
     <Dialog open={vault !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-xl border-border bg-card">
+      <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto border-border bg-card">
         <DialogHeader>
-          <DialogTitle className="font-mono text-foreground">
+          <DialogTitle className="flex items-center gap-2 text-foreground">
+            <TokenIcon symbol={vault.name} size={24} />
             存入 pufETH → {vault.name}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* 产品介绍卡 */}
+          <div className="rounded-lg border border-border bg-background/40 p-4">
+            <p className="cyber-eyebrow text-text-tertiary">产品介绍</p>
+            <p className="mt-2 text-sm text-foreground leading-relaxed">{vault.intro}</p>
+            <a
+              href={vault.docsUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="mt-3 inline-flex items-center gap-1 text-primary text-xs hover:underline"
+            >
+              查看产品主页 <ExternalLink size={11} />
+            </a>
+          </div>
+
+          {/* APY 历史大图 */}
+          <VaultAPYChart vaultKey={vault.key} baseAPY={vault.fallbackAPY} />
+
           <div className="rounded-md border border-border bg-background/40 p-3 font-mono text-sm">
             你的 pufETH 余额：{' '}
             <span className="text-foreground">{formatTokenAmount(balanceAmount)}</span>
@@ -121,7 +142,6 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
               vault.risk === 'Low' ? 'Info' : vault.risk === 'Medium' ? 'Warning' : 'Danger'
             }
             riskNote={`${vault.risk === 'Low' ? '稳健型' : vault.risk === 'Medium' ? '平衡型' : '进取型'}产品：${(Number(vault.sharePrice) / 1e18).toFixed(3)} pufETH = 1 份金库份额，份额价格会随收益累积上涨。`}
-            exitNote="如需赎回，可在「更多 → 赎回与退出」一步将金库份额兑回 pufETH，无需等待主网 1–2 周的官方提款队列。"
           />
 
           {(approve.error || deposit.error) && (

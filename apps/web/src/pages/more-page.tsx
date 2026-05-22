@@ -12,7 +12,9 @@ import { type ComponentType, useState } from 'react'
 import { Link } from 'react-router'
 import { openTutorial } from '../components/OnboardingModal'
 import { SafetyProtectionsDialog } from '../components/SafetyProtectionsButton'
+import { useTokenBalance } from '../hooks/useTokenBalance'
 import { type ThemeMode, useTheme } from '../hooks/useTheme'
+import { CONTRACTS } from '../lib/contracts'
 
 const THEME_OPTIONS: { value: ThemeMode; label: string; Icon: typeof Sun }[] = [
   { value: 'system', label: '系统', Icon: Monitor },
@@ -64,6 +66,7 @@ type Item = {
   icon: ComponentType<{ size?: number; strokeWidth?: number }>
   title: string
   description: string
+  badge?: { count: number }
 }
 
 const LINKS = [
@@ -73,15 +76,27 @@ const LINKS = [
 ] as const
 
 function ItemCard({ item }: { item: Item }) {
-  const { icon: Icon, title, description } = item
+  const { icon: Icon, title, description, badge } = item
   const inner = (
-    <Card className="border-border bg-card shadow-none transition-colors hover:border-primary/40">
+    <Card className="relative border-border bg-card shadow-none transition-colors hover:border-primary/40">
       <CardContent className="flex items-start gap-3 p-4">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <div className="relative flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
           <Icon size={20} strokeWidth={1.75} />
+          {badge && badge.count > 0 && (
+            <span className="-top-1.5 -right-1.5 absolute flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 font-mono font-semibold text-[10px] text-primary-foreground shadow-sm">
+              {badge.count}
+            </span>
+          )}
         </div>
         <div className="min-w-0 flex-1 text-left">
-          <p className="font-semibold text-foreground text-sm">{title}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-semibold text-foreground text-sm">{title}</p>
+            {badge && badge.count > 0 && (
+              <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] text-primary">
+                可赎回
+              </span>
+            )}
+          </div>
           <p className="mt-0.5 text-text-tertiary text-xs leading-relaxed">{description}</p>
         </div>
         <span className="text-text-tertiary">›</span>
@@ -105,12 +120,26 @@ function ItemCard({ item }: { item: Item }) {
 export function MorePage() {
   const [safetyOpen, setSafetyOpen] = useState(false)
 
+  // 统计可赎回仓位（pufETH + 4 个金库份额）
+  const pufETH = useTokenBalance(CONTRACTS.pufETH)
+  const unifiETH = useTokenBalance(CONTRACTS.unifiETH)
+  const unifiUSD = useTokenBalance(CONTRACTS.unifiUSD)
+  const unifiBTC = useTokenBalance(CONTRACTS.unifiBTC)
+  const pufETHs = useTokenBalance(CONTRACTS.pufETHs)
+  const redeemable = [pufETH, unifiETH, unifiUSD, unifiBTC, pufETHs].filter(
+    (b) => (b.data ?? 0n) > 0n,
+  ).length
+
   const items: Item[] = [
     {
       action: { kind: 'link', href: '/exit' },
       icon: ArrowDownToLine,
       title: '赎回与退出',
-      description: '将 pufETH 兑回 ETH，或从金库赎回资产。',
+      description:
+        redeemable > 0
+          ? `当前有 ${redeemable} 个可赎回仓位。`
+          : '将 pufETH 兑回 ETH，或从金库赎回资产。',
+      badge: redeemable > 0 ? { count: redeemable } : undefined,
     },
     {
       action: { kind: 'click', onClick: () => setSafetyOpen(true) },
