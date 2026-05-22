@@ -1,15 +1,6 @@
 import { Card, CardContent } from '@repo/ui/components/card'
-import {
-  BookOpen,
-  ChevronDown,
-  ExternalLink,
-  FileCode2,
-  Monitor,
-  Moon,
-  RotateCcw,
-  ShieldCheck,
-  Sun,
-} from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@repo/ui/components/dialog'
+import { BookOpen, ExternalLink, FileCode2, Monitor, Moon, RotateCcw, ShieldCheck, Sun } from 'lucide-react'
 import { type ComponentType, useState } from 'react'
 import { Link } from 'react-router'
 import { ActivityList } from '../components/ActivityList'
@@ -136,6 +127,7 @@ function ItemCard({ item }: { item: Item }) {
 export function MorePage() {
   const wallet = useWallet()
   const [safetyOpen, setSafetyOpen] = useState(false)
+  const [contractsOpen, setContractsOpen] = useState(false)
 
   const items: Item[] = [
     {
@@ -143,6 +135,12 @@ export function MorePage() {
       icon: ShieldCheck,
       title: '交易安全保障',
       description: '了解每次签名前自动执行的 5 道安全检查。',
+    },
+    {
+      action: { kind: 'click', onClick: () => setContractsOpen(true) },
+      icon: FileCode2,
+      title: 'Sepolia 合约浏览',
+      description: '查看本项目部署的全部 10 个测试网合约。',
     },
     {
       action: { kind: 'click', onClick: openTutorial },
@@ -177,6 +175,7 @@ export function MorePage() {
       </div>
 
       <SafetyProtectionsDialog open={safetyOpen} onOpenChange={setSafetyOpen} />
+      <ContractDialog open={contractsOpen} onOpenChange={setContractsOpen} />
 
       {/* 最近活动 */}
       <div className="space-y-2 pt-2">
@@ -188,8 +187,6 @@ export function MorePage() {
       {wallet.injectedKind !== 'imToken' && <ImTokenLauncher />}
 
       <ThemeSwitcher />
-
-      <ContractExplorer />
 
       <div className="space-y-2 pt-2">
         <p className="cyber-eyebrow">外部链接</p>
@@ -221,22 +218,19 @@ export function MorePage() {
   )
 }
 
-function ContractExplorer() {
-  const [open, setOpen] = useState(false)
+function ContractDialog({
+  open,
+  onOpenChange,
+}: { open: boolean; onOpenChange: (v: boolean) => void }) {
   return (
-    <div className="space-y-2 pt-2">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between"
-      >
-        <p className="cyber-eyebrow">Sepolia 合约浏览</p>
-        <ChevronDown
-          size={14}
-          className={`text-text-tertiary transition-transform ${open ? 'rotate-180' : ''}`}
-        />
-      </button>
-      {open && (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[85vh] max-w-md overflow-y-auto border-border bg-card">
+        <DialogHeader>
+          <DialogTitle className="text-foreground">Sepolia 合约浏览</DialogTitle>
+          <p className="mt-1 text-text-tertiary text-xs">
+            点击任一合约在 Etherscan 查看详情。所有合约均部署在 Sepolia 测试网。
+          </p>
+        </DialogHeader>
         <div className="space-y-1.5">
           {CONTRACT_LABELS.map(({ key, label }) => (
             <a
@@ -244,7 +238,7 @@ function ContractExplorer() {
               href={`https://sepolia.etherscan.io/address/${CONTRACTS[key]}`}
               target="_blank"
               rel="noreferrer noopener"
-              className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2.5 transition-colors hover:border-primary/40"
+              className="flex items-center gap-2.5 rounded-lg border border-border bg-background/40 px-3 py-2.5 transition-colors hover:border-primary/40"
             >
               <FileCode2 size={14} className="shrink-0 text-primary" />
               <div className="min-w-0 flex-1">
@@ -257,7 +251,7 @@ function ContractExplorer() {
             </a>
           ))}
         </div>
-      )}
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
