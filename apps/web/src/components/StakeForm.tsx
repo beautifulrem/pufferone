@@ -1,6 +1,6 @@
 import { Button } from '@repo/ui/components/button'
 import { Input } from '@repo/ui/components/input'
-import { ArrowDownUp, ArrowUpRight, CheckCircle2, ExternalLink, Info } from 'lucide-react'
+import { ArrowDownUp, CheckCircle2, ExternalLink, Info } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { parseEther, parseUnits, type Address } from 'viem'
 import { useAllowance } from '../hooks/useAllowance'
@@ -11,6 +11,7 @@ import { useStakeERC20 } from '../hooks/useStakeERC20'
 import { useStakeETH } from '../hooks/useStakeETH'
 import { useSwap } from '../hooks/useSwap'
 import { useTokenBalance } from '../hooks/useTokenBalance'
+import { useUnstakeETH } from '../hooks/useUnstakeETH'
 import { useWallet } from '../hooks/useWallet'
 import { CONTRACTS, isDeployed } from '../lib/contracts'
 import { formatTokenAmount } from '../lib/format'
@@ -31,16 +32,13 @@ const STAKE_RATE_BPS: Record<Token, bigint> = {
 }
 
 /// 赎回方向汇率（每 1 pufETH 兑换的 token × 100）
-/// - stETH/wstETH 跟 MockSwapRouter Sepolia 配置一致，演示内可签
-/// - ETH 走 Puffer 主网官方 PufferVault 提款队列（1-2 周），测试网不演示真签，
-///   但展示一个合理的预估汇率，让用户看到产品形态
+/// - ETH 走 MockEthUnstake 合约（预存 ETH 储备，rate = 1.04e18）
+/// - stETH/wstETH 走 MockSwapRouter 反向路径，rate 同步合约配置
 const UNSTAKE_RATE_BPS: Record<Token, bigint> = {
   ETH: 104n,
   stETH: 104n,
   wstETH: 89n,
 }
-
-const PUFFER_MAINNET_APP = 'https://app.puffer.fi/stake'
 
 const TOKEN_ADDRESS: Record<Exclude<Token, 'ETH'>, Address> = {
   stETH: CONTRACTS.stETH,
@@ -66,19 +64,29 @@ export function StakeForm() {
   const erc20Balance = useTokenBalance(direction === 'stake' && isErc20 ? tokenAddress : undefined)
   const pufETHBalance = useTokenBalance(direction === 'unstake' ? CONTRACTS.pufETH : undefined)
 
-  // —— 授权：stake 时 pufferDepositor 是 spender，unstake 时 swapRouter ——
+  // —— 授权：spender 取决于 direction + token ——
+  // stake + ERC20  → depositor
+  // unstake + ETH  → ethUnstake
+  // unstake + LST  → swapRouter
+  const unstakeSpender =
+    direction === 'unstake'
+      ? token === 'ETH'
+        ? CONTRACTS.ethUnstake
+        : CONTRACTS.swapRouter
+      : undefined
   const stakeAllowance = useAllowance(
     direction === 'stake' && isErc20 ? tokenAddress : undefined,
     direction === 'stake' && isErc20 ? CONTRACTS.depositor : undefined,
   )
   const unstakeAllowance = useAllowance(
     direction === 'unstake' ? CONTRACTS.pufETH : undefined,
-    direction === 'unstake' ? CONTRACTS.swapRouter : undefined,
+    unstakeSpender,
   )
 
   const stakeETH = useStakeETH()
   const stakeERC20 = useStakeERC20()
   const swap = useSwap()
+  const unstakeETHMutation = useUnstakeETH()
   const approve = useApprove()
   const faucet = useFaucet()
 
@@ -86,6 +94,7 @@ export function StakeForm() {
     stakeETH.reset()
     stakeERC20.reset()
     swap.reset()
+    unstakeETHMutation.reset()
     approve.reset()
     faucet.reset()
     // biome-ignore lint/correctness/useExhaustiveDependencies: only on user change
@@ -152,21 +161,23 @@ export function StakeForm() {
     stakeETH.isPending ||
     stakeERC20.isPending ||
     swap.isPending ||
+    unstakeETHMutation.isPending ||
     approve.isPending ||
     faucet.isPending
 
   const txData =
     direction === 'stake'
       ? (stakeETH.data ?? stakeERC20.data ?? null)
-      : swap.isSuccess && swap.data
-        ? swap.data
-        : null
+      : token === 'ETH'
+        ? (unstakeETHMutation.data ?? null)
+        : (swap.data ?? null)
   const txError =
     direction === 'stake'
       ? (stakeETH.error ?? stakeERC20.error ?? null)
-      : (swap.error ?? null)
+      : token === 'ETH'
+        ? (unstakeETHMutation.error ?? null)
+        : (swap.error ?? null)
 
-  // ETH 赎回不在测试网签名，CTA 改为跳转主网官方入口，不需要 canSubmit
   const canSubmit =
     isDeployed() &&
     wallet.isConnected &&
@@ -184,8 +195,14 @@ export function StakeForm() {
       }
       return
     }
-    // unstake — pufETH → stETH/wstETH 通过 MockSwapRouter
-    if (isUnstakeETH || !tokenAddress) return
+    // unstake
+    if (token === 'ETH') {
+      // pufETH → native ETH 通过 MockEthUnstake 合约（预存 ETH 储备）
+      unstakeETHMutation.mutate({ amount })
+      return
+    }
+    // pufETH → stETH/wstETH 通过 MockSwapRouter
+    if (!tokenAddress) return
     swap.mutate({
       amount,
       path: [CONTRACTS.pufETH, tokenAddress] as readonly Address[],
@@ -204,7 +221,7 @@ export function StakeForm() {
   const approveSpender =
     direction === 'stake'
       ? (tokenAddress ? CONTRACTS.depositor : undefined)
-      : CONTRACTS.swapRouter
+      : unstakeSpender
   const approveToken =
     direction === 'stake' ? tokenAddress : CONTRACTS.pufETH
 
@@ -328,9 +345,7 @@ export function StakeForm() {
             <div className="mt-3 flex items-start gap-2 rounded-md border border-primary/30 bg-primary/5 p-2.5">
               <Info size={12} className="mt-0.5 shrink-0 text-primary" />
               <p className="text-[11px] text-text-secondary-gray leading-relaxed">
-                pufETH 赎回为 ETH 走 Puffer 主网官方 PufferVault 提款队列（约 1–2 周到账）。当前演示运行在 Sepolia 测试网，本路径不在测试网签名 — 下方按钮会跳转主网应用，由你在 imToken / MetaMask 主网环境完成。
-                <br />
-                想立即变现？选 <strong className="text-foreground">stETH</strong> 或 <strong className="text-foreground">wstETH</strong> 走链上闪兑。
+                Sepolia 演示环境下走 PufferOne 的 mock unstake 合约即时兑付（合约预存了 ETH 储备）。主网生产实际走 PufferVault 官方提款队列，约 1–2 周到账 — 本演示压缩这一步以便完整体验。
               </p>
             </div>
           ) : (
@@ -376,17 +391,7 @@ export function StakeForm() {
 
         {/* Action */}
         <div className="mt-5">
-          {isUnstakeETH ? (
-            <a
-              href={PUFFER_MAINNET_APP}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="cta-gradient flex h-12 items-center justify-center gap-2 rounded-full font-mono text-sm"
-            >
-              在主网申请 ETH 赎回
-              <ArrowUpRight size={14} />
-            </a>
-          ) : needsApproval && approveToken && approveSpender ? (
+          {needsApproval && approveToken && approveSpender ? (
             <GradientCTA
               loading={approve.isPending}
               disabled={!canSubmit}
@@ -416,7 +421,9 @@ export function StakeForm() {
                           ? isErc20
                             ? `第 2/2 步：质押 ${token}`
                             : `质押 ${token} 铸造 pufETH`
-                          : `第 2/2 步：赎回为 ${token}`}
+                          : isUnstakeETH
+                            ? `第 2/2 步：赎回为 ETH`
+                            : `第 2/2 步：赎回为 ${token}`}
             </GradientCTA>
           )}
         </div>
@@ -439,7 +446,9 @@ export function StakeForm() {
                       ? txData.expectedPufETH
                       : 'amountOut' in txData
                         ? txData.amountOut
-                        : 0n,
+                        : 'ethOut' in txData
+                          ? txData.ethOut
+                          : 0n,
                     18,
                     6,
                   )}

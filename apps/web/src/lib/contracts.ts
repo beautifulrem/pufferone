@@ -25,10 +25,12 @@ export type DeployedContracts = {
   unifiBTC: SepoliaAddress
   pufETHs: SepoliaAddress
   swapRouter: SepoliaAddress
+  ethUnstake: SepoliaAddress
 }
 
 /// PufferOne deployed contracts on Sepolia (chain 11155111).
 /// Deployed via contracts/script/Deploy.s.sol on 2026-05-22.
+/// MockEthUnstake added 2026-05-22 via DeployEthUnstake.s.sol (pre-funded 0.3 ETH).
 export const CONTRACTS: DeployedContracts = {
   pufETH: '0xd44387034102491Af58292fF1c7405AED4e7Eb04',
   stETH: '0xB59271CD9158Bb50125c3F9AC5CA013eE2fa7AF6',
@@ -40,6 +42,7 @@ export const CONTRACTS: DeployedContracts = {
   unifiBTC: '0xEae62881Bbeeb18bDAE3a9C5edAB4B7eF33128e4',
   pufETHs: '0xE8EAB43253f09C674B49b39451Bd3647cB21AeEb',
   swapRouter: '0xF69507F745dC5b4a92f34c824A06e5308578361a',
+  ethUnstake: '0x24842fcD8c000d23F5e19BB3dFdda4a764802D11',
 }
 
 /// True when the user has populated the addresses post-deploy.
@@ -238,6 +241,37 @@ export const SWAP_ROUTER_ABI = [
       { name: 'minAmountOut', type: 'uint256' },
       { name: 'path', type: 'address[]' },
     ],
+    outputs: [{ type: 'uint256' }],
+  },
+] as const
+
+export const ETH_UNSTAKE_ABI = [
+  {
+    type: 'function',
+    name: 'unstakeETH',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'pufETHIn', type: 'uint256' }],
+    outputs: [{ type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'quoteUnstake',
+    stateMutability: 'view',
+    inputs: [{ name: 'pufETHIn', type: 'uint256' }],
+    outputs: [{ type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'ethReserve',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'rate',
+    stateMutability: 'view',
+    inputs: [],
     outputs: [{ type: 'uint256' }],
   },
 ] as const
