@@ -47,4 +47,7 @@ tasks/
 .claude/
 CLAUDE.md
 AGENTS.md
+DESIGN.md
+SECURITY.md
+security/
 
