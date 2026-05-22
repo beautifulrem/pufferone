@@ -93,8 +93,12 @@ export function SwapForm() {
               </span>
             </div>
             <SlippagePresets value={slippageBps} onChange={setSlippageBps} />
-            <p className="font-mono text-[10px] text-text-tertiary">
-              链上强制最少收到 · 实际成交 {'<'} {(slippageBps / 100).toFixed(2)}% 会自动回滚
+            <p className="text-[11px] text-text-tertiary leading-relaxed">
+              如果实际收到的 pufETH 比预期少超过{' '}
+              <span className="font-mono text-foreground">
+                {(slippageBps / 100).toFixed(2)}%
+              </span>
+              ，交易会自动取消，资金原路退回。
             </p>
           </div>
         )}
