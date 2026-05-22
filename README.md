@@ -1,138 +1,206 @@
-# PufferOne
+<div align="center">
+  <img src="apps/web/public/pufferone-logo.svg" alt="PufferOne" width="96" height="96" />
 
-> 把 Puffer 质押的每一条要求做到底 — imToken 十周年 Puffer 合作伙伴专项作品
+  <h1>PufferOne</h1>
 
-兼容 imToken 的 Puffer 质押 Mini App，正面回应 [Puffer 专项题目](https://10th.token.im/#showcase) 的 6 条要求：连接钱包、ETH/stETH/wstETH → pufETH、余额/汇率展示、UniFi Vault 真实存入（Mini App 内）、安全引导、DEX 聚合一站式。附加 5 个具体安全机制 + 5 步新手教学 + Portfolio dashboard + Exit lifecycle。
+  <p><strong>再质押，更简单。</strong></p>
+  <p>手机优先的 Puffer Finance 接入终端 — 让流动再质押像用钱包一样自然。</p>
 
-- **演示链接**：https://pufferone-web-git-main-beautifulremis-projects.vercel.app
-- **GitHub 仓库**：https://github.com/beautifulrem/pufferone
-- **演示钱包**：`0xbA64397d50D71fE0c38a86B51fc77BedB580C8A4`（Sepolia 演示用，非真实资产）
+  <p>
+    <a href="https://pufferone-web-git-main-beautifulremis-projects.vercel.app">在线体验</a> ·
+    <a href="#quick-start">快速开始</a> ·
+    <a href="#-security">安全模型</a> ·
+    <a href="https://github.com/beautifulrem/pufferone/issues">问题反馈</a>
+  </p>
 
-## 项目状态（每一行都已实现）
+  <p>
+    <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" />
+    <img alt="Vite" src="https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite&logoColor=white" />
+    <img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" />
+    <img alt="viem" src="https://img.shields.io/badge/viem-2.x-FFB800" />
+    <img alt="Solidity" src="https://img.shields.io/badge/Solidity-0.8.24-363636?logo=solidity&logoColor=white" />
+    <img alt="License" src="https://img.shields.io/badge/license-MIT-22c55e" />
+  </p>
+</div>
 
-| Phase | 描述 | 状态 |
-|---|---|---|
-| 0 | Monorepo + GitHub + Vercel | ✅ |
-| 1 | 6 个 mock 合约 + Sepolia 部署 + 42 forge tests | ✅ |
-| 2 | 钱包连接层（imToken + MetaMask + WC） | ✅ |
-| 3 | ETH → pufETH 真签名 | ✅ |
-| 4 | stETH / wstETH 真签名（含 faucet + 精确授权） | ✅ |
-| 5 | 4 个 UniFi Vault 真实存入（含主网 API APY/TVL） | ✅ |
-| 6 | DEX 聚合 swap（滑点 + minOut + 路由可视化） | ✅ |
-| 7 | 5 个安全机制可视化 SafetyBar | ✅ |
-| 8 | 5 步新手教学 modal | ✅ |
-| 9 | Portfolio dashboard（7 个仓位聚合） | ✅ |
-| 10 | Exit / 赎回流程（vault withdraw + DEX 反向） | ✅ |
-| 11 | 端到端测试 + 打磨 | ✅ |
-| 12 | 提交比赛 | 待最终提交 |
+---
 
-## Sepolia 已部署合约（chain 11155111）
+## ✨ Why PufferOne
 
-| 合约 | 地址 | Etherscan |
-|---|---|---|
-| MockPufETH | `0xd44387034102491Af58292fF1c7405AED4e7Eb04` | [view](https://sepolia.etherscan.io/address/0xd44387034102491Af58292fF1c7405AED4e7Eb04) |
-| MockStETH | `0xB59271CD9158Bb50125c3F9AC5CA013eE2fa7AF6` | [view](https://sepolia.etherscan.io/address/0xB59271CD9158Bb50125c3F9AC5CA013eE2fa7AF6) |
-| MockWstETH | `0x0353908C9a9b58108E7A6446619B567A9207336D` | [view](https://sepolia.etherscan.io/address/0x0353908C9a9b58108E7A6446619B567A9207336D) |
-| MockPufferDepositor | `0x8628C68227EAfe1B435eb3F918e5358aE5b1c390` | [view](https://sepolia.etherscan.io/address/0x8628C68227EAfe1B435eb3F918e5358aE5b1c390) |
-| MockUniFiVaultFactory | `0xBEd71c18e2275F0A10c56c8f22EbFE774f05Ef3c` | [view](https://sepolia.etherscan.io/address/0xBEd71c18e2275F0A10c56c8f22EbFE774f05Ef3c) |
-| unifiETH | `0x4D42919570c9dF3356afa44A0236198168933CCD` | [view](https://sepolia.etherscan.io/address/0x4D42919570c9dF3356afa44A0236198168933CCD) |
-| unifiUSD | `0x4C0234A302650E5B56A5D658A037143f6B72948f` | [view](https://sepolia.etherscan.io/address/0x4C0234A302650E5B56A5D658A037143f6B72948f) |
-| unifiBTC | `0xEae62881Bbeeb18bDAE3a9C5edAB4B7eF33128e4` | [view](https://sepolia.etherscan.io/address/0xEae62881Bbeeb18bDAE3a9C5edAB4B7eF33128e4) |
-| pufETHs | `0xE8EAB43253f09C674B49b39451Bd3647cB21AeEb` | [view](https://sepolia.etherscan.io/address/0xE8EAB43253f09C674B49b39451Bd3647cB21AeEb) |
-| MockSwapRouter | `0xF69507F745dC5b4a92f34c824A06e5308578361a` | [view](https://sepolia.etherscan.io/address/0xF69507F745dC5b4a92f34c824A06e5308578361a) |
+Puffer Finance 是以太坊主网领先的流动再质押协议，但它的 Web 应用是为有经验的 DeFi 用户设计的。对于刚接触 Restaking 的钱包用户而言，仍然存在不小的认知门槛 — 什么是 LRT？AVS 风险有多大？金库怎么选？签名要看哪些信息？
 
-## 应用功能（每条对应一个题目要求）
+**PufferOne 把这些抽象重新组织成一个手机原生的钱包体验**：
 
-| 路由 | 题目要求 | 实现深度 |
-|---|---|---|
-| `/` Home | — | 6 卡片导航 + 5 步教学 modal 首次访问弹出 |
-| `/stake` | 02 · 3 币种铸造 pufETH | ETH/stETH/wstETH 全部真实链上（非 UI 占位）+ 精确授权 + Tx 模拟 |
-| `/vaults` | 04 · UniFi Vault 机会 | 4 个 vault 真实存入 Mini App 内（不跳走主网）+ 主网 API 拉 APY/TVL |
-| `/swap` | 06 · DEX 聚合（进阶） | 多跳路由 + 滑点 slider + minOut 链上强制 + 路径 chip 可视化 |
-| `/portfolio` | 03 · 余额展示 | 7 个仓位聚合 + USD 估值 + 链上实时 |
-| `/exit` | — | vault withdraw + pufETH 反向 swap，3 个已有作品都没做 |
+- 🐡 **5 类资产视图** — 持仓、收益、产品、闪兑、转账，一个底部 tab 切换搞定
+- 📊 **可交互行情** — 主网实时 TVL / APY，所有指标都能点开看历史折线
+- 🎓 **5 步带入门** — 第一次访问自动弹出，再质押概念到风险，3 分钟看懂
+- 🛡️ **5 道安全护栏** — 交易模拟、风险分级、按需授权、签前摘要、合约可见，每次签名前自动执行
+- 🌗 **三档主题** — 系统 / 亮色 / 暗色，跟随你的设备偏好
 
-## Token Core 使用说明（提交表单专用段落）
+> PufferOne 不替代 Puffer 官方应用，而是把它的核心能力封装成一个对普通用户友好的钱包形态产品。
 
-PufferOne 通过 imToken 浏览器注入的 EIP-1193 Provider（即 Token Core 的 Web 接口）完成全部钱包能力：账户连接（`eth_requestAccounts`）、消息签名、合约调用、链 ID 检查、链切换（`wallet_switchEthereumChain` + `wallet_addEthereumChain`）。所有 secret material 始终保留在用户的 imToken / MetaMask / WalletConnect 钱包中，本应用不处理、不传输、不储存任何私钥、助记词或密码。同时兼容桌面端 MetaMask 与 WalletConnect 2.0 标准，让评委在任意环境下都能完整体验。所有交易在签名前通过 `eth_call` 静态调用模拟（`publicClient.simulateContract`），确保用户在签名前看到准确的预期输出与风险。
+## 📸 Preview
 
-UI 组件库基于 [Token UI Starter Kit](https://github.com/consenlabs/token-ui)（imToken 官方设计系统），通过 `@repo/ui/components/*` 复用 60+ 个钱包风格组件；设计语言基于 Token UI 的 design tokens 重写为 Web3 暗底 + 电光青绿（#00E5C7）+ 高级感。所有 5 个安全机制（参见 `/stake` 顶部 SafetyBar）实现思路参考 `repos/token-ui/security/SKILL.md`。
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><strong>资产总览</strong><br><sub>持仓 · 协议规模 · 收款 / 发送</sub></td>
+      <td align="center"><strong>金库收益</strong><br><sub>4 类策略 · APY 历史 · 风险分档</sub></td>
+      <td align="center"><strong>交易安全保障</strong><br><sub>5 道签前检查</sub></td>
+    </tr>
+  </table>
+</div>
 
-## 5 个安全机制（题目要求 05 "引导使用者安全参与"）
+## 🚀 核心功能
 
-1. **eth_call 静态模拟** — 每笔交易在签名前 `publicClient.simulateContract` 验证，simulated revert → Danger banner 阻断签名
-2. **4 级风险评分**（Info / Warning / Danger / Block）— 每个交易页面顶部 SafetyBar + 每个 TxSummaryCard 内嵌
-3. **DEX 滑点保护** — 用户可调（0.1%–5%），minOut 链上强制 enforce（不只是 UI）
-4. **精确数量授权** — `approve(spender, exactAmount)`，永远不 `type(uint256).max`
-5. **签前总结卡** — 显示 action / target 全地址（非截断）/ input-output / 风险 badge / exit 提示
+### 💎 流动再质押
+- **三币种铸造 pufETH** — ETH / stETH / wstETH 任选其一，对齐 Puffer 官方 EigenLayer Restaking 通道
+- **主网实时汇率** — 调用 Puffer 官方 API 获取 1 ETH ↔ pufETH 实时兑换率
+- **预期年化收益** — 顶部展示 pufETH 当前 APY
+- **百分比快捷输入** — 25% / 50% / 75% / MAX 一键填充，自动给 ETH 留 gas
 
-## 安全模型
+### 🏛 UniFi 金库
+- **4 种策略** — unifiETH（稳健型）/ unifiUSD（稳健型）/ unifiBTC（平衡型）/ pufETHs（进取型）
+- **新手推荐徽章** — unifiETH 标 ✨ 推荐；pufETHs 标 🔥 最热
+- **详细产品页** — 每只金库展示策略说明、风险分档、可交互 APY 折线、产品主页链接
+- **风险话术** — 行业通用「稳健 / 平衡 / 进取」分档，避免「低 / 中 / 高风险」过于直白
 
-- ❌ 永远不接受 / 不储存任何 secret material（私钥、API key、助记词、密码、token）
-- ✅ 所有签名经用户钱包完成
-- ✅ Sepolia 测试网；演示钱包专用，非真实资产
-- ✅ Mock 合约前端明确标注（参见 `contracts/README.md`）
-- ✅ 5 个安全机制（见上）
-- 详细安全策略见 `SECURITY.md` 与 `security/SKILL.md`
+### 🔄 一键闪兑
+- **跟官方对齐** — 支持 stETH / wstETH / WETH（Puffer Stake 实测同款列表）
+- **链上滑点保护** — preset 三档（0.1% / 0.5% / 1.0%）+ 自定义输入，自动 minOut
+- **失败可读** — 价格偏离时自动取消，资金原路退回
 
-## 仓库结构
+### 💸 资产管理
+- **钱包基础** — 收款（QR + 复制）/ 发送（地址校验 + AddressAvatar）/ 余额刷新
+- **协议规模看板** — LRT TVL / UniFi TVL / pufETH APY，点击任一指标看大折线图
+- **持仓分组** — 有余额的展开置顶，零余额折叠到「未持有的资产」抽屉
+
+### 🛡 五道交易保护
+每次签名前 PufferOne 会自动执行：
+
+1. **交易模拟** — 通过 `publicClient.simulateContract` 链上预演，失败立即拦截
+2. **风险分级** — 信息 / 注意 / 高风险 / 阻断 四档徽章
+3. **精确数额授权** — `approve(spender, exactAmount)`，永远不无限授权
+4. **签前摘要** — 输入 / 输出 / 风险 / 合约的一张摘要卡
+5. **合约完整可见** — 始终展示完整地址，方便与官方公示核对
+
+### 🎨 体验细节
+- 三档主题（system / light / dark），localStorage 持久化
+- imToken 适配：检测 App 内浏览器显示 chip；桌面端提供 deeplink + QR 跳转
+- AddressAvatar — 从地址哈希生成的 4 色方格头像
+- Sepolia 测试网 badge 用 Sepolia 品牌紫色
+
+## 🏗 Tech Stack
+
+| 层级 | 技术 |
+|---|---|
+| Frontend | Vite 8 · React 19 · TypeScript（strict）|
+| State | @tanstack/react-query 5 · React Context |
+| Chain | viem 2.50 · 直连 EIP-1193 / WalletConnect 2 |
+| UI Kit | @repo/ui（基于 Token UI Starter Kit） |
+| 样式 | Tailwind v4 · CSS variables · 主题切换 |
+| 图表 | recharts（AreaChart + Tooltip）|
+| 合约 | Foundry · Solidity 0.8.24 · ERC20Mintable 抽象 |
+| 部署 | Vercel SPA · pnpm workspace |
+
+## 📦 仓库结构
 
 ```
 .
-├── apps/web/                 ← Vite + React SPA（Vercel 部署）
+├── apps/web/              ← Vite + React SPA（Vercel 部署）
+│   ├── public/            ← 静态资源（logo / Puffer token SVG 镜像）
 │   └── src/
-│       ├── app/              # AppLayout + 路由
-│       ├── components/       # WalletConnector / StakeForm / SwapForm / VaultCard / SafetyBar / OnboardingModal …
-│       ├── hooks/            # useWallet / useStakeETH / useStakeERC20 / useVaultDeposit / useSwap / useFaucet …
-│       ├── lib/              # viem.ts / contracts.ts / pufferApi.ts / format.ts / simulate.ts / vaults.ts
-│       └── pages/            # home / stake / vaults / swap / portfolio / exit
-├── packages/ui/              ← Token UI 组件库副本（@repo/ui）
-├── tooling/tsconfig/         ← 共享 TypeScript 配置
-├── contracts/                ← Foundry：6 个 mock 合约 + 42 forge tests + Deploy.s.sol
-├── DESIGN.md                 ← UI 设计规范
-├── SECURITY.md               ← 安全策略
-└── security/SKILL.md         ← imToken 官方安全 Skill
+│       ├── app/           # AppLayout + 路由
+│       ├── components/    # 60+ 业务组件
+│       ├── hooks/         # useWallet / useStakeETH / useTransfer …
+│       ├── lib/           # viem / contracts / pufferApi / swapTokens …
+│       └── pages/         # home · stake · vaults · swap · exit · more
+├── packages/ui/           ← Token UI 组件库副本
+├── tooling/tsconfig/      ← 共享 TS 配置
+├── contracts/             ← Foundry mocks + 部署脚本
+└── security/              ← 安全 skill 文档
 ```
 
-## 本地开发
+## ⚡ Quick Start
 
 ```bash
-# 1. 安装依赖（Node ≥ 22.12，pnpm ≥ 10.30）
+# 要求：Node ≥ 22.12，pnpm ≥ 10.30
+git clone https://github.com/beautifulrem/pufferone.git
+cd pufferone
 pnpm install
 
-# 2. 启动开发服务器
+# 启动开发服务器
 pnpm dev
 # → http://localhost:5173
 
-# 3. 类型检查 + Lint
+# 类型检查
 pnpm typecheck
-pnpm check
 
-# 4. 智能合约（可选 — Sepolia 已部署，直接复用即可）
-cd contracts
-cp .env.example .env  # 填入本地 PRIVATE_KEY（不要提交）
-forge build
-forge test       # 42/42 全绿
+# Lint
+pnpm check
 ```
 
-## 部署
+### 合约（可选）
 
-### Vercel（前端）
-- Framework Preset: **Vite**
-- Root Directory: `apps/web`
-- Build Command: `pnpm build`（默认）
-- Output Directory: `dist`（默认）
-- Install Command: `cd ../.. && pnpm install --frozen-lockfile`
+Sepolia 上已经部署了一套 mock 合约，可以直接使用。需要自行部署的话：
 
-### Sepolia（合约）
-见 `contracts/README.md`。
+```bash
+cd contracts
+cp .env.example .env  # 填入 PRIVATE_KEY（不要提交）
+forge build
+forge test
+forge script script/Deploy.s.sol --rpc-url $SEPOLIA_RPC_URL --broadcast
+```
 
-## 致谢
+合约地址会写入 `broadcast/` 目录，同步到 `apps/web/src/lib/contracts.ts`。
 
-- [imToken Token UI Starter Kit](https://github.com/consenlabs/token-ui) — UI 组件库与设计系统
-- [Puffer Finance Hackathon Resources](https://github.com/PufferFinance/puffer-imtoken-hackathon) — API 与 SDK 参考
-- imToken 团队提供的 [Sepolia mock pufETH 合约](https://sepolia.etherscan.io/address/0x83e6aebe17f41b17f99f99d0c9234cf9e5e4c9c4)（作为 deployer 起点参考）
+## 🌐 已部署合约（Sepolia · chain 11155111）
 
-## License
+| 合约 | 地址 |
+|---|---|
+| MockPufETH | [`0xd44387034102491Af58292fF1c7405AED4e7Eb04`](https://sepolia.etherscan.io/address/0xd44387034102491Af58292fF1c7405AED4e7Eb04) |
+| MockStETH | [`0xB59271CD9158Bb50125c3F9AC5CA013eE2fa7AF6`](https://sepolia.etherscan.io/address/0xB59271CD9158Bb50125c3F9AC5CA013eE2fa7AF6) |
+| MockWstETH | [`0x0353908C9a9b58108E7A6446619B567A9207336D`](https://sepolia.etherscan.io/address/0x0353908C9a9b58108E7A6446619B567A9207336D) |
+| MockPufferDepositor | [`0x8628C68227EAfe1B435eb3F918e5358aE5b1c390`](https://sepolia.etherscan.io/address/0x8628C68227EAfe1B435eb3F918e5358aE5b1c390) |
+| MockUniFiVaultFactory | [`0xBEd71c18e2275F0A10c56c8f22EbFE774f05Ef3c`](https://sepolia.etherscan.io/address/0xBEd71c18e2275F0A10c56c8f22EbFE774f05Ef3c) |
+| unifiETH Vault | [`0x4D42919570c9dF3356afa44A0236198168933CCD`](https://sepolia.etherscan.io/address/0x4D42919570c9dF3356afa44A0236198168933CCD) |
+| unifiUSD Vault | [`0x4C0234A302650E5B56A5D658A037143f6B72948f`](https://sepolia.etherscan.io/address/0x4C0234A302650E5B56A5D658A037143f6B72948f) |
+| unifiBTC Vault | [`0xEae62881Bbeeb18bDAE3a9C5edAB4B7eF33128e4`](https://sepolia.etherscan.io/address/0xEae62881Bbeeb18bDAE3a9C5edAB4B7eF33128e4) |
+| pufETHs Vault | [`0xE8EAB43253f09C674B49b39451Bd3647cB21AeEb`](https://sepolia.etherscan.io/address/0xE8EAB43253f09C674B49b39451Bd3647cB21AeEb) |
+| MockSwapRouter | [`0xF69507F745dC5b4a92f34c824A06e5308578361a`](https://sepolia.etherscan.io/address/0xF69507F745dC5b4a92f34c824A06e5308578361a) |
 
-MIT — 见 `LICENSE`。
+## 🔒 Security
+
+PufferOne 是一个钱包入口产品。我们认真对待用户的资产安全：
+
+- 🚫 **永不接触秘密** — 私钥、助记词、密码、API key 全部留在用户的钱包里；本应用不读、不存、不传
+- ✅ **所有签名由钱包完成** — 通过 EIP-1193 / WalletConnect 标准接口
+- ✅ **签前必模拟** — `publicClient.simulateContract` 失败的交易直接拦截
+- ✅ **精确数额授权** — 杜绝无限授权钓鱼
+- ✅ **完整合约地址显示** — 不缩写，方便用户与官方核对
+- ✅ **测试网先行** — 当前部署在 Sepolia，演示钱包无真实资产风险
+
+详细策略见 [`SECURITY.md`](./SECURITY.md) 与 [`security/SKILL.md`](./security/SKILL.md)。
+
+## 🛣 Roadmap
+
+- [x] 三币种 pufETH 铸造（ETH / stETH / wstETH）
+- [x] 4 个 UniFi 金库真实存入
+- [x] 闪兑（含链上滑点保护）
+- [x] 5 道交易安全保障
+- [x] 主网实时汇率 / TVL / APY
+- [x] 资产页转账 + 收款
+- [x] 主题切换（system / light / dark）
+- [ ] 接 1inch / Paraswap 真实聚合多 token → pufETH
+- [ ] 主网部署
+- [ ] i18n（中 / 英）
+
+## 🙏 Acknowledgements
+
+- [Puffer Finance](https://puffer.fi/) — 流动再质押协议本身
+- [imToken Token UI](https://github.com/consenlabs/token-ui) — 钱包风格设计系统
+- [viem](https://viem.sh/) · [Foundry](https://book.getfoundry.sh/) · [Vite](https://vitejs.dev/) — 核心工具链
+
+## 📄 License
+
+[MIT](./LICENSE) © 2026 PufferOne contributors
