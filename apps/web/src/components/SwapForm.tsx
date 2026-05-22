@@ -1,6 +1,6 @@
 import { Button } from '@repo/ui/components/button'
 import { Input } from '@repo/ui/components/input'
-import { ArrowDown, CheckCircle2, ExternalLink, Settings2 } from 'lucide-react'
+import { ArrowDown, CheckCircle2, ExternalLink, Info, Settings2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { parseEther, type Address } from 'viem'
 import { useAllowance } from '../hooks/useAllowance'
@@ -10,33 +10,38 @@ import { useTokenBalance } from '../hooks/useTokenBalance'
 import { useWallet } from '../hooks/useWallet'
 import { CONTRACTS } from '../lib/contracts'
 import { formatTokenAmount } from '../lib/format'
+import { MAINNET_AGGREGATOR_URL, SWAP_TOKENS, type SwapToken } from '../lib/swapTokens'
 import { CornerBracketCard } from './CornerBracketCard'
 import { GradientCTA } from './GradientCTA'
 import { PercentChips } from './PercentChips'
 import { SafetyProtectionsButton } from './SafetyProtectionsButton'
 import { TokenIcon } from './TokenIcon'
 
-type InputToken = 'stETH' | 'wstETH'
-
-const INPUT_ADDRESS: Record<InputToken, Address> = {
-  stETH: CONTRACTS.stETH,
-  wstETH: CONTRACTS.wstETH,
-}
-
-const RATE_BPS: Record<InputToken, bigint> = {
-  stETH: 96n,
-  wstETH: 112n,
-}
-
 export function SwapForm() {
   const wallet = useWallet()
-  const [tokenIn, setTokenIn] = useState<InputToken>('stETH')
+  const [tokenKey, setTokenKey] = useState<string>('stETH')
   const [amount, setAmount] = useState('')
   const [slippageBps, setSlippageBps] = useState<number>(50)
   const [settingsOpen, setSettingsOpen] = useState(false)
 
-  const balance = useTokenBalance(INPUT_ADDRESS[tokenIn])
-  const allowance = useAllowance(INPUT_ADDRESS[tokenIn], CONTRACTS.swapRouter)
+  const selectedToken: SwapToken =
+    SWAP_TOKENS.find((t) => t.key === tokenKey) ?? SWAP_TOKENS[0] ?? {
+      key: 'stETH',
+      symbol: 'stETH',
+      fullName: 'Lido Staked ETH',
+      sepoliaAddress: CONTRACTS.stETH,
+      rateBps: 96n,
+      sepoliaSignable: true,
+    }
+  const signable = selectedToken.sepoliaSignable && selectedToken.sepoliaAddress
+  const sepoliaAddress = selectedToken.sepoliaAddress
+
+  // Balance / allowance only meaningful for Sepolia-signable tokens
+  const balance = useTokenBalance(signable ? sepoliaAddress : undefined)
+  const allowance = useAllowance(
+    signable ? sepoliaAddress : undefined,
+    signable ? CONTRACTS.swapRouter : undefined,
+  )
   const approve = useApprove()
   const swap = useSwap()
 
@@ -44,7 +49,7 @@ export function SwapForm() {
     swap.reset()
     approve.reset()
     // biome-ignore lint/correctness/useExhaustiveDependencies: only on user change
-  }, [tokenIn, amount])
+  }, [tokenKey, amount])
 
   const inputWei = useMemo(() => {
     if (!amount) return 0n
@@ -55,19 +60,26 @@ export function SwapForm() {
     }
   }, [amount])
 
-  const expectedOut = (inputWei * RATE_BPS[tokenIn]) / 100n
+  const expectedOut = (inputWei * selectedToken.rateBps) / 100n
   const minOut = (expectedOut * BigInt(10_000 - slippageBps)) / 10_000n
 
-  const path: readonly Address[] = [INPUT_ADDRESS[tokenIn], CONTRACTS.pufETH]
+  const path: readonly Address[] = signable && sepoliaAddress
+    ? [sepoliaAddress, CONTRACTS.pufETH]
+    : []
 
   const balanceAmount = balance.data ?? 0n
   const allowanceAmount = allowance.data ?? 0n
-  const insufficientBalance = balanceAmount < inputWei
-  const needsApproval = !insufficientBalance && allowanceAmount < inputWei
+  const insufficientBalance = signable ? balanceAmount < inputWei : false
+  const needsApproval = signable && !insufficientBalance && allowanceAmount < inputWei
   const isPending = swap.isPending || approve.isPending
 
   const canSubmit =
-    wallet.isConnected && wallet.isCorrectChain && inputWei > 0n && !insufficientBalance && !isPending
+    signable &&
+    wallet.isConnected &&
+    wallet.isCorrectChain &&
+    inputWei > 0n &&
+    !insufficientBalance &&
+    !isPending
 
   return (
     <div className="space-y-4">
@@ -103,23 +115,34 @@ export function SwapForm() {
           </div>
         )}
 
-        {/* Token segmented selector — Uniswap-ish chips */}
-        <div className="mb-2 grid grid-cols-2 gap-1.5 rounded-lg bg-background/60 p-1">
-          {(['stETH', 'wstETH'] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTokenIn(t)}
-              className={`flex items-center justify-center gap-1.5 rounded-md py-2 font-mono text-sm transition-all ${
-                tokenIn === t
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-text-tertiary hover:text-foreground'
-              }`}
-            >
-              <TokenIcon symbol={t} size={16} />
-              {t}
-            </button>
-          ))}
+        {/* Token chip selector — horizontally scrollable list */}
+        <div className="-mx-1 mb-2 overflow-x-auto px-1 no-scrollbar">
+          <div className="flex gap-1.5">
+            {SWAP_TOKENS.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                onClick={() => setTokenKey(t.key)}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-xs transition-all ${
+                  tokenKey === t.key
+                    ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                    : 'border-border bg-card text-text-tertiary hover:border-border-strong hover:text-foreground'
+                }`}
+              >
+                <TokenIcon symbol={t.symbol} size={14} />
+                {t.symbol}
+                {!t.sepoliaSignable && (
+                  <span
+                    className={`ml-0.5 rounded-full px-1 py-0 text-[9px] ${
+                      tokenKey === t.key ? 'bg-white/25 text-white' : 'bg-warning/15 text-warning'
+                    }`}
+                  >
+                    主网
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Input card */}
@@ -127,9 +150,17 @@ export function SwapForm() {
           <div className="mb-2 flex items-center justify-between font-mono text-text-tertiary text-xs">
             <span>支付</span>
             <span>
-              余额{' '}
-              <span className="text-foreground">{formatTokenAmount(balanceAmount, 18, 4)}</span>{' '}
-              {tokenIn}
+              {signable ? (
+                <>
+                  余额{' '}
+                  <span className="text-foreground">
+                    {formatTokenAmount(balanceAmount, 18, 4)}
+                  </span>{' '}
+                  {selectedToken.symbol}
+                </>
+              ) : (
+                <span className="text-text-tertiary">仅主网</span>
+              )}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -139,19 +170,25 @@ export function SwapForm() {
               placeholder="0.0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="h-11 flex-1 border-0 bg-transparent p-0 font-mono text-2xl text-foreground shadow-none focus-visible:ring-0"
+              disabled={!signable}
+              className="h-11 flex-1 border-0 bg-transparent p-0 font-mono text-2xl text-foreground shadow-none focus-visible:ring-0 disabled:opacity-50"
             />
             <div className="flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 font-mono text-foreground text-xs">
-              <TokenIcon symbol={tokenIn} size={18} />
-              {tokenIn}
+              <TokenIcon symbol={selectedToken.symbol} size={18} />
+              {selectedToken.symbol}
             </div>
           </div>
-          <div className="mt-3">
-            <PercentChips balance={balanceAmount} onPick={setAmount} />
-          </div>
-          <p className="mt-3 border-border border-t pt-2 font-mono text-[10px] text-text-tertiary">
-            参考汇率 · 1 {tokenIn} ≈ {(Number(RATE_BPS[tokenIn]) / 100).toFixed(2)} pufETH
-          </p>
+          {signable && (
+            <div className="mt-3">
+              <PercentChips balance={balanceAmount} onPick={setAmount} />
+            </div>
+          )}
+          {signable && selectedToken.rateBps > 0n && (
+            <p className="mt-3 border-border border-t pt-2 font-mono text-[10px] text-text-tertiary">
+              参考汇率 · 1 {selectedToken.symbol} ≈{' '}
+              {(Number(selectedToken.rateBps) / 100).toFixed(2)} pufETH
+            </p>
+          )}
         </div>
 
         {/* Arrow */}
@@ -169,17 +206,44 @@ export function SwapForm() {
           </div>
           <div className="flex items-center gap-3">
             <p className="flex-1 font-mono text-2xl text-foreground">
-              {formatTokenAmount(minOut, 18, 6)}
+              {signable ? formatTokenAmount(minOut, 18, 6) : '—'}
             </p>
             <div className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 font-mono text-foreground text-sm">
               <TokenIcon symbol="pufETH" size={18} />
               pufETH
             </div>
           </div>
-          <p className="mt-2 font-mono text-[10px] text-text-tertiary">
-            预计 {formatTokenAmount(expectedOut, 18, 6)} pufETH · 路由 {tokenIn} → pufETH
-          </p>
+          {signable && (
+            <p className="mt-2 font-mono text-[10px] text-text-tertiary">
+              预计 {formatTokenAmount(expectedOut, 18, 6)} pufETH · 路由{' '}
+              {selectedToken.symbol} → pufETH
+            </p>
+          )}
         </div>
+
+        {/* 主网提示卡（非 Sepolia-signable token） */}
+        {!signable && (
+          <div className="mt-3 flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/5 p-3">
+            <Info size={14} className="mt-0.5 shrink-0 text-warning" />
+            <div className="text-[11px] leading-relaxed">
+              <p className="font-semibold text-foreground">
+                {selectedToken.symbol} 仅在主网可用
+              </p>
+              <p className="mt-1 text-text-tertiary">
+                Sepolia 测试网仅部署了 stETH / wstETH 的演示路径。如需在主网用{' '}
+                {selectedToken.symbol} 兑换 pufETH，请前往 Puffer 官方入口。
+              </p>
+              <a
+                href={MAINNET_AGGREGATOR_URL}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="mt-2 inline-flex items-center gap-1 text-primary hover:underline"
+              >
+                前往 Puffer 主网应用 <ExternalLink size={11} />
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* Errors */}
         {(approve.error || swap.error) && (
@@ -198,21 +262,25 @@ export function SwapForm() {
 
         {/* Action */}
         <div className="mt-4">
-          {needsApproval ? (
+          {!signable ? (
+            <Button disabled size="lg" className="w-full font-mono opacity-60">
+              {selectedToken.symbol} 暂不可在测试网兑换
+            </Button>
+          ) : needsApproval && sepoliaAddress ? (
             <GradientCTA
               loading={approve.isPending}
               disabled={!canSubmit}
               onClick={() =>
                 approve.mutate({
-                  token: INPUT_ADDRESS[tokenIn],
+                  token: sepoliaAddress,
                   spender: CONTRACTS.swapRouter,
                   amount: inputWei,
                 })
               }
             >
               {approve.isPending
-                ? `授权 ${tokenIn} 中…`
-                : `授权 ${formatTokenAmount(inputWei, 18, 4)} ${tokenIn}`}
+                ? `授权 ${selectedToken.symbol} 中…`
+                : `授权 ${formatTokenAmount(inputWei, 18, 4)} ${selectedToken.symbol}`}
             </GradientCTA>
           ) : (
             <GradientCTA
@@ -225,10 +293,10 @@ export function SwapForm() {
                 : !wallet.isCorrectChain
                   ? '请切换到 Sepolia'
                   : insufficientBalance
-                    ? `余额不足，去 Stake 页面 faucet ${tokenIn}`
+                    ? `余额不足，去 Stake 页面 faucet ${selectedToken.symbol}`
                     : swap.isPending
                       ? '签名 & 广播中…'
-                      : `兑换 ${tokenIn} → pufETH`}
+                      : `兑换 ${selectedToken.symbol} → pufETH`}
             </GradientCTA>
           )}
         </div>
