@@ -258,27 +258,31 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
           )}
 
           {success && (
-            <div className="rounded-md border border-success/40 bg-success-surface/40 p-3 text-sm">
-              <p className="font-mono font-semibold text-success-text">
+            <div className="rounded-lg border border-success/40 bg-success-surface/40 p-3">
+              <p className="font-mono font-semibold text-success text-sm">
                 {mode === 'deposit' ? '存入成功' : '赎回成功'}
               </p>
-              <p className="mt-1 break-all text-foreground text-xs">
-                交易哈希：{' '}
-                <a
-                  href={`https://sepolia.etherscan.io/tx/${success.txHash}`}
-                  className="text-primary underline"
-                  rel="noreferrer noopener"
-                  target="_blank"
-                >
-                  {success.txHash}
-                </a>
+              <p className="mt-1 font-mono text-text-tertiary text-xs">
+                收到{' '}
+                <span className="text-primary">
+                  {mode === 'deposit'
+                    ? formatTokenAmount(
+                        (success as { expectedShares: bigint }).expectedShares,
+                        18,
+                        6,
+                      )
+                    : formatTokenAmount((success as { assetsOut: bigint }).assetsOut, 18, 6)}
+                </span>{' '}
+                {mode === 'deposit' ? vault.name : 'pufETH'}
               </p>
-              <p className="mt-1 text-foreground text-xs">
-                收到：
-                {mode === 'deposit'
-                  ? `${formatTokenAmount((success as { expectedShares: bigint }).expectedShares)} ${vault.name}`
-                  : `${formatTokenAmount((success as { assetsOut: bigint }).assetsOut)} pufETH`}
-              </p>
+              <a
+                href={`https://sepolia.etherscan.io/tx/${success.txHash}`}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="mt-2 inline-flex items-center gap-1 font-mono text-primary text-xs hover:underline"
+              >
+                Etherscan 查看 <ExternalLink size={11} />
+              </a>
             </div>
           )}
 
