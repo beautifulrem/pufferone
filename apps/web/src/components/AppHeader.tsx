@@ -40,9 +40,17 @@ export function AppHeader() {
         ) : (
           <Badge
             variant="outline"
-            className="border-warning/40 bg-warning/10 font-mono text-warning-text text-xs"
+            className="font-mono text-xs"
+            style={{
+              borderColor: 'rgba(167, 139, 250, 0.4)',
+              background: 'rgba(167, 139, 250, 0.1)',
+              color: 'rgb(167 139 250)',
+            }}
           >
-            <span className="mr-1.5 size-1.5 animate-pulse rounded-full bg-warning" />
+            <span
+              className="mr-1.5 size-1.5 animate-pulse rounded-full"
+              style={{ background: 'rgb(167 139 250)' }}
+            />
             Sepolia 测试网
           </Badge>
         )}
