@@ -7,7 +7,7 @@ export function SwapPage() {
         <h1 className="font-bold text-2xl text-foreground tracking-tight">
           闪兑 <span className="text-primary">pufETH</span>
         </h1>
-        <p className="mt-1 text-text-tertiary text-xs">将 stETH / wstETH 等 LST 资产快速兑换为 pufETH。</p>
+        <p className="mt-1 text-text-tertiary text-xs">LST 与 pufETH 双向快速兑换，支持链上滑点保护。</p>
       </div>
       <SwapForm />
     </div>
