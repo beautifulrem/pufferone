@@ -114,8 +114,12 @@ export function SwapForm() {
   const outputSymbol = isReverse ? selectedToken.symbol : 'pufETH'
 
   const flip = () => {
-    setDirection((d) => (d === 'forward' ? 'reverse' : 'forward'))
+    const next = direction === 'forward' ? 'reverse' : 'forward'
+    setDirection(next)
     setAmount('')
+    if (next === 'reverse' && !selectedToken.sepoliaSignable) {
+      setTokenKey('stETH')
+    }
   }
 
   return (
@@ -154,32 +158,39 @@ export function SwapForm() {
 
         {/* Token chip selector */}
         <div className="mb-2 grid grid-cols-3 gap-1.5">
-          {SWAP_TOKENS.filter((t) => !isReverse || t.sepoliaSignable).map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              onClick={() => setTokenKey(t.key)}
-              className={`relative flex items-center justify-center gap-1.5 rounded-full border px-3 py-2 font-mono text-sm transition-all ${
-                tokenKey === t.key
-                  ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                  : 'border-border bg-card text-text-tertiary hover:border-border-strong hover:text-foreground'
-              }`}
-            >
-              <TokenIcon symbol={t.symbol} size={16} />
-              <span className="truncate">{t.symbol}</span>
-              {!t.sepoliaSignable && (
-                <span
-                  className={`-top-1.5 -right-1 absolute rounded-full px-1 py-0 text-[8px] leading-tight ${
-                    tokenKey === t.key
-                      ? 'bg-white/30 text-white'
-                      : 'bg-warning/90 text-white'
-                  }`}
-                >
-                  主网
-                </span>
-              )}
-            </button>
-          ))}
+          {SWAP_TOKENS.map((t) => {
+            const disabled = isReverse && !t.sepoliaSignable
+            const active = tokenKey === t.key && !disabled
+            return (
+              <button
+                key={t.key}
+                type="button"
+                disabled={disabled}
+                onClick={() => !disabled && setTokenKey(t.key)}
+                className={`relative flex items-center justify-center gap-1.5 rounded-full border px-3 py-2 font-mono text-sm transition-all ${
+                  disabled
+                    ? 'cursor-not-allowed border-border bg-card/50 text-text-tertiary/40'
+                    : active
+                      ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                      : 'border-border bg-card text-text-tertiary hover:border-border-strong hover:text-foreground'
+                }`}
+              >
+                <TokenIcon symbol={t.symbol} size={16} />
+                <span className="truncate">{t.symbol}</span>
+                {!t.sepoliaSignable && (
+                  <span
+                    className={`-top-1.5 -right-1 absolute rounded-full px-1 py-0 text-[8px] leading-tight ${
+                      active
+                        ? 'bg-white/30 text-white'
+                        : 'bg-warning/90 text-white'
+                    }`}
+                  >
+                    主网
+                  </span>
+                )}
+              </button>
+            )
+          })}
         </div>
 
         {/* Input card */}
