@@ -15,6 +15,7 @@ import { CONTRACTS, isDeployed } from '../lib/contracts'
 import { formatTokenAmount } from '../lib/format'
 import { CornerBracketCard } from './CornerBracketCard'
 import { GradientCTA } from './GradientCTA'
+import { PercentChips } from './PercentChips'
 import { SafetyProtectionsButton } from './SafetyProtectionsButton'
 import { TokenIcon } from './TokenIcon'
 
@@ -90,16 +91,8 @@ export function StakeForm() {
     }
   }
 
-  const setMax = () => {
-    if (token === 'ETH') {
-      // 保留 0.005 ETH 做 gas
-      const reserve = parseEther('0.005')
-      const usable = balanceAmount > reserve ? balanceAmount - reserve : 0n
-      setAmount(formatTokenAmount(usable, 18, 6))
-    } else {
-      setAmount(formatTokenAmount(balanceAmount, 18, 6))
-    }
-  }
+  // 保留 0.005 ETH 做 gas（ERC-20 不需要 reserve）
+  const gasReserve = token === 'ETH' ? parseEther('0.005') : 0n
 
   return (
     <div className="space-y-4">
@@ -130,13 +123,6 @@ export function StakeForm() {
               余额{' '}
               <span className="text-foreground">{formatTokenAmount(balanceAmount, 18, 4)}</span>{' '}
               {token}
-              <button
-                type="button"
-                onClick={setMax}
-                className="ml-2 rounded bg-primary/15 px-1.5 py-0.5 text-primary text-[10px] uppercase tracking-wider"
-              >
-                Max
-              </button>
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -153,6 +139,9 @@ export function StakeForm() {
               {token}
             </div>
           </div>
+          <div className="mt-3">
+            <PercentChips balance={balanceAmount} onPick={setAmount} gasReserve={gasReserve} />
+          </div>
         </div>
 
         {/* Arrow + estimate */}
@@ -164,7 +153,9 @@ export function StakeForm() {
         <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
           <div className="mb-2 flex items-center justify-between font-mono text-text-tertiary text-xs">
             <span>预计收到</span>
-            <span className="text-text-tertiary">汇率 1 {token} = {TOKEN_RATE[token].toString()}% pufETH</span>
+            <span className="text-text-tertiary">
+              1 {token} ≈ {(Number(TOKEN_RATE[token]) / 100).toFixed(2)} pufETH
+            </span>
           </div>
           <div className="flex items-center gap-3">
             <p className="flex-1 font-mono text-2xl text-foreground">
@@ -175,6 +166,9 @@ export function StakeForm() {
               pufETH
             </div>
           </div>
+          <p className="mt-2 font-mono text-[10px] text-text-tertiary leading-relaxed">
+            pufETH 数量少于 ETH 是因为它代表「已经在工作」的 ETH——价格会随着 Puffer 收益自动累积。
+          </p>
         </div>
 
         {/* Faucet hint */}

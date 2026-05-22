@@ -13,6 +13,7 @@ import { CONTRACTS } from '../lib/contracts'
 import { formatTokenAmount } from '../lib/format'
 import { CornerBracketCard } from './CornerBracketCard'
 import { GradientCTA } from './GradientCTA'
+import { PercentChips } from './PercentChips'
 import { SafetyProtectionsButton } from './SafetyProtectionsButton'
 import { TokenIcon } from './TokenIcon'
 
@@ -69,8 +70,6 @@ export function SwapForm() {
   const canSubmit =
     wallet.isConnected && wallet.isCorrectChain && inputWei > 0n && !insufficientBalance && !isPending
 
-  const setMax = () => setAmount(formatTokenAmount(balanceAmount, 18, 6))
-
   return (
     <div className="space-y-4">
       <CornerBracketCard className="p-4">
@@ -105,6 +104,25 @@ export function SwapForm() {
           </div>
         )}
 
+        {/* Token segmented selector — Uniswap-ish chips */}
+        <div className="mb-2 grid grid-cols-2 gap-1.5 rounded-lg bg-background/60 p-1">
+          {(['stETH', 'wstETH'] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTokenIn(t)}
+              className={`flex items-center justify-center gap-1.5 rounded-md py-2 font-mono text-sm transition-all ${
+                tokenIn === t
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-text-tertiary hover:text-foreground'
+              }`}
+            >
+              <TokenIcon symbol={t} size={16} />
+              {t}
+            </button>
+          ))}
+        </div>
+
         {/* Input card */}
         <div className="rounded-2xl border border-border bg-background/50 p-4">
           <div className="mb-2 flex items-center justify-between font-mono text-text-tertiary text-xs">
@@ -112,13 +130,7 @@ export function SwapForm() {
             <span>
               余额{' '}
               <span className="text-foreground">{formatTokenAmount(balanceAmount, 18, 4)}</span>{' '}
-              <button
-                type="button"
-                onClick={setMax}
-                className="ml-1.5 rounded bg-primary/15 px-1.5 py-0.5 text-primary text-[10px] uppercase tracking-wider"
-              >
-                Max
-              </button>
+              {tokenIn}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -130,18 +142,17 @@ export function SwapForm() {
               onChange={(e) => setAmount(e.target.value)}
               className="h-11 flex-1 border-0 bg-transparent p-0 font-mono text-2xl text-foreground shadow-none focus-visible:ring-0"
             />
-            <select
-              value={tokenIn}
-              onChange={(e) => setTokenIn(e.target.value as InputToken)}
-              className="appearance-none rounded-full border border-border bg-card px-3 py-1.5 font-mono text-foreground text-sm"
-            >
-              {(['stETH', 'wstETH'] as const).map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 font-mono text-foreground text-xs">
+              <TokenIcon symbol={tokenIn} size={18} />
+              {tokenIn}
+            </div>
           </div>
+          <div className="mt-3">
+            <PercentChips balance={balanceAmount} onPick={setAmount} />
+          </div>
+          <p className="mt-3 border-border border-t pt-2 font-mono text-[10px] text-text-tertiary">
+            参考汇率 · 1 {tokenIn} ≈ {(Number(RATE_BPS[tokenIn]) / 100).toFixed(2)} pufETH
+          </p>
         </div>
 
         {/* Arrow */}

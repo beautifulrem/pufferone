@@ -1,6 +1,7 @@
 import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
 import { Card, CardContent } from '@repo/ui/components/card'
+import { Flame, Sparkles } from 'lucide-react'
 import { useMemo } from 'react'
 import { APYHistory } from '../lib/mockHistory'
 import type { VaultDescriptor } from '../lib/vaults'
@@ -40,14 +41,35 @@ export function VaultCard({ vault, apy, tvl, apyLoading, userShares, onDeposit }
     [vault.address, effectiveAPY],
   )
 
+  const isBeginner = vault.highlight === 'beginner'
+  const isHot = vault.highlight === 'hot'
+
   return (
-    <Card className="border-border bg-card shadow-none transition-colors hover:border-primary/40">
+    <Card
+      className={`relative border-border bg-card shadow-none transition-colors hover:border-primary/40 ${
+        isBeginner ? 'border-primary/40 bg-primary/[0.03]' : ''
+      }`}
+    >
       <CardContent className="p-4">
-        {/* Top row: icon + name + risk badge */}
+        {/* Top row: icon + name + 风险 + highlight badge */}
         <div className="mb-3 flex items-center gap-3">
           <TokenIcon symbol={vault.name} size={36} />
           <div className="min-w-0 flex-1">
-            <p className="font-mono font-semibold text-foreground text-base">{vault.name}</p>
+            <div className="flex items-center gap-1.5">
+              <p className="font-mono font-semibold text-foreground text-base">{vault.name}</p>
+              {(isBeginner || isHot) && (
+                <span
+                  className={`flex items-center gap-0.5 rounded-full px-1.5 py-0.5 font-mono text-[9px] ${
+                    isBeginner
+                      ? 'bg-primary/15 text-primary'
+                      : 'bg-warning/15 text-warning'
+                  }`}
+                >
+                  {isBeginner ? <Sparkles size={9} /> : <Flame size={9} />}
+                  {isBeginner ? '新手推荐' : '最热'}
+                </span>
+              )}
+            </div>
             <p className="truncate font-mono text-[10px] text-text-tertiary">{vault.description}</p>
           </div>
           <Badge variant={risk.variant} className="font-mono text-[10px]">

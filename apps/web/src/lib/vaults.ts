@@ -17,6 +17,8 @@ export type VaultDescriptor = {
   fallbackTVL: number
   /// Vault sharePrice (1e18 = 1:1) used for client-side preview
   sharePrice: bigint
+  /// Optional editorial flag — '新手推荐' / '最热' badges shown on the card
+  highlight?: 'beginner' | 'hot'
 }
 
 export const VAULTS: readonly VaultDescriptor[] = [
@@ -30,6 +32,7 @@ export const VAULTS: readonly VaultDescriptor[] = [
     fallbackAPY: 5.0,
     fallbackTVL: 18_500_000,
     sharePrice: 1_050_000_000_000_000_000n, // 1.05e18
+    highlight: 'beginner',
   },
   {
     key: 'unifiUSD',
@@ -63,5 +66,6 @@ export const VAULTS: readonly VaultDescriptor[] = [
     fallbackAPY: 7.5,
     fallbackTVL: 2_120_000,
     sharePrice: 1_075_000_000_000_000_000n, // 1.075e18
+    highlight: 'hot',
   },
 ] as const

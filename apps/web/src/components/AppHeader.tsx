@@ -4,6 +4,7 @@ import { useWallet } from '../hooks/useWallet'
 import { truncateAddress } from '../lib/format'
 import { CHAIN_ID } from '../lib/viem'
 import { InjectedWalletLabel } from '../lib/wallet'
+import { AddressAvatar } from './AddressAvatar'
 import { PufferOneLogo } from './PufferOneLogo'
 
 export function AppHeader() {
@@ -27,18 +28,19 @@ export function AppHeader() {
         ) : (
           <Badge
             variant="outline"
-            className="border-border-strong font-mono text-text-tertiary text-xs"
+            className="border-warning/40 bg-warning/10 font-mono text-warning-text text-xs"
           >
             <span className="mr-1.5 size-1.5 animate-pulse rounded-full bg-warning" />
-            Sepolia
+            Sepolia 测试网
           </Badge>
         )}
         {wallet.isConnected && wallet.address ? (
           <Badge
             variant="outline"
-            className="cursor-pointer border-primary/40 bg-primary/5 font-mono text-foreground text-xs hover:border-primary/70"
+            className="cursor-pointer gap-1.5 border-primary/40 bg-primary/5 font-mono text-foreground text-xs hover:border-primary/70"
             onClick={() => navigator.clipboard.writeText(wallet.address ?? '')}
           >
+            <AddressAvatar address={wallet.address} size={14} />
             {truncateAddress(wallet.address)}
           </Badge>
         ) : (

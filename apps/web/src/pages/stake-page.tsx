@@ -1,6 +1,10 @@
-import { HelpCircle } from 'lucide-react'
+import { HelpCircle, TrendingUp } from 'lucide-react'
 import { openTutorial } from '../components/OnboardingModal'
 import { StakeForm } from '../components/StakeForm'
+
+/// Mock pufETH staking APY — main-net runs ~3.5% (Beacon Chain + Puffer modules).
+/// PufferOne 在 Sepolia 上没有真实收益累积，所以前端给一个稳定参考值。
+const STAKING_APY = 3.5
 
 export function StakePage() {
   return (
@@ -21,6 +25,31 @@ export function StakePage() {
           这是什么
         </button>
       </div>
+
+      {/* 预期收益卡 */}
+      <div className="flex items-center justify-between rounded-xl border border-primary/30 bg-primary/5 p-4">
+        <div className="flex items-center gap-3">
+          <span className="flex size-9 items-center justify-center rounded-full bg-primary/15">
+            <TrendingUp size={18} className="text-primary" />
+          </span>
+          <div>
+            <p className="font-mono text-text-tertiary text-[10px] uppercase tracking-wider">
+              预期年化收益
+            </p>
+            <p className="font-mono font-bold text-2xl text-foreground leading-none">
+              {STAKING_APY.toFixed(2)}%
+            </p>
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="font-mono text-[10px] text-text-tertiary uppercase tracking-wider">参考汇率</p>
+          <p className="font-mono font-semibold text-foreground text-sm">1 ETH → 0.96 pufETH</p>
+          <p className="font-mono text-[10px] text-text-tertiary">
+            含未来收益增长
+          </p>
+        </div>
+      </div>
+
       <StakeForm />
     </div>
   )
