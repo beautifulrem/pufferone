@@ -49,9 +49,20 @@ const TOKEN_ADDRESS: Record<Exclude<Token, 'ETH'>, Address> = {
 /// 用户想自定义可去闪兑页用 SwapForm 的完整滑点控件。
 const UNSTAKE_SLIPPAGE_BPS = 50
 
-export function StakeForm() {
+export type StakeFormProps = {
+  /// 受控的 stake/unstake 方向。若不传则使用内部 state。
+  direction?: Direction
+  onDirectionChange?: (direction: Direction) => void
+}
+
+export function StakeForm({ direction: dirProp, onDirectionChange }: StakeFormProps = {}) {
   const wallet = useWallet()
-  const [direction, setDirection] = useState<Direction>('stake')
+  const [dirInner, setDirInner] = useState<Direction>('stake')
+  const direction = dirProp ?? dirInner
+  const setDirection = (d: Direction) => {
+    if (onDirectionChange) onDirectionChange(d)
+    else setDirInner(d)
+  }
   const [token, setToken] = useState<Token>('ETH')
   const [amount, setAmount] = useState('')
 

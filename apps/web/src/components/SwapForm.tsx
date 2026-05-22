@@ -85,11 +85,11 @@ export function SwapForm() {
     <div className="space-y-4">
       <CornerBracketCard className="p-4">
         {/* Settings row */}
-        <div className="mb-3 flex items-center justify-between">
-          <p className="font-mono text-text-tertiary text-xs">闪兑 · 一键换 pufETH</p>
+        <div className="mb-3 flex items-center justify-end">
           <button
             type="button"
             onClick={() => setSettingsOpen((v) => !v)}
+            aria-label="滑点设置"
             className="text-text-tertiary hover:text-foreground"
           >
             <Settings2 size={16} />

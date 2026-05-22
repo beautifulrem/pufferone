@@ -149,8 +149,10 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
             </a>
           </div>
 
-          {/* APY 历史大图 */}
-          <VaultAPYChart vaultKey={vault.key} baseAPY={vault.fallbackAPY} />
+          {/* APY 历史大图 — 仅申购时展示（赎回时不影响决策） */}
+          {mode === 'deposit' && (
+            <VaultAPYChart vaultKey={vault.key} baseAPY={vault.fallbackAPY} />
+          )}
 
           <div className="rounded-md border border-border bg-background/40 p-3 font-mono text-sm">
             {mode === 'deposit' ? '你的 pufETH 余额：' : `你的 ${vault.name} 份额：`}{' '}
