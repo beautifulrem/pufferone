@@ -115,42 +115,34 @@ export function SwapForm() {
           </div>
         )}
 
-        {/* Token chip selector — horizontally scrollable list with right fade mask */}
-        <div
-          className="-mx-1 mb-2 overflow-x-auto px-1 no-scrollbar"
-          style={{
-            maskImage:
-              'linear-gradient(to right, black 0%, black 88%, transparent 100%)',
-            WebkitMaskImage:
-              'linear-gradient(to right, black 0%, black 88%, transparent 100%)',
-          }}
-        >
-          <div className="flex gap-1.5 pr-6">
-            {SWAP_TOKENS.map((t) => (
-              <button
-                key={t.key}
-                type="button"
-                onClick={() => setTokenKey(t.key)}
-                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-xs transition-all ${
-                  tokenKey === t.key
-                    ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                    : 'border-border bg-card text-text-tertiary hover:border-border-strong hover:text-foreground'
-                }`}
-              >
-                <TokenIcon symbol={t.symbol} size={14} />
-                {t.symbol}
-                {!t.sepoliaSignable && (
-                  <span
-                    className={`ml-0.5 rounded-full px-1 py-0 text-[9px] ${
-                      tokenKey === t.key ? 'bg-white/25 text-white' : 'bg-warning/15 text-warning'
-                    }`}
-                  >
-                    主网
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
+        {/* Token chip selector — 2 行 × 4 列 grid，所有 token 一眼可见 */}
+        <div className="mb-2 grid grid-cols-4 gap-1.5">
+          {SWAP_TOKENS.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setTokenKey(t.key)}
+              className={`relative flex items-center justify-center gap-1 rounded-full border px-2 py-1.5 font-mono text-xs transition-all ${
+                tokenKey === t.key
+                  ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                  : 'border-border bg-card text-text-tertiary hover:border-border-strong hover:text-foreground'
+              }`}
+            >
+              <TokenIcon symbol={t.symbol} size={14} />
+              <span className="truncate">{t.symbol}</span>
+              {!t.sepoliaSignable && (
+                <span
+                  className={`-top-1.5 -right-1 absolute rounded-full px-1 py-0 text-[8px] leading-tight ${
+                    tokenKey === t.key
+                      ? 'bg-white/30 text-white'
+                      : 'bg-warning/90 text-white'
+                  }`}
+                >
+                  主网
+                </span>
+              )}
+            </button>
+          ))}
         </div>
 
         {/* Input card */}
