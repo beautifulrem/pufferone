@@ -4,6 +4,7 @@ import { useWallet } from '../hooks/useWallet'
 import { truncateAddress } from '../lib/format'
 import { CHAIN_ID } from '../lib/viem'
 import { InjectedWalletLabel } from '../lib/wallet'
+import { PufferOneLogo } from './PufferOneLogo'
 
 export function AppHeader() {
   const wallet = useWallet()
@@ -12,12 +13,7 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between border-border border-b bg-background/80 px-4 py-3 backdrop-blur-xl">
       <div className="flex items-center gap-2.5">
-        <div
-          className="size-7 rounded-full"
-          style={{
-            background: 'linear-gradient(135deg, rgb(252 114 255) 0%, rgb(125 211 252) 100%)',
-          }}
-        />
+        <PufferOneLogo size={28} />
         <span className="font-mono font-semibold text-foreground text-sm tracking-tight">
           PufferOne
         </span>

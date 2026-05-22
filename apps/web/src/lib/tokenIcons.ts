@@ -1,43 +1,103 @@
-/// Spothq cryptocurrency-icons CDN.
-/// Source: https://github.com/spothq/cryptocurrency-icons
+/// Token icon source registry.
+///
+/// Strategy: try Trust Wallet first (most comprehensive ERC-20 logo DB indexed
+/// by mainnet checksum address), then Spothq fallback for vanilla tokens
+/// (BTC/ETH/USDT/etc). If both fail, the React component renders an inline
+/// SVG with a gradient circle + letter glyph.
+///
+/// Sources:
+/// - https://github.com/trustwallet/assets
+/// - https://github.com/spothq/cryptocurrency-icons
+
+const TRUST = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets'
 const SPOTHQ = 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color'
 
-/// Tokens that exist in Spothq directly.
-const DIRECT: Record<string, string> = {
-  ETH: `${SPOTHQ}/eth.svg`,
-  WETH: `${SPOTHQ}/eth.svg`,
-  STETH: `${SPOTHQ}/steth.svg`,
-  WSTETH: `${SPOTHQ}/steth.svg`, // wstETH 复用 stETH 图标，外部加 W 标记
-  USDC: `${SPOTHQ}/usdc.svg`,
-  USDT: `${SPOTHQ}/usdt.svg`,
-  WBTC: `${SPOTHQ}/wbtc.svg`,
-  BTC: `${SPOTHQ}/btc.svg`,
+/// Mainnet checksum addresses (case-sensitive — Trust Wallet pinned to checksum).
+const MAINNET = {
+  STETH: '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',
+  WSTETH: '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0',
+  PUFETH: '0xD9A442856C234a39a81a089C06451EBAa4306a72',
+  USDC: '0xA0b86991c6218b36c1D19D4a2e9Eb0cE3606eB48',
+  USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+  WBTC: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+} as const
+
+/// Ordered list of CDN URLs to try for a token. The TokenIcon component will
+/// try each in turn until one loads successfully.
+function trustWalletUrl(addr: string): string {
+  return `${TRUST}/${addr}/logo.png`
 }
 
-/// Tokens that need a custom gradient overlay (no CDN icon).
-/// Uniswap-clean palette: pink primary + soft cyan/purple/amber accents.
-const GRADIENT: Record<string, { from: string; to: string; label: string }> = {
-  PUFETH: { from: '#FC72FF', to: '#A78BFA', label: 'P' },
-  UNIFIETH: { from: '#FC72FF', to: '#7D8AFC', label: 'uE' },
-  UNIFIUSD: { from: '#5EEAD4', to: '#7D8AFC', label: 'uU' },
-  UNIFIBTC: { from: '#FBBF24', to: '#FC72FF', label: 'uB' },
-  PUFETHS: { from: '#A78BFA', to: '#FC72FF', label: 'P+' },
+function spothqUrl(symbol: string): string {
+  return `${SPOTHQ}/${symbol.toLowerCase()}.svg`
 }
 
-export type TokenIconInfo =
-  | { kind: 'direct'; url: string }
+export type TokenSource =
+  | { kind: 'urls'; urls: readonly string[]; symbol: string }
   | { kind: 'gradient'; from: string; to: string; label: string }
-  | { kind: 'fallback'; label: string }
+  | {
+      kind: 'wrapped'
+      base: TokenSource
+      ringColor: string
+      label: string
+    }
 
-export function getTokenIcon(symbol: string): TokenIconInfo {
+/// Direct registry — order matters (first URL tried first).
+const SOURCES: Record<string, TokenSource> = {
+  ETH: { kind: 'urls', urls: [spothqUrl('eth')], symbol: 'ETH' },
+  WETH: { kind: 'urls', urls: [spothqUrl('eth')], symbol: 'WETH' },
+  STETH: {
+    kind: 'urls',
+    urls: [trustWalletUrl(MAINNET.STETH), spothqUrl('steth')],
+    symbol: 'stETH',
+  },
+  WSTETH: {
+    kind: 'urls',
+    urls: [trustWalletUrl(MAINNET.WSTETH), spothqUrl('wsteth')],
+    symbol: 'wstETH',
+  },
+  PUFETH: {
+    kind: 'urls',
+    urls: [trustWalletUrl(MAINNET.PUFETH)],
+    symbol: 'pufETH',
+  },
+  USDC: { kind: 'urls', urls: [trustWalletUrl(MAINNET.USDC), spothqUrl('usdc')], symbol: 'USDC' },
+  USDT: { kind: 'urls', urls: [trustWalletUrl(MAINNET.USDT), spothqUrl('usdt')], symbol: 'USDT' },
+  WBTC: { kind: 'urls', urls: [trustWalletUrl(MAINNET.WBTC), spothqUrl('wbtc')], symbol: 'WBTC' },
+}
+
+/// Vault wrappers: a base token icon with a dashed ring overlay.
+const WRAPS: Record<string, { base: keyof typeof SOURCES; ringColor: string; label: string }> = {
+  UNIFIETH: { base: 'ETH', ringColor: '#FC72FF', label: 'unifiETH' },
+  UNIFIUSD: { base: 'USDC', ringColor: '#7DD3FC', label: 'unifiUSD' },
+  UNIFIBTC: { base: 'WBTC', ringColor: '#FBBF24', label: 'unifiBTC' },
+  PUFETHS: { base: 'PUFETH', ringColor: '#A78BFA', label: 'pufETHs' },
+}
+
+export function getTokenSource(symbol: string): TokenSource {
   const upper = symbol.toUpperCase()
-  if (upper in DIRECT) {
-    const url = DIRECT[upper]
-    if (url) return { kind: 'direct', url }
+  if (upper in SOURCES) {
+    const source = SOURCES[upper]
+    if (source) return source
   }
-  if (upper in GRADIENT) {
-    const g = GRADIENT[upper]
-    if (g) return { kind: 'gradient', from: g.from, to: g.to, label: g.label }
+  if (upper in WRAPS) {
+    const wrap = WRAPS[upper]
+    if (wrap) {
+      const base = SOURCES[wrap.base]
+      if (base) {
+        return {
+          kind: 'wrapped',
+          base,
+          ringColor: wrap.ringColor,
+          label: wrap.label,
+        }
+      }
+    }
   }
-  return { kind: 'fallback', label: upper.slice(0, 2) }
+  return {
+    kind: 'gradient',
+    from: '#FC72FF',
+    to: '#A78BFA',
+    label: symbol.slice(0, 2).toUpperCase(),
+  }
 }
