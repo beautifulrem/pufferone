@@ -7,8 +7,11 @@ import { pufferApi } from '../lib/pufferApi'
 /// for a demo (rates / TVL don't move fast). On failure the consumers fall back
 /// to hand-curated mock values so the page never breaks.
 
-const STALE_MS = 60_000 // 1 minute
-const REFETCH_MS = 5 * 60_000 // 5 minutes
+// Puffer API 限速 100 req / 15 min / IP。这里把 staleTime 设到 5 分钟、
+// refetchInterval 设到 10 分钟、关闭 retry，配合 lib/pufferApi.ts 内的
+// sessionStorage 缓存层，远远低于限速窗口。
+const STALE_MS = 5 * 60_000 // 5 minutes
+const REFETCH_MS = 10 * 60_000 // 10 minutes
 
 export function usePufETHRate() {
   return useQuery({
@@ -16,7 +19,8 @@ export function usePufETHRate() {
     queryFn: pufferApi.pufETHRate,
     staleTime: STALE_MS,
     refetchInterval: REFETCH_MS,
-    retry: 1,
+    retry: 0,
+    refetchOnWindowFocus: false,
   })
 }
 
@@ -26,7 +30,8 @@ export function useVaultAPYs() {
     queryFn: pufferApi.vaultsAPY,
     staleTime: STALE_MS,
     refetchInterval: REFETCH_MS,
-    retry: 1,
+    retry: 0,
+    refetchOnWindowFocus: false,
   })
 }
 
@@ -36,7 +41,8 @@ export function useVaultTVLs() {
     queryFn: pufferApi.vaultsTVL,
     staleTime: STALE_MS,
     refetchInterval: REFETCH_MS,
-    retry: 1,
+    retry: 0,
+    refetchOnWindowFocus: false,
   })
 }
 
@@ -46,6 +52,7 @@ export function useProtocolTVL() {
     queryFn: pufferApi.protocolTVL,
     staleTime: STALE_MS,
     refetchInterval: REFETCH_MS,
-    retry: 1,
+    retry: 0,
+    refetchOnWindowFocus: false,
   })
 }
