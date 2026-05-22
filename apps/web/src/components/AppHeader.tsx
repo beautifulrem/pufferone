@@ -1,4 +1,3 @@
-import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
 import { Copy, LogOut } from 'lucide-react'
 import { useRef, useState } from 'react'
@@ -34,27 +33,16 @@ export function AppHeader() {
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         {wrongChain ? (
-          <Badge variant="destructive" className="font-mono text-xs">
+          <span className="flex h-7 items-center rounded-full border border-destructive/40 bg-destructive/10 px-2.5 font-mono text-destructive text-[11px]">
             链错误
-          </Badge>
+          </span>
         ) : (
-          <Badge
-            variant="outline"
-            className="font-mono text-xs"
-            style={{
-              borderColor: 'rgba(167, 139, 250, 0.4)',
-              background: 'rgba(167, 139, 250, 0.1)',
-              color: 'rgb(167 139 250)',
-            }}
-          >
-            <span
-              className="mr-1.5 size-1.5 animate-pulse rounded-full"
-              style={{ background: 'rgb(167 139 250)' }}
-            />
-            Sepolia 测试网
-          </Badge>
+          <span className="flex h-7 items-center gap-1.5 rounded-full border border-border bg-card px-2.5 font-mono text-text-tertiary text-[11px]">
+            <span className="size-1.5 animate-pulse rounded-full bg-green-400" />
+            Sepolia
+          </span>
         )}
         {wallet.isConnected && wallet.address ? (
           <AddressDropdown address={wallet.address} onDisconnect={wallet.disconnect} />
@@ -86,14 +74,14 @@ function AddressDropdown({ address, onDisconnect }: { address: string; onDisconn
 
   return (
     <div className="relative" ref={ref}>
-      <Badge
-        variant="outline"
-        className="cursor-pointer gap-1.5 border-primary/40 bg-primary/5 font-mono text-foreground text-xs hover:border-primary/70"
+      <button
+        type="button"
         onClick={() => setOpen((v) => !v)}
+        className="flex h-7 items-center gap-1.5 rounded-full border border-primary/40 bg-primary/5 px-2.5 font-mono text-foreground text-[11px] transition-colors hover:border-primary/70"
       >
         <AddressAvatar address={address} size={14} />
         {truncateAddress(address)}
-      </Badge>
+      </button>
 
       {open && (
         <>
