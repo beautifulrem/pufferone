@@ -224,14 +224,14 @@ function ContractDialog({
 }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] max-w-md overflow-y-auto border-border bg-card">
+      <DialogContent className="flex max-h-[80vh] max-w-md flex-col overflow-hidden border-border bg-card">
         <DialogHeader>
           <DialogTitle className="text-foreground">Sepolia 合约浏览</DialogTitle>
           <p className="mt-1 text-text-tertiary text-xs">
-            点击任一合约在 Etherscan 查看详情。所有合约均部署在 Sepolia 测试网。
+            点击任一合约在 Etherscan 查看详情。
           </p>
         </DialogHeader>
-        <div className="space-y-1.5">
+        <div className="-mx-1 flex-1 space-y-1.5 overflow-y-auto px-1 pb-1">
           {CONTRACT_LABELS.map(({ key, label }) => (
             <a
               key={key}
