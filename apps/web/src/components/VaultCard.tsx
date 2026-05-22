@@ -84,12 +84,14 @@ export function VaultCard({ vault, apy, tvl, apyLoading, userShares, onDeposit }
           <div>
             <p className="font-mono text-[10px] text-text-tertiary uppercase tracking-wide">APY</p>
             <p className="font-mono font-semibold text-foreground text-lg">
-              {apyLoading ? '—' : `${effectiveAPY.toFixed(2)}%`}
+              {apyLoading ? '—' : effectiveAPY > 0 ? `${effectiveAPY.toFixed(2)}%` : '暂无数据'}
             </p>
           </div>
           <div>
             <p className="font-mono text-[10px] text-text-tertiary uppercase tracking-wide">TVL</p>
-            <p className="font-mono font-semibold text-foreground text-lg">{formatTVL(effectiveTVL)}</p>
+            <p className="font-mono font-semibold text-foreground text-lg">
+              {effectiveTVL > 0 ? formatTVL(effectiveTVL) : '暂无数据'}
+            </p>
           </div>
           <div className="h-10">
             <Sparkline data={sparklineData} />
