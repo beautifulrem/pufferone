@@ -1,58 +1,100 @@
-/// PufferOne 自绘 inline SVG logo.
-/// 灵感：Puffer 河豚轮廓 + "1" 数字 + 渐变。完全离线（不依赖任何 CDN）。
-/// 圆形 + 渐变背景（粉→紫 →淡蓝） + 中间一个 stylized 河豚剪影 / P1。
+/// PufferOne app icon — 在 Figma 中手工绘制的版本，转译为 inline SVG。
+///
+/// 设计：
+/// - 256×256 圆角方形（半径 56）做容器
+/// - 对角线渐变背景：粉 #FC72FF → 紫 #A78BFA → 青 #7DD3FC
+/// - 中间是 cute pufferfish 剪影：白身、左下粉脸颊、深色眼睛带高光、小嘴 + 粉色舌头
+/// - 7 个白色 spike 三角形围绕身体辐射（右侧让位给尾巴）
+/// - 右侧白色三角尾鳍
+///
+/// 用 viewBox 256x256，外层可缩放到任意 size。
 export function PufferOneLogo({ size = 28 }: { size?: number }) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 64 64"
+      viewBox="0 0 256 256"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-label="PufferOne"
     >
       <defs>
-        <linearGradient id="po-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+        <linearGradient id="po-bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#FC72FF" />
           <stop offset="0.55" stopColor="#A78BFA" />
           <stop offset="1" stopColor="#7DD3FC" />
         </linearGradient>
-        <linearGradient id="po-fish" x1="20" y1="22" x2="44" y2="46" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#FFFFFF" stopOpacity="0.95" />
-          <stop offset="1" stopColor="#FFFFFF" stopOpacity="0.7" />
-        </linearGradient>
+        <radialGradient id="po-hl" cx="128" cy="0" r="128" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="white" stopOpacity="0.4" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
+        </radialGradient>
       </defs>
 
       {/* Background rounded square */}
-      <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#po-bg)" />
+      <rect x="0" y="0" width="256" height="256" rx="56" fill="url(#po-bg)" />
 
-      {/* Subtle inner highlight */}
-      <rect
-        x="3"
-        y="3"
-        width="58"
-        height="30"
-        rx="15"
-        fill="white"
-        fillOpacity="0.12"
+      {/* Top highlight */}
+      <rect x="0" y="0" width="256" height="120" rx="56" fill="url(#po-hl)" />
+
+      {/* Spikes — 7 white triangles around the body, skipping the rightmost (tail) */}
+      {/* Each spike: small triangle, tip pointing outward, ~22px tall */}
+      {/* Computed from angle 0..2π starting at top (-π/2), skipping index 2 (right) */}
+
+      {/* Spike 0 (top, angle -90°) */}
+      <polygon points="128,38 122,58 134,58" fill="#FFFFFF" opacity="0.92" />
+      {/* Spike 1 (top-right, angle -45°) */}
+      <polygon
+        points="182,60 168,72 178,82"
+        fill="#FFFFFF"
+        opacity="0.92"
+        transform="rotate(-15 175 70)"
+      />
+      {/* Spike 3 skipped (rightmost — tail goes here) */}
+      {/* Spike 3 (bottom-right, angle 45°) */}
+      <polygon
+        points="180,180 168,170 184,176"
+        fill="#FFFFFF"
+        opacity="0.92"
+        transform="rotate(60 177 175)"
+      />
+      {/* Spike 4 (bottom, angle 90°) */}
+      <polygon points="128,218 122,198 134,198" fill="#FFFFFF" opacity="0.92" />
+      {/* Spike 5 (bottom-left, angle 135°) */}
+      <polygon
+        points="76,180 88,170 72,176"
+        fill="#FFFFFF"
+        opacity="0.92"
+        transform="rotate(-60 78 175)"
+      />
+      {/* Spike 6 (left, angle 180°) */}
+      <polygon points="38,128 58,122 58,134" fill="#FFFFFF" opacity="0.92" />
+      {/* Spike 7 (top-left, angle 225°) */}
+      <polygon
+        points="74,60 88,72 78,82"
+        fill="#FFFFFF"
+        opacity="0.92"
+        transform="rotate(15 78 70)"
       />
 
-      {/* Stylized pufferfish body (rounded triangle) + tail */}
-      <path
-        d="M40 26 C 46 26, 50 30, 50 36 C 50 42, 46 46, 40 46 L 40 44 L 50 50 L 50 36 L 50 22 L 40 28 Z"
-        fill="url(#po-fish)"
-        transform="translate(-2 0)"
-      />
-      {/* Fish body main blob */}
-      <ellipse cx="30" cy="36" rx="13" ry="10" fill="url(#po-fish)" />
-      {/* Spike dots around body */}
-      <circle cx="22" cy="30" r="1.4" fill="white" fillOpacity="0.5" />
-      <circle cx="22" cy="42" r="1.4" fill="white" fillOpacity="0.5" />
-      <circle cx="34" cy="28" r="1.2" fill="white" fillOpacity="0.45" />
-      <circle cx="34" cy="44" r="1.2" fill="white" fillOpacity="0.45" />
-      {/* Eye */}
-      <circle cx="35" cy="34" r="2" fill="#0F0F0F" />
-      <circle cx="35.7" cy="33.3" r="0.6" fill="white" />
+      {/* Tail — right-side triangle pointing right (replaces skipped spike 2) */}
+      <polygon points="186,128 220,108 220,148" fill="#FFFFFF" opacity="0.95" />
+
+      {/* Body — white ellipse */}
+      <ellipse cx="128" cy="128" rx="56" ry="48" fill="#FFFFFF" />
+
+      {/* Cheek blush — pink */}
+      <ellipse cx="100" cy="138" rx="13" ry="8" fill="#FC72FF" opacity="0.55" />
+
+      {/* Mouth (small dark) */}
+      <ellipse cx="128" cy="150" rx="10" ry="7" fill="#4D2050" opacity="0.85" />
+
+      {/* Tongue inside mouth */}
+      <ellipse cx="128" cy="154" rx="6" ry="3" fill="#FC72FFB3" />
+
+      {/* Eye — cream outer + dark pupil + white highlight */}
+      <ellipse cx="148" cy="116" rx="14" ry="14" fill="#F5F5FA" />
+      <circle cx="151" cy="119" r="9" fill="#0F0F19" />
+      <circle cx="154" cy="116" r="3.5" fill="#FFFFFF" />
     </svg>
   )
 }
