@@ -21,8 +21,8 @@ function AppLayout() {
   return (
     <MobileShell>
       <AppHeader />
-      <NetworkGuard />
       <div className="px-4 pt-4">
+        <NetworkGuard />
         <Outlet />
       </div>
       <BottomTabNav />
