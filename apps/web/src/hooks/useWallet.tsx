@@ -7,8 +7,8 @@ import {
   useMemo,
   useState,
 } from 'react'
-import type { Address } from 'viem'
-import { CHAIN_ID, createWalletClientFromProvider, getPublicClient } from '../lib/viem'
+import { type Address, createPublicClient, custom } from 'viem'
+import { CHAIN, CHAIN_ID, createWalletClientFromProvider, getPublicClient } from '../lib/viem'
 import {
   detectInjectedKind,
   detectInjectedProvider,
@@ -168,18 +168,27 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return createWalletClientFromProvider(state.provider, state.address)
   }, [state.provider, state.address])
 
+  /// 钱包连接后，simulate/读取走钱包自己的 RPC（通常显著快于公开 HTTP RPC，
+  /// 比如 publicnode.com 高峰期能慢到 5+ 秒）。未连接时退回 HTTP fallback。
+  const publicClient = useMemo(() => {
+    if (state.provider && state.chainId === CHAIN_ID) {
+      return createPublicClient({ chain: CHAIN, transport: custom(state.provider) })
+    }
+    return getPublicClient()
+  }, [state.provider, state.chainId])
+
   const value = useMemo<WalletContextValue>(
     () => ({
       ...state,
       isConnected: state.address !== null,
       isCorrectChain: state.chainId === CHAIN_ID,
-      publicClient: getPublicClient(),
+      publicClient,
       walletClient,
       connectInjected,
       disconnect,
       switchToSepolia,
     }),
-    [state, walletClient, connectInjected, disconnect, switchToSepolia],
+    [state, walletClient, publicClient, connectInjected, disconnect, switchToSepolia],
   )
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>
