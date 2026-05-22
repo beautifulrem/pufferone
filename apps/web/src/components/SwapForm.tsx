@@ -13,6 +13,7 @@ import { CONTRACTS } from '../lib/contracts'
 import { formatTokenAmount } from '../lib/format'
 import { CornerBracketCard } from './CornerBracketCard'
 import { GradientCTA } from './GradientCTA'
+import { SafetyProtectionsButton } from './SafetyProtectionsButton'
 import { TokenIcon } from './TokenIcon'
 
 type InputToken = 'stETH' | 'wstETH'
@@ -248,9 +249,7 @@ export function SwapForm() {
         </CornerBracketCard>
       )}
 
-      <p className="font-mono text-[10px] text-text-tertiary">
-        合约 <span className="text-text-tertiary break-all">{CONTRACTS.swapRouter}</span>
-      </p>
+      <SafetyProtectionsButton />
     </div>
   )
 }

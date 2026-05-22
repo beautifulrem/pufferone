@@ -1,9 +1,10 @@
 import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
-import { ArrowLeftRight, Layers, TrendingUp } from 'lucide-react'
-import { useMemo } from 'react'
+import { ArrowLeftRight, Layers, TrendingUp, X } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router'
 import { CornerBracketCard } from '../components/CornerBracketCard'
+import { openTutorial } from '../components/OnboardingModal'
 import { Sparkline } from '../components/Sparkline'
 import { TokenIcon } from '../components/TokenIcon'
 import { useNativeBalance } from '../hooks/useNativeBalance'
@@ -21,6 +22,44 @@ type AssetRow = {
   usdPerUnit: number
   href: string
   badge?: string
+}
+
+const INTRO_DISMISSED_KEY = 'pufferone:intro-dismissed'
+
+function IntroCard() {
+  const [hidden, setHidden] = useState(true)
+  useEffect(() => {
+    setHidden(window.localStorage.getItem(INTRO_DISMISSED_KEY) === 'true')
+  }, [])
+  if (hidden) return null
+  const dismiss = () => {
+    window.localStorage.setItem(INTRO_DISMISSED_KEY, 'true')
+    setHidden(true)
+  }
+  return (
+    <div className="relative rounded-xl border border-primary/30 bg-primary/5 p-4">
+      <button
+        type="button"
+        onClick={dismiss}
+        aria-label="关闭介绍"
+        className="absolute top-2 right-2 rounded-full p-1 text-text-tertiary hover:text-foreground"
+      >
+        <X size={14} />
+      </button>
+      <p className="cyber-eyebrow text-primary">欢迎来到 PufferOne</p>
+      <p className="mt-2 text-foreground text-sm leading-relaxed">
+        把 ETH 存进来变成 <span className="font-semibold text-primary">pufETH</span>，
+        一边赚以太坊共识奖励，一边赚 Puffer 收益。
+      </p>
+      <button
+        type="button"
+        onClick={openTutorial}
+        className="mt-3 inline-flex items-center gap-1 font-mono text-primary text-xs hover:underline"
+      >
+        了解更多（5 步教学） →
+      </button>
+    </div>
+  )
 }
 
 export function HomePage() {
@@ -109,6 +148,8 @@ export function HomePage() {
 
   return (
     <div className="space-y-4 pb-6">
+      <IntroCard />
+
       {/* Eyebrow */}
       <p className="cyber-eyebrow">PUFFER // 我的资产</p>
 

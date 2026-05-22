@@ -4,6 +4,11 @@ import { useEffect, useState } from 'react'
 
 const STORAGE_KEY = 'pufferone:onboarded'
 
+/// 任何组件调用此方法即可重新打开 5 步新手教学
+export function openTutorial() {
+  window.dispatchEvent(new Event('pufferone:open-tutorial'))
+}
+
 type Step = {
   title: string
   body: string
@@ -50,10 +55,20 @@ export function OnboardingModal() {
   useEffect(() => {
     const seen = window.localStorage.getItem(STORAGE_KEY)
     if (!seen) {
-      // Small delay so the page paints first
+      // 首次访问 — 稍延迟让页面先 paint
       const t = setTimeout(() => setOpen(true), 600)
       return () => clearTimeout(t)
     }
+  }, [])
+
+  useEffect(() => {
+    // 允许外部按钮通过 custom event 重新触发教学
+    const handler = () => {
+      setStep(0)
+      setOpen(true)
+    }
+    window.addEventListener('pufferone:open-tutorial', handler)
+    return () => window.removeEventListener('pufferone:open-tutorial', handler)
   }, [])
 
   const handleClose = () => {

@@ -1,6 +1,8 @@
 import { Badge } from '@repo/ui/components/badge'
 import { Card, CardContent } from '@repo/ui/components/card'
 import { Separator } from '@repo/ui/components/separator'
+import { ChevronDown } from 'lucide-react'
+import { useState } from 'react'
 import type { Address } from 'viem'
 import { formatTokenAmount } from '../lib/format'
 
@@ -35,9 +37,11 @@ const riskBadge: Record<TxSummaryProps['riskLevel'], { variant: 'success' | 'sec
 
 /// TxSummaryCard — the canonical "what you're about to sign" preview.
 /// Shows: action / target / asset+amount / expected output / risk badge.
-/// Address is rendered in FULL per SKILL.md §1.2 — never truncated on confirm.
+/// Address is rendered in FULL per SKILL.md §1.2 — collapsible so non-technical
+/// users aren't bothered by it but advanced users can still verify.
 export function TxSummaryCard(props: TxSummaryProps) {
   const risk = riskBadge[props.riskLevel]
+  const [showAddress, setShowAddress] = useState(false)
 
   return (
     <Card className="border-border bg-card shadow-none">
@@ -75,22 +79,36 @@ export function TxSummaryCard(props: TxSummaryProps) {
           </div>
         </div>
 
-        <Separator />
-
-        <div>
-          <p className="text-text-tertiary text-xs uppercase tracking-wide">合约地址（完整）</p>
-          <p className="mt-1 break-all font-mono text-foreground text-xs">{props.contractAddress}</p>
-        </div>
-
         {props.exitNote && (
           <>
             <Separator />
             <div>
-              <p className="text-text-tertiary text-xs uppercase tracking-wide">交易之后</p>
+              <p className="text-text-tertiary text-xs uppercase tracking-wide">想知道之后怎么办？</p>
               <p className="mt-1 text-sm text-text-secondary-gray leading-relaxed">{props.exitNote}</p>
             </div>
           </>
         )}
+
+        <Separator />
+
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowAddress((v) => !v)}
+            className="flex w-full items-center justify-between font-mono text-text-tertiary text-xs uppercase tracking-wide hover:text-foreground"
+          >
+            <span>查看合约地址</span>
+            <ChevronDown
+              size={12}
+              className={`transition-transform ${showAddress ? 'rotate-180' : ''}`}
+            />
+          </button>
+          {showAddress && (
+            <p className="mt-2 break-all font-mono text-foreground text-xs">
+              {props.contractAddress}
+            </p>
+          )}
+        </div>
       </CardContent>
     </Card>
   )

@@ -15,6 +15,7 @@ import { CONTRACTS, isDeployed } from '../lib/contracts'
 import { formatTokenAmount } from '../lib/format'
 import { CornerBracketCard } from './CornerBracketCard'
 import { GradientCTA } from './GradientCTA'
+import { SafetyProtectionsButton } from './SafetyProtectionsButton'
 import { TokenIcon } from './TokenIcon'
 
 type Token = 'ETH' | 'stETH' | 'wstETH'
@@ -271,19 +272,7 @@ export function StakeForm() {
         </CornerBracketCard>
       )}
 
-      {/* Safety chips strip */}
-      <div className="flex flex-wrap gap-1.5 px-1 font-mono text-[10px]">
-        <span className="rounded-full bg-card px-2 py-1 text-text-tertiary">✓ eth_call 模拟</span>
-        <span className="rounded-full bg-card px-2 py-1 text-text-tertiary">✓ 精确授权</span>
-        <span className="rounded-full bg-card px-2 py-1 text-text-tertiary">✓ 全地址显示</span>
-        <span className="rounded-full bg-card px-2 py-1 text-text-tertiary">✓ 风险评分</span>
-        <span className="rounded-full bg-card px-2 py-1 text-text-tertiary">✓ 签前总结</span>
-      </div>
-
-      {/* Contract footer */}
-      <p className="font-mono text-[10px] text-text-tertiary">
-        合约 <span className="neon-cyan break-all">{CONTRACTS.depositor}</span>
-      </p>
+      <SafetyProtectionsButton />
     </div>
   )
 }

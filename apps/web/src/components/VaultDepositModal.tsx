@@ -120,8 +120,8 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
             riskLevel={
               vault.risk === 'Low' ? 'Info' : vault.risk === 'Medium' ? 'Warning' : 'Danger'
             }
-            riskNote={`${vault.risk === 'Low' ? '低风险' : vault.risk === 'Medium' ? '中等风险' : '较高风险'}档位 — Sepolia 模拟金库。每份份额定价 ${(Number(vault.sharePrice) / 1e18).toFixed(3)} pufETH。`}
-            exitNote="金库份额可通过 withdraw() 赎回（见「更多 → 赎回与退出」）。所有授权均使用精确数额，绝不无限——遵循安全规范。"
+            riskNote={`${vault.risk === 'Low' ? '低风险档' : vault.risk === 'Medium' ? '中等风险档' : '较高风险档'}：${(Number(vault.sharePrice) / 1e18).toFixed(3)} pufETH = 1 份金库份额，份额价格会随收益累积上涨。`}
+            exitNote="想取出来的时候，去「更多 → 赎回与退出」一步就能换回 pufETH，不用等主网 1–2 周的提款队列。"
           />
 
           {(approve.error || deposit.error) && (

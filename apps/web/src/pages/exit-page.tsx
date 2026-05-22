@@ -102,22 +102,21 @@ export function ExitPage() {
       <div>
         <p className="cyber-eyebrow">PUFFER // 赎回</p>
         <h1 className="mt-1 font-bold text-2xl text-foreground tracking-tight">
-          退出仓位
+          把仓位换回去
         </h1>
         <p className="max-w-3xl text-text-secondary-gray leading-relaxed">
-          每个 PufferOne 仓位都可以单步赎回。已有的 Puffer 作品都不做退出端——
-          PufferOne 把「如何离开」这一步也写出来，体现完整生命周期（存入 → 管理 → 退出）。
+          手里有的资产，这里都可以一步换回 ETH 或 pufETH。
         </p>
       </div>
 
       <Card className="border-border bg-card shadow-none">
         <CardContent className="space-y-2 p-4">
           <p className="cyber-eyebrow">pufETH → stETH / wstETH</p>
-          <p className="font-mono font-semibold text-foreground text-sm">
-            通过 DEX 反向兑换退出 pufETH
+          <p className="font-semibold text-foreground text-sm">
+            把 pufETH 换回 stETH / wstETH
           </p>
           <p className="text-text-tertiary text-xs leading-relaxed">
-            MockSwapRouter 已配置反向路径：pufETH → stETH（1.04）/ pufETH → wstETH（0.89）。生产环境走 PufferVault 提款队列（1–2 周延迟）。
+            不用走主网官方的 1–2 周提款队列，直接在兑换页一步完成。
           </p>
           <Button asChild size="sm" variant="outline" className="mt-2 font-mono">
             <Link to="/swap">前往兑换页 →</Link>
@@ -125,7 +124,7 @@ export function ExitPage() {
         </CardContent>
       </Card>
 
-      <p className="cyber-eyebrow pt-2">UniFi 金库赎回</p>
+      <p className="cyber-eyebrow pt-2">金库仓位赎回</p>
       <div className="space-y-2">
         {VAULTS.map((v) => (
           <VaultExitCard key={v.key} vault={v} />
