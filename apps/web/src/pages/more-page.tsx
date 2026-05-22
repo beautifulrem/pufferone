@@ -6,6 +6,7 @@ import {
   Monitor,
   Moon,
   ShieldCheck,
+  Smartphone,
   Sun,
 } from 'lucide-react'
 import { type ComponentType, useState } from 'react'
@@ -14,6 +15,7 @@ import { openTutorial } from '../components/OnboardingModal'
 import { SafetyProtectionsDialog } from '../components/SafetyProtectionsButton'
 import { useTokenBalance } from '../hooks/useTokenBalance'
 import { type ThemeMode, useTheme } from '../hooks/useTheme'
+import { useWallet } from '../hooks/useWallet'
 import { CONTRACTS } from '../lib/contracts'
 
 const THEME_OPTIONS: { value: ThemeMode; label: string; Icon: typeof Sun }[] = [
@@ -117,7 +119,16 @@ function ItemCard({ item }: { item: Item }) {
   )
 }
 
+/// 拼装 imToken DApp 浏览器深度链接，让桌面 / 其他浏览器用户一键跳到
+/// imToken App 内打开 PufferOne。imToken 的 deeplink 文档：
+/// imtokenv2://navigate/DAppView?url=<encoded>
+function buildImTokenDeeplink(): string {
+  const current = typeof window !== 'undefined' ? window.location.href : ''
+  return `imtokenv2://navigate/DAppView?url=${encodeURIComponent(current)}`
+}
+
 export function MorePage() {
+  const wallet = useWallet()
   const [safetyOpen, setSafetyOpen] = useState(false)
 
   // 统计可赎回仓位（pufETH + 4 个金库份额）
@@ -169,6 +180,28 @@ export function MorePage() {
       </div>
 
       <SafetyProtectionsDialog open={safetyOpen} onOpenChange={setSafetyOpen} />
+
+      {/* imToken deeplink — 已在 imToken 内打开时不显示 */}
+      {wallet.injectedKind !== 'imToken' && (
+        <a
+          href={buildImTokenDeeplink()}
+          className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40"
+        >
+          <span
+            className="flex size-10 shrink-0 items-center justify-center rounded-lg"
+            style={{ background: 'rgba(56, 152, 252, 0.12)', color: 'rgb(56, 152, 252)' }}
+          >
+            <Smartphone size={20} strokeWidth={1.75} />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-foreground text-sm">在 imToken 中打开</p>
+            <p className="mt-0.5 text-text-tertiary text-xs leading-relaxed">
+              一键跳转到 imToken DApp 浏览器，获得最佳钱包体验。
+            </p>
+          </div>
+          <ExternalLink size={14} className="text-text-tertiary" />
+        </a>
+      )}
 
       <ThemeSwitcher />
 

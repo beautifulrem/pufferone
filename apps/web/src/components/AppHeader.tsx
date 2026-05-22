@@ -18,6 +18,18 @@ export function AppHeader() {
         <span className="font-mono font-semibold text-foreground text-sm tracking-tight">
           PufferOne
         </span>
+        {wallet.injectedKind === 'imToken' && (
+          <span
+            className="ml-1 rounded-full px-1.5 py-0.5 font-mono text-[9px]"
+            style={{
+              background: 'rgba(56, 152, 252, 0.12)',
+              color: 'rgb(56, 152, 252)',
+            }}
+            title="已在 imToken 钱包内打开"
+          >
+            imToken 内置
+          </span>
+        )}
       </div>
 
       <div className="flex items-center gap-2">
