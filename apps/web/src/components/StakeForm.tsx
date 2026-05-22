@@ -1,6 +1,6 @@
 import { Button } from '@repo/ui/components/button'
 import { Input } from '@repo/ui/components/input'
-import { ArrowDownUp, CheckCircle2, ExternalLink, Info } from 'lucide-react'
+import { ArrowDownUp, ArrowUpRight, CheckCircle2, ExternalLink, Info } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { parseEther, parseUnits, type Address } from 'viem'
 import { useAllowance } from '../hooks/useAllowance'
@@ -30,12 +30,17 @@ const STAKE_RATE_BPS: Record<Token, bigint> = {
   wstETH: 112n,
 }
 
-/// 赎回方向汇率（每 1 pufETH 兑换的 token × 100，跟 MockSwapRouter 配置一致）
-/// ETH 不在反向 swap 路径中，因为主网 ETH 需要走 PufferVault 提款队列 (1-2 周)
-const UNSTAKE_RATE_BPS: Record<Exclude<Token, 'ETH'>, bigint> = {
+/// 赎回方向汇率（每 1 pufETH 兑换的 token × 100）
+/// - stETH/wstETH 跟 MockSwapRouter Sepolia 配置一致，演示内可签
+/// - ETH 走 Puffer 主网官方 PufferVault 提款队列（1-2 周），测试网不演示真签，
+///   但展示一个合理的预估汇率，让用户看到产品形态
+const UNSTAKE_RATE_BPS: Record<Token, bigint> = {
+  ETH: 104n,
   stETH: 104n,
   wstETH: 89n,
 }
+
+const PUFFER_MAINNET_APP = 'https://app.puffer.fi/stake'
 
 const TOKEN_ADDRESS: Record<Exclude<Token, 'ETH'>, Address> = {
   stETH: CONTRACTS.stETH,
@@ -110,10 +115,9 @@ export function StakeForm() {
     if (direction === 'stake') {
       return (inputWei * STAKE_RATE_BPS[token]) / 100n
     }
-    if (isUnstakeETH) return 0n // ETH 不可
-    const rate = UNSTAKE_RATE_BPS[token as Exclude<Token, 'ETH'>]
+    const rate = UNSTAKE_RATE_BPS[token]
     return (inputWei * rate) / 100n
-  }, [inputWei, direction, token, isUnstakeETH])
+  }, [inputWei, direction, token])
 
   const minOut = useMemo(() => {
     if (direction === 'stake') return expectedOut // stake 走铸造合约，固定汇率无滑点
@@ -162,14 +166,14 @@ export function StakeForm() {
       ? (stakeETH.error ?? stakeERC20.error ?? null)
       : (swap.error ?? null)
 
+  // ETH 赎回不在测试网签名，CTA 改为跳转主网官方入口，不需要 canSubmit
   const canSubmit =
     isDeployed() &&
     wallet.isConnected &&
     wallet.isCorrectChain &&
     inputWei > 0n &&
     !insufficientBalance &&
-    !isPending &&
-    !isUnstakeETH
+    !isPending
 
   const handlePrimary = () => {
     if (direction === 'stake') {
@@ -233,29 +237,23 @@ export function StakeForm() {
           </button>
         </div>
 
-        {/* Token segmented — unstake 时 ETH 灰掉 */}
+        {/* Token segmented */}
         <div className="mb-4 grid grid-cols-3 gap-1 rounded-lg bg-background/60 p-1">
-          {(['ETH', 'stETH', 'wstETH'] as const).map((t) => {
-            const disabled = direction === 'unstake' && t === 'ETH'
-            return (
-              <button
-                key={t}
-                type="button"
-                disabled={disabled}
-                onClick={() => setToken(t)}
-                className={`flex items-center justify-center gap-1.5 rounded-md py-2 font-mono text-sm transition-all ${
-                  token === t && !disabled
-                    ? 'bg-primary text-primary-foreground'
-                    : disabled
-                      ? 'cursor-not-allowed text-text-disabled opacity-50'
-                      : 'text-text-tertiary hover:text-foreground'
-                }`}
-              >
-                <TokenIcon symbol={t} size={14} />
-                {t}
-              </button>
-            )
-          })}
+          {(['ETH', 'stETH', 'wstETH'] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setToken(t)}
+              className={`flex items-center justify-center gap-1.5 rounded-md py-2 font-mono text-sm transition-all ${
+                token === t
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-text-tertiary hover:text-foreground'
+              }`}
+            >
+              <TokenIcon symbol={t} size={14} />
+              {t}
+            </button>
+          ))}
         </div>
 
         {/* Input row */}
@@ -275,19 +273,16 @@ export function StakeForm() {
               placeholder="0.0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              disabled={isUnstakeETH}
-              className="h-12 flex-1 border-0 bg-transparent p-0 font-mono text-2xl text-foreground shadow-none focus-visible:ring-0 disabled:opacity-50"
+              className="h-12 flex-1 border-0 bg-transparent p-0 font-mono text-2xl text-foreground shadow-none focus-visible:ring-0"
             />
             <div className="flex items-center gap-1.5 rounded-full border border-border bg-card px-2 py-1 font-mono text-foreground text-xs">
               <TokenIcon symbol={sourceSymbol} size={18} />
               {sourceSymbol}
             </div>
           </div>
-          {!isUnstakeETH && (
-            <div className="mt-3">
-              <PercentChips balance={balanceAmount} onPick={setAmount} gasReserve={gasReserve} />
-            </div>
-          )}
+          <div className="mt-3">
+            <PercentChips balance={balanceAmount} onPick={setAmount} gasReserve={gasReserve} />
+          </div>
         </div>
 
         {/* Flip 按钮 — MetaMask Swap 风格圆形 ↕ */}
@@ -310,16 +305,14 @@ export function StakeForm() {
               1 {sourceSymbol} ≈{' '}
               {direction === 'stake'
                 ? (Number(STAKE_RATE_BPS[token]) / 100).toFixed(2)
-                : isUnstakeETH
-                  ? '—'
-                  : (Number(UNSTAKE_RATE_BPS[token as Exclude<Token, 'ETH'>]) / 100).toFixed(2)}{' '}
+                : (Number(UNSTAKE_RATE_BPS[token]) / 100).toFixed(2)}{' '}
               {targetSymbol}
             </span>
           </div>
           <div className="flex items-center gap-3">
             <p className="flex-1 font-mono text-2xl text-foreground">
               <span className="text-primary">
-                {isUnstakeETH ? '—' : formatTokenAmount(direction === 'unstake' ? minOut : expectedOut, 18, 6)}
+                {formatTokenAmount(direction === 'unstake' && !isUnstakeETH ? minOut : expectedOut, 18, 6)}
               </span>
             </p>
             <div className="flex items-center gap-1.5 rounded-full border border-primary/40 bg-card px-2 py-1 font-mono text-foreground text-xs">
@@ -332,10 +325,12 @@ export function StakeForm() {
               pufETH 数量少于 ETH，是因为它代表已包含未来收益的头寸；随着 Puffer 持续累积收益，pufETH 对 ETH 的赎回比例会逐步上升。
             </p>
           ) : isUnstakeETH ? (
-            <div className="mt-3 flex items-start gap-2 rounded-md border border-warning/30 bg-warning/5 p-2.5">
-              <Info size={12} className="mt-0.5 shrink-0 text-warning" />
-              <p className="text-[11px] text-text-tertiary leading-relaxed">
-                pufETH 不能直接赎回为 ETH — 主网官方提款队列约 1-2 周。如需立即变现，请选 stETH 或 wstETH。
+            <div className="mt-3 flex items-start gap-2 rounded-md border border-primary/30 bg-primary/5 p-2.5">
+              <Info size={12} className="mt-0.5 shrink-0 text-primary" />
+              <p className="text-[11px] text-text-secondary-gray leading-relaxed">
+                pufETH 赎回为 ETH 走 Puffer 主网官方 PufferVault 提款队列（约 1–2 周到账）。当前演示运行在 Sepolia 测试网，本路径不在测试网签名 — 下方按钮会跳转主网应用，由你在 imToken / MetaMask 主网环境完成。
+                <br />
+                想立即变现？选 <strong className="text-foreground">stETH</strong> 或 <strong className="text-foreground">wstETH</strong> 走链上闪兑。
               </p>
             </div>
           ) : (
@@ -381,7 +376,17 @@ export function StakeForm() {
 
         {/* Action */}
         <div className="mt-5">
-          {needsApproval && approveToken && approveSpender ? (
+          {isUnstakeETH ? (
+            <a
+              href={PUFFER_MAINNET_APP}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="cta-gradient flex h-12 items-center justify-center gap-2 rounded-full font-mono text-sm"
+            >
+              在主网申请 ETH 赎回
+              <ArrowUpRight size={14} />
+            </a>
+          ) : needsApproval && approveToken && approveSpender ? (
             <GradientCTA
               loading={approve.isPending}
               disabled={!canSubmit}
@@ -401,19 +406,17 @@ export function StakeForm() {
                   ? '请先连接钱包'
                   : !wallet.isCorrectChain
                     ? '请切换到 Sepolia'
-                    : isUnstakeETH
-                      ? 'ETH 暂不可直接赎回'
-                      : insufficientBalance
-                        ? direction === 'stake'
-                          ? `余额不足，先 faucet ${token}`
-                          : 'pufETH 余额不足'
-                        : isPending
-                          ? '签名 & 广播中…'
-                          : direction === 'stake'
-                            ? isErc20
-                              ? `第 2/2 步：质押 ${token}`
-                              : `质押 ${token} 铸造 pufETH`
-                            : `第 2/2 步：赎回为 ${token}`}
+                    : insufficientBalance
+                      ? direction === 'stake'
+                        ? `余额不足，先 faucet ${token}`
+                        : 'pufETH 余额不足'
+                      : isPending
+                        ? '签名 & 广播中…'
+                        : direction === 'stake'
+                          ? isErc20
+                            ? `第 2/2 步：质押 ${token}`
+                            : `质押 ${token} 铸造 pufETH`
+                          : `第 2/2 步：赎回为 ${token}`}
             </GradientCTA>
           )}
         </div>
