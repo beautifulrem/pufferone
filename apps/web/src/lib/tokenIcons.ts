@@ -13,7 +13,7 @@ const TRUST = 'https://raw.githubusercontent.com/trustwallet/assets/master/block
 const SPOTHQ = 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color'
 /// Puffer 官方 token SVG (app.puffer.fi/icons/tokens/{Symbol}.svg)，已镜像到本地
 /// /public/icons/tokens/ 以免远程 CDN 抖动。
-const PUFFER_LOCAL = '/icons/tokens'
+const PUFFER_LOCAL = `${import.meta.env.BASE_URL}icons/tokens`
 
 /// Mainnet checksum addresses (case-sensitive — Trust Wallet pinned to checksum).
 const MAINNET = {
