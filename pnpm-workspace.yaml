@@ -26,6 +26,6 @@ catalogs:
     '@fontsource/noto-sans-sc': '^5.2.9'
     class-variance-authority: ^0.7.1
     clsx: ^2.1.1
-    'lucide-react': '^1.7.0'
+    'lucide-react': '^1.14.0'
     recharts: ^3.8.1
     tailwind-merge: ^3.5.0

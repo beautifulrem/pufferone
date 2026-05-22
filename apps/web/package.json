@@ -15,9 +15,11 @@
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.100.11",
     "@walletconnect/ethereum-provider": "^2.23.9",
+    "lucide-react": "catalog:ui",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-router": "catalog:react",
+    "recharts": "catalog:ui",
     "viem": "^2.50.4"
   },
   "devDependencies": {

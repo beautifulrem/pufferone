@@ -1,16 +1,18 @@
 import { Toaster } from '@repo/ui/components/sonner'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { useEffect } from 'react'
-import { BrowserRouter, Link, Outlet, Route, Routes } from 'react-router'
+import { BrowserRouter, Outlet, Route, Routes } from 'react-router'
 import { AppHeader } from '../components/AppHeader'
+import { BottomTabNav } from '../components/BottomTabNav'
+import { MobileShell } from '../components/MobileShell'
 import { NetworkGuard } from '../components/NetworkGuard'
 import { OnboardingModal } from '../components/OnboardingModal'
 import { WalletProvider } from '../hooks/useWallet'
 import { queryClient } from '../lib/queryClient'
-import { HomePage } from '../pages/home-page'
-import { StakePage } from '../pages/stake-page'
 import { ExitPage } from '../pages/exit-page'
-import { PortfolioPage } from '../pages/portfolio-page'
+import { HomePage } from '../pages/home-page'
+import { MorePage } from '../pages/more-page'
+import { StakePage } from '../pages/stake-page'
 import { SwapPage } from '../pages/swap-page'
 import { VaultsPage } from '../pages/vaults-page'
 
@@ -21,63 +23,16 @@ function AppLayout() {
   }, [])
 
   return (
-    <main className="min-h-screen bg-surface-page text-foreground">
-      <div className="relative isolate">
-        <div
-          aria-hidden
-          className="-z-10 -translate-x-1/2 pointer-events-none absolute top-[-20%] left-1/2 h-[600px] w-[800px] rounded-full opacity-30 blur-3xl"
-          style={{
-            background: 'radial-gradient(circle, rgb(0 229 199 / 0.4) 0%, rgb(0 229 199 / 0) 70%)',
-          }}
-        />
-
-        <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-          <AppHeader />
-          <nav className="mb-8 flex gap-1 font-mono text-sm">
-            <Link
-              to="/"
-              className="rounded-md border border-transparent px-3 py-1.5 text-text-tertiary transition-colors hover:border-border hover:text-foreground"
-            >
-              Home
-            </Link>
-            <Link
-              to="/stake"
-              className="rounded-md border border-transparent px-3 py-1.5 text-text-tertiary transition-colors hover:border-border hover:text-foreground"
-            >
-              Stake
-            </Link>
-            <Link
-              to="/vaults"
-              className="rounded-md border border-transparent px-3 py-1.5 text-text-tertiary transition-colors hover:border-border hover:text-foreground"
-            >
-              Vaults
-            </Link>
-            <Link
-              to="/swap"
-              className="rounded-md border border-transparent px-3 py-1.5 text-text-tertiary transition-colors hover:border-border hover:text-foreground"
-            >
-              Swap
-            </Link>
-            <Link
-              to="/portfolio"
-              className="rounded-md border border-transparent px-3 py-1.5 text-text-tertiary transition-colors hover:border-border hover:text-foreground"
-            >
-              Portfolio
-            </Link>
-            <Link
-              to="/exit"
-              className="rounded-md border border-transparent px-3 py-1.5 text-text-tertiary transition-colors hover:border-border hover:text-foreground"
-            >
-              Exit
-            </Link>
-          </nav>
-          <NetworkGuard />
-          <Outlet />
-        </div>
+    <MobileShell>
+      <AppHeader />
+      <NetworkGuard />
+      <div className="px-4 pt-4">
+        <Outlet />
       </div>
+      <BottomTabNav />
       <Toaster />
       <OnboardingModal />
-    </main>
+    </MobileShell>
   )
 }
 
@@ -92,7 +47,7 @@ function App() {
               <Route path="stake" element={<StakePage />} />
               <Route path="vaults" element={<VaultsPage />} />
               <Route path="swap" element={<SwapPage />} />
-              <Route path="portfolio" element={<PortfolioPage />} />
+              <Route path="more" element={<MorePage />} />
               <Route path="exit" element={<ExitPage />} />
             </Route>
           </Routes>
