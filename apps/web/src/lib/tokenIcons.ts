@@ -20,6 +20,9 @@ const MAINNET = {
   USDC: '0xA0b86991c6218b36c1D19D4a2e9Eb0cE3606eB48',
   USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
   WBTC: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+  DAI: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+  CBETH: '0xBe9895146f7AF43049ca1c1AE358B0541Ea49704',
+  RETH: '0xae78736Cd615f374D3085123A210448E74Fc6393',
 } as const
 
 /// Ordered list of CDN URLs to try for a token. The TokenIcon component will
@@ -64,6 +67,27 @@ const SOURCES: Record<string, TokenSource> = {
   USDC: { kind: 'urls', urls: [trustWalletUrl(MAINNET.USDC), spothqUrl('usdc')], symbol: 'USDC' },
   USDT: { kind: 'urls', urls: [trustWalletUrl(MAINNET.USDT), spothqUrl('usdt')], symbol: 'USDT' },
   WBTC: { kind: 'urls', urls: [trustWalletUrl(MAINNET.WBTC), spothqUrl('wbtc')], symbol: 'WBTC' },
+  DAI: { kind: 'urls', urls: [trustWalletUrl(MAINNET.DAI), spothqUrl('dai')], symbol: 'DAI' },
+  CBETH: {
+    kind: 'urls',
+    urls: [
+      // Coinbase Wrapped Staked ETH — Trust Wallet 偶发 503，加 CoinGecko 作主源
+      'https://assets.coingecko.com/coins/images/27008/large/cbeth.png',
+      trustWalletUrl(MAINNET.CBETH),
+      spothqUrl('cbeth'),
+    ],
+    symbol: 'cbETH',
+  },
+  RETH: {
+    kind: 'urls',
+    urls: [
+      // Rocket Pool ETH — 同上
+      'https://assets.coingecko.com/coins/images/20764/large/reth.png',
+      trustWalletUrl(MAINNET.RETH),
+      spothqUrl('reth'),
+    ],
+    symbol: 'rETH',
+  },
 }
 
 /// Vault wrappers: a base token icon with a dashed ring overlay.
