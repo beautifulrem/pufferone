@@ -7,7 +7,7 @@
   <p>手机优先的 Puffer Finance 接入终端 — 让流动再质押像用钱包一样自然。</p>
 
   <p>
-    <a href="https://pufferone-web-git-main-beautifulremis-projects.vercel.app">在线体验</a> ·
+    <a href="https://beautifulrem.github.io/pufferone/">在线体验</a> ·
     <a href="#-快速开始">快速开始</a> ·
     <a href="#-安全模型">安全模型</a>
   </p>
