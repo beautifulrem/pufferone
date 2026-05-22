@@ -11,7 +11,6 @@ import { useWallet } from '../hooks/useWallet'
 import { CONTRACTS } from '../lib/contracts'
 import { formatTokenAmount } from '../lib/format'
 import { MAINNET_AGGREGATOR_URL, SWAP_TOKENS, type SwapToken } from '../lib/swapTokens'
-import { AIInsight } from './AIInsight'
 import { CornerBracketCard } from './CornerBracketCard'
 import { GradientCTA } from './GradientCTA'
 import { PercentChips } from './PercentChips'
@@ -84,10 +83,6 @@ export function SwapForm() {
 
   return (
     <div className="space-y-4">
-      <AIInsight
-        ctx={{ operation: 'swap', amount: inputWei, tokenIn: selectedToken.symbol }}
-      />
-
       <CornerBracketCard className="p-4">
         {/* Settings row */}
         <div className="mb-3 flex items-center justify-between">

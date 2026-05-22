@@ -13,7 +13,6 @@ import { useTokenBalance } from '../hooks/useTokenBalance'
 import { useWallet } from '../hooks/useWallet'
 import { CONTRACTS, isDeployed } from '../lib/contracts'
 import { formatTokenAmount } from '../lib/format'
-import { AIInsight } from './AIInsight'
 import { CornerBracketCard } from './CornerBracketCard'
 import { GradientCTA } from './GradientCTA'
 import { PercentChips } from './PercentChips'
@@ -97,8 +96,6 @@ export function StakeForm() {
 
   return (
     <div className="space-y-4">
-      <AIInsight ctx={{ operation: 'stake', amount: inputWei, tokenIn: token }} />
-
       <CornerBracketCard className="p-5">
         {/* Token segmented */}
         <div className="mb-4 grid grid-cols-3 gap-1 rounded-lg bg-background/60 p-1">
