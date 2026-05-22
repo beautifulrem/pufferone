@@ -69,8 +69,7 @@ const SOURCES: Record<string, TokenSource> = {
   },
   PUFETH: {
     kind: 'urls',
-    // 用 PufferOne 改色版（粉紫青）保持与全站主色一致
-    urls: ['/pufferone-logo.svg', pufferLocalUrl('pufETH'), trustWalletUrl(MAINNET.PUFETH)],
+    urls: [pufferLocalUrl('pufETH'), trustWalletUrl(MAINNET.PUFETH)],
     symbol: 'pufETH',
   },
   WETH: {
