@@ -449,7 +449,16 @@ export function StakeForm({ direction: dirProp, onDirectionChange }: StakeFormPr
 
         {/* Action */}
         <div className="mt-5">
-          {needsApproval && approveToken && approveSpender ? (
+          {txData ? (
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full font-mono"
+              onClick={() => setAmount('')}
+            >
+              再次操作
+            </Button>
+          ) : needsApproval && approveToken && approveSpender ? (
             <GradientCTA
               loading={approve.isPending}
               disabled={!canSubmit}

@@ -314,7 +314,16 @@ export function SwapForm() {
 
         {/* Action */}
         <div className="mt-4">
-          {!signable && !isReverse ? (
+          {swap.data ? (
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full font-mono"
+              onClick={() => setAmount('')}
+            >
+              再次兑换
+            </Button>
+          ) : !signable && !isReverse ? (
             <Button disabled size="lg" className="w-full font-mono opacity-60">
               {selectedToken.symbol} 暂不可在测试网兑换
             </Button>

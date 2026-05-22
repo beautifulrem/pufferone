@@ -284,7 +284,21 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
 
           <Separator />
 
-          {needsApproval ? (
+          {success ? (
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full font-mono"
+              onClick={() => {
+                setAmount(mode === 'deposit' ? '0.5' : '0.1')
+                deposit.reset()
+                withdraw.reset()
+                approve.reset()
+              }}
+            >
+              再次操作
+            </Button>
+          ) : needsApproval ? (
             <Button
               size="lg"
               className="w-full font-mono"
