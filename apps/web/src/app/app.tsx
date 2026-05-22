@@ -1,12 +1,12 @@
 import { Toaster } from '@repo/ui/components/sonner'
 import { QueryClientProvider } from '@tanstack/react-query'
-import { useEffect } from 'react'
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router'
 import { AppHeader } from '../components/AppHeader'
 import { BottomTabNav } from '../components/BottomTabNav'
 import { MobileShell } from '../components/MobileShell'
 import { NetworkGuard } from '../components/NetworkGuard'
 import { OnboardingModal } from '../components/OnboardingModal'
+import { ThemeProvider } from '../hooks/useTheme'
 import { WalletProvider } from '../hooks/useWallet'
 import { queryClient } from '../lib/queryClient'
 import { ExitPage } from '../pages/exit-page'
@@ -17,11 +17,6 @@ import { SwapPage } from '../pages/swap-page'
 import { VaultsPage } from '../pages/vaults-page'
 
 function AppLayout() {
-  useEffect(() => {
-    document.documentElement.classList.add('dark')
-    document.documentElement.style.colorScheme = 'dark'
-  }, [])
-
   return (
     <MobileShell>
       <AppHeader />
@@ -38,22 +33,24 @@ function AppLayout() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <WalletProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<AppLayout />}>
-              <Route index element={<HomePage />} />
-              <Route path="stake" element={<StakePage />} />
-              <Route path="vaults" element={<VaultsPage />} />
-              <Route path="swap" element={<SwapPage />} />
-              <Route path="more" element={<MorePage />} />
-              <Route path="exit" element={<ExitPage />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </WalletProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <WalletProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route element={<AppLayout />}>
+                <Route index element={<HomePage />} />
+                <Route path="stake" element={<StakePage />} />
+                <Route path="vaults" element={<VaultsPage />} />
+                <Route path="swap" element={<SwapPage />} />
+                <Route path="more" element={<MorePage />} />
+                <Route path="exit" element={<ExitPage />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </WalletProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   )
 }
 

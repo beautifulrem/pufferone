@@ -1,6 +1,56 @@
 import { Card, CardContent } from '@repo/ui/components/card'
-import { ArrowDownToLine, BookOpen, ExternalLink, ShieldCheck } from 'lucide-react'
+import {
+  ArrowDownToLine,
+  BookOpen,
+  ExternalLink,
+  Monitor,
+  Moon,
+  ShieldCheck,
+  Sun,
+} from 'lucide-react'
 import { Link } from 'react-router'
+import { type ThemeMode, useTheme } from '../hooks/useTheme'
+
+const THEME_OPTIONS: { value: ThemeMode; label: string; Icon: typeof Sun }[] = [
+  { value: 'system', label: '系统', Icon: Monitor },
+  { value: 'light', label: '亮色', Icon: Sun },
+  { value: 'dark', label: '暗色', Icon: Moon },
+]
+
+function ThemeSwitcher() {
+  const { mode, setMode } = useTheme()
+  return (
+    <Card className="border-border bg-card shadow-none">
+      <CardContent className="p-4">
+        <p className="cyber-eyebrow">主题</p>
+        <p className="mt-1 mb-3 text-text-tertiary text-xs leading-relaxed">
+          跟随系统、强制亮色或暗色。设置会本地保存。
+        </p>
+        <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-background p-1">
+          {THEME_OPTIONS.map(({ value, label, Icon }) => {
+            const active = mode === value
+            return (
+              <button
+                type="button"
+                key={value}
+                onClick={() => setMode(value)}
+                className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs font-medium transition-colors ${
+                  active
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-text-tertiary hover:text-foreground'
+                }`}
+                aria-pressed={active}
+              >
+                <Icon size={14} strokeWidth={2} />
+                <span>{label}</span>
+              </button>
+            )
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
 const ITEMS = [
   {
@@ -57,6 +107,8 @@ export function MorePage() {
           </Link>
         ))}
       </div>
+
+      <ThemeSwitcher />
 
       <div className="space-y-2 pt-2">
         <p className="cyber-eyebrow">外部链接</p>

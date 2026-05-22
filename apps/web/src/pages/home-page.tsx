@@ -128,7 +128,7 @@ export function HomePage() {
             <p className="font-mono text-warning text-xs">连接钱包查看你的实际仓位</p>
           )}
           <div className="-mb-1 -mx-1 h-10 pt-2">
-            <Sparkline data={sparklineData} color="#FF1493" colorBottom="#00E8FF" height={40} />
+            <Sparkline data={sparklineData} color="#FC72FF" colorBottom="#A78BFA" height={40} />
           </div>
         </div>
       </CornerBracketCard>
@@ -143,13 +143,13 @@ export function HomePage() {
         </Button>
         <Button asChild variant="outline" className="h-16 flex-col gap-1 border-border bg-card font-mono text-xs">
           <Link to="/vaults">
-            <Layers size={18} style={{ color: '#A78BFA' }} />
+            <Layers size={18} style={{ color: 'var(--ai-primary)' }} />
             <span>Vault</span>
           </Link>
         </Button>
         <Button asChild variant="outline" className="h-16 flex-col gap-1 border-border bg-card font-mono text-xs">
           <Link to="/swap">
-            <ArrowLeftRight size={18} style={{ color: '#00E8FF' }} />
+            <ArrowLeftRight size={18} style={{ color: 'var(--brand-secondary)' }} />
             <span>Swap</span>
           </Link>
         </Button>
