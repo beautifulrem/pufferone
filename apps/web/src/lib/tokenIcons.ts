@@ -17,12 +17,10 @@ const MAINNET = {
   STETH: '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',
   WSTETH: '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0',
   PUFETH: '0xD9A442856C234a39a81a089C06451EBAa4306a72',
+  WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
   USDC: '0xA0b86991c6218b36c1D19D4a2e9Eb0cE3606eB48',
   USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
   WBTC: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-  DAI: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-  CBETH: '0xBe9895146f7AF43049ca1c1AE358B0541Ea49704',
-  RETH: '0xae78736Cd615f374D3085123A210448E74Fc6393',
 } as const
 
 /// Ordered list of CDN URLs to try for a token. The TokenIcon component will
@@ -48,7 +46,6 @@ export type TokenSource =
 /// Direct registry — order matters (first URL tried first).
 const SOURCES: Record<string, TokenSource> = {
   ETH: { kind: 'urls', urls: [spothqUrl('eth')], symbol: 'ETH' },
-  WETH: { kind: 'urls', urls: [spothqUrl('eth')], symbol: 'WETH' },
   STETH: {
     kind: 'urls',
     urls: [trustWalletUrl(MAINNET.STETH), spothqUrl('steth')],
@@ -64,30 +61,16 @@ const SOURCES: Record<string, TokenSource> = {
     urls: [trustWalletUrl(MAINNET.PUFETH)],
     symbol: 'pufETH',
   },
+  WETH: {
+    kind: 'urls',
+    // WETH 在 Trust Wallet / Spothq 中常 fallback 到 ETH logo
+    urls: [trustWalletUrl(MAINNET.WETH), spothqUrl('eth')],
+    symbol: 'WETH',
+  },
+  // USDC / USDT / WBTC 被金库卡片用作 unifiUSD / unifiBTC 的底图（见下方 WRAPS）
   USDC: { kind: 'urls', urls: [trustWalletUrl(MAINNET.USDC), spothqUrl('usdc')], symbol: 'USDC' },
   USDT: { kind: 'urls', urls: [trustWalletUrl(MAINNET.USDT), spothqUrl('usdt')], symbol: 'USDT' },
   WBTC: { kind: 'urls', urls: [trustWalletUrl(MAINNET.WBTC), spothqUrl('wbtc')], symbol: 'WBTC' },
-  DAI: { kind: 'urls', urls: [trustWalletUrl(MAINNET.DAI), spothqUrl('dai')], symbol: 'DAI' },
-  CBETH: {
-    kind: 'urls',
-    urls: [
-      // Coinbase Wrapped Staked ETH — Trust Wallet 偶发 503，加 CoinGecko 作主源
-      'https://assets.coingecko.com/coins/images/27008/large/cbeth.png',
-      trustWalletUrl(MAINNET.CBETH),
-      spothqUrl('cbeth'),
-    ],
-    symbol: 'cbETH',
-  },
-  RETH: {
-    kind: 'urls',
-    urls: [
-      // Rocket Pool ETH — 同上
-      'https://assets.coingecko.com/coins/images/20764/large/reth.png',
-      trustWalletUrl(MAINNET.RETH),
-      spothqUrl('reth'),
-    ],
-    symbol: 'rETH',
-  },
 }
 
 /// Vault wrappers: a base token icon with a dashed ring overlay.

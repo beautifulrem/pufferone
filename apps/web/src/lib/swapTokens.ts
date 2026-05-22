@@ -1,14 +1,12 @@
 import type { Address } from 'viem'
 import { CONTRACTS } from './contracts'
 
-/// Token catalogue for the DEX aggregator page.
+/// Token catalogue for the swap page.
 ///
-/// On Sepolia we only have stETH / wstETH mock contracts that can actually
-/// participate in the swap router (`MockSwapRouter` has registered rates for
-/// these pairs). The other tokens listed here exist on Ethereum mainnet and
-/// are shown for product completeness — selecting them triggers a transparent
-/// "main-net only" notice with a link to the live Puffer entry point, rather
-/// than silently pretending to swap.
+/// 与 Puffer Finance 官方 Stake / EigenLayer Restaking 通道（app.puffer.fi/stake
+/// 下 ETH tab 实测）保持一致：官方支持 ETH / stETH / wstETH / WETH 4 种
+/// 输入资产。USDC / USDT / DAI / WBTC / cbETH / rETH 等其他代币官方
+/// 不支持直接兑换为 pufETH，因此移除。
 ///
 /// `rate` is the approximate amount of pufETH obtained per 1 input token,
 /// scaled by 100 (bps). 96 means 1 stETH ≈ 0.96 pufETH.
@@ -47,53 +45,13 @@ export const SWAP_TOKENS: readonly SwapToken[] = [
     sepoliaSignable: true,
   },
   {
-    key: 'USDC',
-    symbol: 'USDC',
-    fullName: 'USD Coin',
-    mainnetAddress: '0xA0b86991c6218b36c1D19D4a2e9Eb0cE3606eB48',
-    rateBps: 0n, // 取决于实时 ETH/USDC 汇率，存入弹窗只展示
-    sepoliaSignable: false,
-  },
-  {
-    key: 'USDT',
-    symbol: 'USDT',
-    fullName: 'Tether USD',
-    mainnetAddress: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-    rateBps: 0n,
-    sepoliaSignable: false,
-  },
-  {
-    key: 'DAI',
-    symbol: 'DAI',
-    fullName: 'Dai Stablecoin',
-    mainnetAddress: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-    rateBps: 0n,
-    sepoliaSignable: false,
-  },
-  {
-    key: 'WBTC',
-    symbol: 'WBTC',
-    fullName: 'Wrapped BTC',
-    mainnetAddress: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-    rateBps: 0n,
-    sepoliaSignable: false,
-  },
-  {
-    key: 'cbETH',
-    symbol: 'cbETH',
-    fullName: 'Coinbase Wrapped Staked ETH',
-    mainnetAddress: '0xBe9895146f7AF43049ca1c1AE358B0541Ea49704',
-    rateBps: 105n,
-    sepoliaSignable: false,
-  },
-  {
-    key: 'rETH',
-    symbol: 'rETH',
-    fullName: 'Rocket Pool ETH',
-    mainnetAddress: '0xae78736Cd615f374D3085123A210448E74Fc6393',
-    rateBps: 108n,
+    key: 'WETH',
+    symbol: 'WETH',
+    fullName: 'Wrapped ETH',
+    mainnetAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    rateBps: 96n,
     sepoliaSignable: false,
   },
 ] as const
 
-export const MAINNET_AGGREGATOR_URL = 'https://app.puffer.fi/'
+export const MAINNET_AGGREGATOR_URL = 'https://app.puffer.fi/stake'

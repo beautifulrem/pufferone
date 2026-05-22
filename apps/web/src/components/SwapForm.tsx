@@ -115,20 +115,20 @@ export function SwapForm() {
           </div>
         )}
 
-        {/* Token chip selector — 2 行 × 4 列 grid，所有 token 一眼可见 */}
-        <div className="mb-2 grid grid-cols-4 gap-1.5">
+        {/* Token chip selector — 跟 Puffer 官方 EigenLayer 通道支持的 token 对齐 */}
+        <div className="mb-2 grid grid-cols-3 gap-1.5">
           {SWAP_TOKENS.map((t) => (
             <button
               key={t.key}
               type="button"
               onClick={() => setTokenKey(t.key)}
-              className={`relative flex items-center justify-center gap-1 rounded-full border px-2 py-1.5 font-mono text-xs transition-all ${
+              className={`relative flex items-center justify-center gap-1.5 rounded-full border px-3 py-2 font-mono text-sm transition-all ${
                 tokenKey === t.key
                   ? 'border-primary bg-primary text-primary-foreground shadow-sm'
                   : 'border-border bg-card text-text-tertiary hover:border-border-strong hover:text-foreground'
               }`}
             >
-              <TokenIcon symbol={t.symbol} size={14} />
+              <TokenIcon symbol={t.symbol} size={16} />
               <span className="truncate">{t.symbol}</span>
               {!t.sepoliaSignable && (
                 <span
