@@ -1,21 +1,16 @@
-name: Deploy
+name: Deploy to Vercel
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 concurrency:
   group: deploy
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,22 +24,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # GitHub Pages build (base = /pufferone/)
-      - name: Build for GitHub Pages
-        run: pnpm --filter @repo/web build
-
-      - name: Copy 404.html for SPA routing
-        run: cp apps/web/dist/index.html apps/web/dist/404.html
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: apps/web/dist
-
-      # Vercel build (base = /)
-      - name: Rebuild for Vercel
-        run: pnpm --filter @repo/web build
-        env:
-          GITHUB_ACTIONS: ''
+      - run: pnpm --filter @repo/web build
 
       - name: Prepare Vercel deploy
         run: |
@@ -54,17 +34,6 @@ jobs:
           echo '{"projectId":"prj_fFfiPoZo64hpbdAbidPBcIBC5tpd","orgId":"team_193Luvf7v6yBoueoO7lPgwkR"}' > apps/web/dist/.vercel/project.json
 
       - name: Deploy to Vercel
-        if: env.VERCEL_TOKEN != ''
         run: npx vercel deploy apps/web/dist/ --prod --yes --token $VERCEL_TOKEN
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-  deploy-pages:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4

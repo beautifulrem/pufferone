@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@repo/ui/compo
 import { Check, Copy, ExternalLink, Smartphone } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-const PROD_URL = 'https://beautifulrem.github.io/pufferone/'
+const PROD_URL = 'https://dist-ten-virid-31.vercel.app/'
 
 function appUrl(): string {
   if (typeof window === 'undefined') return PROD_URL
