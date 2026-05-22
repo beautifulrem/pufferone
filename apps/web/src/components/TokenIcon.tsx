@@ -22,7 +22,7 @@ export function TokenIcon({ symbol, size = 36 }: { symbol: string; size?: number
     const grad =
       info.kind === 'gradient'
         ? `linear-gradient(135deg, ${info.from}, ${info.to})`
-        : 'linear-gradient(135deg, #FF1493, #7C3AED)'
+        : 'linear-gradient(135deg, #FC72FF, #A78BFA)'
     const label = info.kind === 'gradient' ? info.label : symbol.slice(0, 2)
     return (
       <div
@@ -35,7 +35,6 @@ export function TokenIcon({ symbol, size = 36 }: { symbol: string; size?: number
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: Math.max(10, size * 0.32),
-          boxShadow: '0 4px 14px rgba(255, 20, 147, 0.25)',
         }}
       >
         {label}

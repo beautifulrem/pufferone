@@ -14,8 +14,8 @@ let gradientCount = 0
 
 export function Sparkline({
   data,
-  color = '#FF1493',
-  colorBottom = '#00E8FF',
+  color = '#FC72FF',
+  colorBottom = '#FC72FF',
   height = 40,
 }: SparklineProps) {
   const id = useMemo(() => {

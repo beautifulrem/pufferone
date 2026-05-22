@@ -117,12 +117,12 @@ export function HomePage() {
         <div className="space-y-2 p-5">
           <p className="font-mono text-text-tertiary text-xs">总资产估值</p>
           <p className="font-mono font-semibold text-3xl text-foreground">
-            <span className="neon-pink">${totalUSD.toFixed(2)}</span>
+            <span className="text-foreground">${totalUSD.toFixed(2)}</span>
           </p>
           {wallet.isConnected ? (
             <p className="font-mono text-text-tertiary text-xs">
               {truncateAddress(wallet.address ?? undefined)} ·{' '}
-              <span className="neon-cyan">{activeCount}</span> 个活跃仓位
+              <span className="text-primary">{activeCount}</span> 个活跃仓位
             </p>
           ) : (
             <p className="font-mono text-warning text-xs">连接钱包查看你的实际仓位</p>

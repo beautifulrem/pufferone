@@ -167,63 +167,63 @@
 }
 
 .dark {
-  /* PufferOne — Cyberpunk Neon Pink/Cyan/Purple (Phase 13 redesign 2026-05-22) */
+  /* PufferOne — Uniswap-clean dark theme (Phase 13 v2 redesign 2026-05-22) */
 
-  /* Surfaces — deep purple-black */
-  --background: rgb(12 12 31);
-  --foreground: rgb(245 245 250);
-  --card: rgb(20 18 40);
-  --card-foreground: rgb(245 245 250);
-  --popover: rgb(28 24 56);
-  --popover-foreground: rgb(245 245 250);
+  /* Surfaces — Uniswap dark surfaces */
+  --background: rgb(19 19 19);
+  --foreground: rgb(255 255 255);
+  --card: rgb(27 27 27);
+  --card-foreground: rgb(255 255 255);
+  --popover: rgb(36 36 36);
+  --popover-foreground: rgb(255 255 255);
 
-  /* Actions — neon pink primary */
-  --primary: rgb(255 20 147);
-  --primary-hover: rgb(255 105 180);
-  --primary-active: rgb(217 17 125);
-  --primary-disabled: rgb(120 16 75);
-  --primary-soft: rgb(60 8 38);
-  --primary-foreground: rgb(255 255 255);
-  --secondary: rgb(28 24 56);
-  --secondary-foreground: rgb(245 245 250);
-  --accent: rgb(60 8 38);
-  --accent-foreground: rgb(255 20 147);
-  --muted: rgb(20 18 40);
-  --muted-foreground: rgb(150 145 180);
-  --destructive: rgb(248 113 113);
-  --destructive-hover: rgb(239 68 68);
+  /* Actions — Uniswap pink (softer than cyberpunk neon) */
+  --primary: rgb(252 114 255);
+  --primary-hover: rgb(255 159 255);
+  --primary-active: rgb(231 89 232);
+  --primary-disabled: rgb(120 60 130);
+  --primary-soft: rgba(252, 114, 255, 0.12);
+  --primary-foreground: rgb(19 19 19);
+  --secondary: rgb(36 36 36);
+  --secondary-foreground: rgb(255 255 255);
+  --accent: rgb(36 36 36);
+  --accent-foreground: rgb(252 114 255);
+  --muted: rgb(27 27 27);
+  --muted-foreground: rgb(155 155 155);
+  --destructive: rgb(255 70 70);
+  --destructive-hover: rgb(248 113 113);
   --destructive-foreground: rgb(255 255 255);
 
-  /* Borders & focus — pink hairline + cyan corner */
-  --border: rgba(255, 20, 147, 0.18);
-  --border-strong: rgba(255, 20, 147, 0.45);
-  --border-subtle: rgba(255, 20, 147, 0.08);
-  --input: rgb(20 18 40);
-  --ring: rgb(255 20 147);
-  --input-background: rgb(20 18 40);
-  --switch-background: rgb(60 50 90);
+  /* Borders — extra subtle, Uniswap style */
+  --border: rgba(255, 255, 255, 0.075);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --input: rgb(27 27 27);
+  --ring: rgb(252 114 255);
+  --input-background: rgb(27 27 27);
+  --switch-background: rgb(60 60 60);
   --font-weight-medium: 500;
   --font-weight-normal: 400;
 
-  /* Brand — pink + cyan + purple */
-  --brand: rgb(255 20 147);
-  --brand-secondary: rgb(0 232 255);
-  --brand-hover: rgb(255 105 180);
-  --brand-deep: rgb(124 58 237);
+  /* Brand — Uniswap pink primary, subtle secondaries */
+  --brand: rgb(252 114 255);
+  --brand-secondary: rgb(125 211 252);
+  --brand-hover: rgb(255 159 255);
+  --brand-deep: rgb(155 155 155);
 
-  /* Surface aliases */
-  --surface-page: rgb(12 12 31);
-  --surface-blue: rgb(28 24 56);
-  --surface-blue-light: rgb(48 38 90);
-  --surface-blue-dim: rgb(40 30 75);
-  --surface-blue-info: rgba(0, 232, 255, 0.08);
-  --surface-cool: rgb(20 18 40);
-  --surface-light: rgba(28, 24, 56, 0.85);
-  --surface-ai-tinted: rgba(167, 139, 250, 0.1);
-  --surface-glass-page: rgba(12, 12, 31, 0.85);
-  --surface-glass-elevated: rgba(28, 24, 56, 0.85);
-  --surface-glass-modal: rgba(28, 24, 56, 0.92);
-  --dark-surface: rgba(20, 18, 40, 0.85);
+  /* Surface aliases — Uniswap clean dark */
+  --surface-page: rgb(19 19 19);
+  --surface-blue: rgb(27 27 27);
+  --surface-blue-light: rgb(36 36 36);
+  --surface-blue-dim: rgb(45 45 45);
+  --surface-blue-info: rgba(125, 211, 252, 0.06);
+  --surface-cool: rgb(27 27 27);
+  --surface-light: rgba(36, 36, 36, 0.85);
+  --surface-ai-tinted: rgba(167, 139, 250, 0.08);
+  --surface-glass-page: rgba(19, 19, 19, 0.9);
+  --surface-glass-elevated: rgba(36, 36, 36, 0.9);
+  --surface-glass-modal: rgba(36, 36, 36, 0.95);
+  --dark-surface: rgba(27, 27, 27, 0.9);
 
   /* Feedback — Trading semantics */
   --success: rgb(74 222 128);
@@ -269,17 +269,17 @@
   /* Track colors */
   --progress-track: rgba(255, 20, 147, 0.15);
 
-  /* Charts — pink/cyan/purple rotation */
-  --chart-1: rgb(255 20 147);
-  --chart-2: rgb(0 232 255);
+  /* Charts — Uniswap pink + soft cyan/purple */
+  --chart-1: rgb(252 114 255);
+  --chart-2: rgb(125 211 252);
   --chart-3: rgb(167 139 250);
-  --chart-4: rgb(255 105 180);
+  --chart-4: rgb(255 159 255);
   --chart-5: rgb(124 58 237);
 
-  /* Shadows — neon glow */
-  --shadow-card-color: rgba(0, 0, 0, 0.6);
-  --shadow-cta-color: rgba(255, 20, 147, 0.4);
-  --shadow-dialog-color: rgba(0, 0, 0, 0.7);
+  /* Shadows — minimal, subtle */
+  --shadow-card-color: rgba(0, 0, 0, 0.4);
+  --shadow-cta-color: rgba(252, 114, 255, 0.15);
+  --shadow-dialog-color: rgba(0, 0, 0, 0.6);
 
   /* Density */
   --density-compact-y: 8px;
@@ -292,14 +292,14 @@
   --density-airy-x: 48px;
 
   /* Sidebar */
-  --sidebar: rgb(12 12 31);
-  --sidebar-foreground: rgb(245 245 250);
-  --sidebar-primary: rgb(255 20 147);
-  --sidebar-primary-foreground: rgb(255 255 255);
-  --sidebar-accent: rgb(20 18 40);
-  --sidebar-accent-foreground: rgb(245 245 250);
-  --sidebar-border: rgba(255, 20, 147, 0.2);
-  --sidebar-ring: rgb(255 20 147);
+  --sidebar: rgb(19 19 19);
+  --sidebar-foreground: rgb(255 255 255);
+  --sidebar-primary: rgb(252 114 255);
+  --sidebar-primary-foreground: rgb(19 19 19);
+  --sidebar-accent: rgb(27 27 27);
+  --sidebar-accent-foreground: rgb(255 255 255);
+  --sidebar-border: rgba(255, 255, 255, 0.075);
+  --sidebar-ring: rgb(252 114 255);
 }
 
 @theme inline {
@@ -569,16 +569,15 @@
   font-weight: 700;
   background: linear-gradient(
     90deg,
-    rgb(255 20 147),
-    rgb(193 62 254),
-    rgb(0 232 255),
-    rgb(255 20 147)
+    rgb(252 114 255),
+    rgb(255 159 255),
+    rgb(252 114 255)
   );
-  background-size: 280% 100%;
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: identity-gradient 3.6s ease-in-out infinite;
+  animation: identity-gradient 4s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -625,85 +624,52 @@
 }
 
 /* ============================================================
- * PufferOne Phase 13 — Cyberpunk Utilities
+ * PufferOne Phase 13 v2 — Uniswap-clean Utilities (toned down)
  * ============================================================ */
 
-/* CTA 三色霓虹渐变按钮 */
+/* CTA 主按钮 — Uniswap 风格纯色 + 微 hover 提亮 */
 .cta-gradient {
-  background: linear-gradient(90deg, #ff1493 0%, #c13efe 50%, #00e8ff 100%);
-  background-size: 200% 100%;
-  color: #fff;
+  background: rgb(252 114 255);
+  color: rgb(19 19 19);
   font-weight: 600;
-  box-shadow: 0 4px 24px rgba(255, 20, 147, 0.35);
-  transition: background-position 0.4s ease, box-shadow 0.2s ease;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 .cta-gradient:hover:not(:disabled) {
-  background-position: 100% 0;
-  box-shadow: 0 8px 32px rgba(255, 20, 147, 0.5);
+  background: rgb(255 159 255);
+}
+.cta-gradient:active:not(:disabled) {
+  transform: scale(0.985);
 }
 .cta-gradient:disabled {
-  background: linear-gradient(90deg, #4a2845 0%, #3a2855 50%, #1a3855 100%);
-  color: rgba(255, 255, 255, 0.5);
-  box-shadow: none;
+  background: rgba(252, 114, 255, 0.2);
+  color: rgba(255, 255, 255, 0.4);
   cursor: not-allowed;
 }
 
-/* Cyberpunk corner bracket (cutehamster 风格) */
+/* Corner bracket — 已不用，保留空 class 防 build break */
 .corner-bracket {
   position: relative;
 }
-.corner-bracket::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  right: -1px;
-  width: 18px;
-  height: 18px;
-  border-top: 1.5px solid #00e8ff;
-  border-right: 1.5px solid #00e8ff;
-  border-top-right-radius: 4px;
-  filter: drop-shadow(0 0 6px rgba(0, 232, 255, 0.6));
-  pointer-events: none;
-}
-.corner-bracket::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: -1px;
-  width: 18px;
-  height: 18px;
-  border-bottom: 1.5px solid #ff1493;
-  border-left: 1.5px solid #ff1493;
-  border-bottom-left-radius: 4px;
-  filter: drop-shadow(0 0 6px rgba(255, 20, 147, 0.5));
-  pointer-events: none;
-}
 
-/* Eyebrow label 大写青色字间距 */
+/* Eyebrow label — 简洁灰色细标签 */
 .cyber-eyebrow {
   text-transform: uppercase;
-  letter-spacing: 2.5px;
+  letter-spacing: 1.6px;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
-  color: rgb(0 232 255);
+  color: rgb(155 155 155);
   font-weight: 500;
 }
 
-/* Grid 装饰背景（手机壳外部） */
+/* 外部背景 — 纯净深色，无 grid pattern */
 .grid-bg {
-  background-image:
-    radial-gradient(circle at 25% 0%, rgba(255, 20, 147, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 75% 100%, rgba(0, 232, 255, 0.06) 0%, transparent 50%),
-    linear-gradient(rgba(255, 20, 147, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 20, 147, 0.02) 1px, transparent 1px);
-  background-size: auto, auto, 32px 32px, 32px 32px;
-  background-color: rgb(8 8 24);
+  background: rgb(13 13 13);
 }
 
-/* Token icon fallback (圆形渐变 + 字母) */
+/* Token icon fallback — 纯灰色圆 + 字母 */
 .token-icon-fallback {
-  background: linear-gradient(135deg, #ff1493 0%, #7c3aed 100%);
-  color: #fff;
+  background: rgb(45 45 45);
+  color: rgb(255 255 255);
   font-family: var(--font-mono);
   font-weight: 600;
   display: flex;
@@ -712,38 +678,32 @@
   border-radius: 50%;
 }
 
-/* Neon text glow（用于数字/价格高亮） */
+/* 高亮文本 — Uniswap 直接用色，不用 text-shadow 发光 */
 .neon-pink {
-  color: #ff1493;
-  text-shadow: 0 0 12px rgba(255, 20, 147, 0.5);
+  color: rgb(252 114 255);
 }
 .neon-cyan {
-  color: #00e8ff;
-  text-shadow: 0 0 12px rgba(0, 232, 255, 0.5);
+  color: rgb(125 211 252);
 }
 
-/* Tab nav active indicator */
+/* Tab nav active indicator — 极简 2px 顶部线 */
 .tab-active::after {
   content: '';
   position: absolute;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 24px;
+  width: 28px;
   height: 2px;
-  background: linear-gradient(90deg, #ff1493, #00e8ff);
+  background: rgb(252 114 255);
   border-radius: 0 0 4px 4px;
-  box-shadow: 0 0 8px rgba(255, 20, 147, 0.6);
 }
 
-/* Mobile shell — 手机壳容器 */
+/* Mobile shell — 简洁 460px 容器，无外侧 glow */
 .mobile-shell {
   max-width: 460px;
   margin: 0 auto;
   min-height: 100dvh;
-  background: rgb(12 12 31);
+  background: rgb(19 19 19);
   position: relative;
-  box-shadow:
-    0 0 80px rgba(255, 20, 147, 0.08),
-    0 0 40px rgba(0, 232, 255, 0.06);
 }

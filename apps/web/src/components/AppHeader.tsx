@@ -13,13 +13,14 @@ export function AppHeader() {
     <header className="sticky top-0 z-30 flex items-center justify-between border-border border-b bg-background/80 px-4 py-3 backdrop-blur-xl">
       <div className="flex items-center gap-2.5">
         <div
-          className="size-7 rounded-md border border-primary/50"
+          className="size-7 rounded-full"
           style={{
-            background: 'linear-gradient(135deg, #ff1493 0%, #c13efe 50%, #00e8ff 100%)',
-            boxShadow: '0 0 12px rgba(255, 20, 147, 0.4)',
+            background: 'linear-gradient(135deg, rgb(252 114 255) 0%, rgb(125 211 252) 100%)',
           }}
         />
-        <span className="cyber-eyebrow text-foreground">PufferOne</span>
+        <span className="font-mono font-semibold text-foreground text-sm tracking-tight">
+          PufferOne
+        </span>
       </div>
 
       <div className="flex items-center gap-2">

@@ -15,12 +15,13 @@ const DIRECT: Record<string, string> = {
 }
 
 /// Tokens that need a custom gradient overlay (no CDN icon).
+/// Uniswap-clean palette: pink primary + soft cyan/purple/amber accents.
 const GRADIENT: Record<string, { from: string; to: string; label: string }> = {
-  PUFETH: { from: '#FF1493', to: '#7C3AED', label: 'P' },
-  UNIFIETH: { from: '#FF1493', to: '#C13EFE', label: 'uE' },
-  UNIFIUSD: { from: '#00E8FF', to: '#7C3AED', label: 'uU' },
-  UNIFIBTC: { from: '#FBBF24', to: '#FF1493', label: 'uB' },
-  PUFETHS: { from: '#A78BFA', to: '#FF1493', label: 'P+' },
+  PUFETH: { from: '#FC72FF', to: '#A78BFA', label: 'P' },
+  UNIFIETH: { from: '#FC72FF', to: '#7D8AFC', label: 'uE' },
+  UNIFIUSD: { from: '#5EEAD4', to: '#7D8AFC', label: 'uU' },
+  UNIFIBTC: { from: '#FBBF24', to: '#FC72FF', label: 'uB' },
+  PUFETHS: { from: '#A78BFA', to: '#FC72FF', label: 'P+' },
 }
 
 export type TokenIconInfo =

@@ -1,6 +1,9 @@
 import { cn } from '@repo/ui/lib/utils'
 import type { ReactNode } from 'react'
 
+/// Renamed semantically: was CornerBracketCard, kept name for backward-compat
+/// imports. Now a simple Uniswap-style card: subtle border + rounded corners,
+/// no decorative brackets or glows.
 export function CornerBracketCard({
   children,
   className,
@@ -9,12 +12,7 @@ export function CornerBracketCard({
   className?: string
 }) {
   return (
-    <div
-      className={cn(
-        'corner-bracket relative rounded-xl border border-border bg-card',
-        className,
-      )}
-    >
+    <div className={cn('rounded-2xl border border-border bg-card', className)}>
       {children}
     </div>
   )
