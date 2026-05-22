@@ -115,9 +115,17 @@ export function SwapForm() {
           </div>
         )}
 
-        {/* Token chip selector — horizontally scrollable list */}
-        <div className="-mx-1 mb-2 overflow-x-auto px-1 no-scrollbar">
-          <div className="flex gap-1.5">
+        {/* Token chip selector — horizontally scrollable list with right fade mask */}
+        <div
+          className="-mx-1 mb-2 overflow-x-auto px-1 no-scrollbar"
+          style={{
+            maskImage:
+              'linear-gradient(to right, black 0%, black 88%, transparent 100%)',
+            WebkitMaskImage:
+              'linear-gradient(to right, black 0%, black 88%, transparent 100%)',
+          }}
+        >
+          <div className="flex gap-1.5 pr-6">
             {SWAP_TOKENS.map((t) => (
               <button
                 key={t.key}

@@ -142,12 +142,6 @@ export function VaultDepositModal({ vault, onClose }: VaultDepositModalProps) {
               vault.risk === 'Low' ? 'Info' : vault.risk === 'Medium' ? 'Warning' : 'Danger'
             }
             riskNote={`${vault.risk === 'Low' ? '稳健型' : vault.risk === 'Medium' ? '平衡型' : '进取型'}产品：${(Number(vault.sharePrice) / 1e18).toFixed(3)} pufETH = 1 份金库份额，份额价格会随收益累积上涨。`}
-            insightCtx={{
-              operation: 'deposit',
-              amount: inputWei,
-              vaultName: vault.name,
-              risk: vault.risk,
-            }}
           />
 
           {(approve.error || deposit.error) && (
